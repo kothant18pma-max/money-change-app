@@ -493,12 +493,13 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
       </div>
     </div>
 
-    <!-- INCOME/EXPENSE -->
+    <!-- INCOME/EXPENSE (Re-arranged & Action Column Added) -->
     <div class="app-section" id="section-pnl">
-      <div class="grid-2">
-        <div class="card">
-          <div class="card-header">Add Income / Expense · အမြတ်/ကုန်ကျစရိတ် ထည့်ရန်</div>
-          <form id="pnlForm">
+      <!-- အပေါ်က Card: Add Income/Expense Form -->
+      <div class="card">
+        <div class="card-header">Add Income / Expense · အမြတ်/ကုန်ကျစရိတ် ထည့်ရန်</div>
+        <form id="pnlForm">
+          <div class="form-row-2">
             <div class="form-row">
               <label>Type <span class="mm">အမျိုးအစား</span></label>
               <div class="toggle-group" id="pnlTypeToggle">
@@ -506,50 +507,58 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
                 <button type="button" data-type="expense" class="toggle-btn">EXPENSE</button>
               </div>
             </div>
-            <div class="form-row-2">
-              <div class="form-row">
-                <label>Category <span class="mm">ခေါင်းစဉ်</span></label>
-                <select id="pnlCategory"></select>
-              </div>
-              <div class="form-row">
-                <label>Source <span class="mm">ငွေထွက်/ဝင် နေရာ</span></label>
-                <select id="pnlSource"></select>
-              </div>
+            <div class="form-row">
+              <label>Category <span class="mm">ခေါင်းစဉ်</span></label>
+              <select id="pnlCategory"></select>
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-row">
+              <label>Source <span class="mm">ငွေထွက်/ဝင် နေရာ</span></label>
+              <select id="pnlSource"></select>
             </div>
             <div class="form-row">
               <label>Amount <span class="mm">ပမာဏ</span></label>
               <input type="number" id="pnlAmount" placeholder="10000" required>
             </div>
-            <div class="form-row">
-              <label>Note <span class="mm">မှတ်ချက်</span></label>
-              <input type="text" id="pnlNote" placeholder="Description">
-            </div>
-            <button type="submit" class="btn-primary">RECORD</button>
-          </form>
+          </div>
+          <div class="form-row">
+            <label>Note <span class="mm">မှတ်ချက်</span></label>
+            <input type="text" id="pnlNote" placeholder="မှတ်ချက်ရေးပါ (အကြောင်းအရာ)">
+          </div>
+          <button type="submit" class="btn-primary">RECORD</button>
+        </form>
+        <div class="hint" style="margin-top: 1rem;">
+          ⚠ စာရင်းသွင်းပြီးနောက် <strong style="color: var(--accent);">Admin</strong> ကသာ Reversal / Delete လုပ်ခွင့်ရှိပါသည်။ User များအနေဖြင့် စာရင်းသွင်းခွင့်သာ ရှိပါသည်။
         </div>
-        <div class="card">
-          <div class="card-header">P&L Summary · အမြတ်/ကုန်ကျ စာရင်း</div>
-          <!-- Date Filter ထည့်ပေးခြင်း -->
-          <div class="form-row-2" style="margin-bottom: 1rem;">
-            <div class="form-row">
-              <label>Start Date <span class="mm">စတင်ရက်</span></label>
-              <input type="date" id="pnlStart">
-            </div>
-            <div class="form-row">
-              <label>End Date <span class="mm">ပြီးဆုံးရက်</span></label>
-              <input type="date" id="pnlEnd">
-            </div>
+      </div>
+
+      <!-- အောက်က Card: P&L Table -->
+      <div class="card">
+        <div class="card-header">P&L Summary · အမြတ်/ကုန်ကျ စာရင်း</div>
+        <div class="form-row-2" style="margin-bottom: 1rem;">
+          <div class="form-row">
+            <label>Start Date <span class="mm">စတင်ရက်</span></label>
+            <input type="date" id="pnlStart">
           </div>
-          <!-- Sum Total ပြပေးခြင်း (ညာဘက်) -->
-          <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem; font: 700 1.1rem/1.4 'JetBrains Mono', monospace; color: var(--accent);">
-            <span id="pnlSumText">Total Income: 0 MMK | Total Expense: 0 MMK</span>
+          <div class="form-row">
+            <label>End Date <span class="mm">ပြီးဆုံးရက်</span></label>
+            <input type="date" id="pnlEnd">
           </div>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Source</th><th>Amount</th><th>Note</th></tr></thead>
-              <tbody id="pnlBody"></tbody>
-            </table>
-          </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem; font: 700 1.1rem/1.4 'JetBrains Mono', monospace; color: var(--accent);">
+          <span id="pnlSumText">Total Income: 0 MMK | Total Expense: 0 MMK</span>
+        </div>
+        <div class="table-wrap">
+          <table id="pnlTable">
+            <thead><tr>
+              <th>Date</th><th>Type</th><th>Category</th><th>Source</th>
+              <th>Amount</th><th>Note</th>
+              <th class="pnl-action-col" style="display:none">Action</th>
+            </tr></thead>
+            <tbody id="pnlBody"></tbody>
+          </table>
+          <div class="empty-state" id="pnlEmpty" style="display:none">No Income/Expense records yet.</div>
         </div>
       </div>
     </div>
@@ -989,7 +998,8 @@ function savePermissions() {
   showToast('PERMISSIONS SAVED');
 }
 
-function showModal(title, text, details = null, isWarning = false, confirmCallback = null) {
+// Modified showModal to support Note Input for Delete/Reversals
+function showModal(title, text, details = null, isWarning = false, confirmCallback = null, confirmText = 'DELETE', inputPlaceholder = null) {
   const box = document.getElementById('modalBox');
   const icon = document.getElementById('modalIcon');
   const titleEl = document.getElementById('modalTitle');
@@ -1004,9 +1014,25 @@ function showModal(title, text, details = null, isWarning = false, confirmCallba
     detailsEl.style.display = 'block';
     detailsEl.innerHTML = details.map(d => `<div class="row"><span>${d.k}</span><strong>${d.v}</strong></div>`).join('');
   } else { detailsEl.style.display = 'none'; }
+
+  // Remove any existing modal input
+  const oldInput = document.getElementById('modalInputWrap');
+  if (oldInput) oldInput.remove();
+
   if (confirmCallback) {
-    actionsEl.innerHTML = `<button onclick="closeModal()">CANCEL</button><button class="btn-delete" id="modalConfirmBtn">DELETE</button>`;
-    document.getElementById('modalConfirmBtn').onclick = () => { confirmCallback(); closeModal(); };
+    if (inputPlaceholder) {
+      const inputWrap = document.createElement('div');
+      inputWrap.id = 'modalInputWrap';
+      inputWrap.style.cssText = 'margin-bottom:1.5rem;';
+      inputWrap.innerHTML = `<label style="display:block;font:400 12.1px/1 'JetBrains Mono',monospace;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-soft);margin-bottom:0.6rem;">Note <span class="mm" style="font-family:'Noto Sans Myanmar',sans-serif;text-transform:none;color:rgba(218,218,218,0.6);margin-left:0.5rem;">မှတ်ချက်</span></label><input type="text" id="modalInput" placeholder="${inputPlaceholder}" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);border-radius:4px;padding:0.75rem;font:400 0.9rem 'JetBrains Mono',monospace;color:var(--text);outline:none;">`;
+      actionsEl.parentNode.insertBefore(inputWrap, actionsEl);
+    }
+    actionsEl.innerHTML = `<button onclick="closeModal()">CANCEL</button><button class="btn-delete" id="modalConfirmBtn">${confirmText}</button>`;
+    document.getElementById('modalConfirmBtn').onclick = () => {
+      const inputVal = inputPlaceholder ? (document.getElementById('modalInput')?.value || '') : null;
+      confirmCallback(inputVal);
+      closeModal();
+    };
   } else {
     actionsEl.innerHTML = `<button class="btn-confirm" onclick="closeModal()">OK</button>`;
   }
@@ -1247,15 +1273,15 @@ function confirmDeleteTx(id) {
   if (!can('canDelete')) return;
   const t = state.transactions.find(x => x.id === id); if(!t) return;
   showModal('WARNING: DELETE TRANSACTION', 'ဤ မှတ်တမ်းကို ဖျက်လိုက်ပါက ငွေပမာဏများ အလိုလို ပြန်လည် ပြောင်းလဲသွားပါမည်။ ဖျက်ရန် သေချာပါသလား?',
-    [{k: 'Type', v: t.type === 'in' ? 'Cash In' : 'Cash Out'}, {k: 'Amount', v: fmt(t.amount) + ' MMK'}, {k: 'Customer', v: t.customerName}], true, () => deleteTx(id));
+    [{k: 'Type', v: t.type === 'in' ? 'Cash In' : 'Cash Out'}, {k: 'Amount', v: fmt(t.amount) + ' MMK'}, {k: 'Customer', v: t.customerName}], true, (note) => deleteTx(id, note), 'DELETE', 'ဖျက်သည့် အကြောင်းပြချက် (optional)');
 }
-function deleteTx(id) {
+function deleteTx(id, note) {
   const t = state.transactions.find(x => x.id === id); if(!t) return;
   if (t.type==='in') { state.balances.cash -= t.amount; state.balances[t.account] += t.amount; } else { state.balances.cash += t.amount; state.balances[t.account] -= t.amount; }
   if(t.income) state.balances[t.incomeSource || 'cash'] -= t.income;
   state.transactions = state.transactions.filter(x => x.id!==id);
   state.pnl = state.pnl.filter(p => p.id !== 'pnl_tx_' + id);
-  addLog('DELETE_TX', `Deleted ${t.type} of ${fmt(t.amount)} for ${t.customerName}`);
+  addLog('DELETE_TX', `Deleted ${t.type} of ${fmt(t.amount)} for ${t.customerName}. Note: ${note || 'N/A'}`);
   renderAll(); showToast('DELETED');
 }
 
@@ -1292,18 +1318,21 @@ function renderReports() {
   </div>`;
 }
 
-// ============ RENDER: PNL (Date Filter နဲ့ Total Sum ထည့်ပေးထားခြင်း) ============
+// ============ RENDER: PNL ============
 function renderPnl() {
-  const b = document.getElementById('pnlBody'); b.innerHTML = '';
+  const b = document.getElementById('pnlBody');
+  const e = document.getElementById('pnlEmpty');
+  const t = document.getElementById('pnlTable');
   const sumText = document.getElementById('pnlSumText');
   if(!b) return;
-  
+
+  b.innerHTML = '';
   const ds = document.getElementById('pnlStart')?.value;
   const de = document.getElementById('pnlEnd')?.value;
   let filteredPnl = state.pnl.slice().reverse();
-  
+
   let sumInc = 0, sumExp = 0;
-  
+
   if (ds && de) {
     const start = new Date(ds); start.setHours(0,0,0,0);
     const end = new Date(de); end.setHours(23,59,59,999);
@@ -1312,17 +1341,120 @@ function renderPnl() {
       return d >= start && d <= end;
     });
   }
-  
-  filteredPnl.forEach(p => {
-    const dt = new Date(p.ts);
-    b.innerHTML += `<tr><td style="color:var(--text-soft)">${dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}</td>
-      <td class="type-${p.type==='income'?'in':'out'}">${p.type.toUpperCase()}</td><td>${escapeHtml(p.category)}</td>
-      <td style="color:var(--text-soft)">${escapeHtml(p.source)}</td><td class="amount">${p.type==='income'?'+':'-'}${fmt(p.amount)}</td>
-      <td style="color:var(--text-soft)">${escapeHtml(p.note||'')}</td></tr>`;
-    if (p.type === 'income') sumInc += p.amount; else sumExp += p.amount;
-  });
-  
+
+  // Admin only: show Action column
+  const showAction = isAdmin();
+  const actionTh = document.querySelector('#pnlTable th.pnl-action-col');
+  if (actionTh) actionTh.style.display = showAction ? 'table-cell' : 'none';
+
+  if (filteredPnl.length === 0) {
+    e.style.display = 'block';
+    t.style.display = 'none';
+  } else {
+    e.style.display = 'none';
+    t.style.display = '';
+    filteredPnl.forEach(p => {
+      const dt = new Date(p.ts);
+      const isLinked = p.id && p.id.startsWith('pnl_tx_');
+      let actionHtml = '';
+      if (showAction) {
+        if (isLinked) {
+          actionHtml = `<td style="display:table-cell"><span style="font:400 10px/1 'JetBrains Mono',monospace;color:var(--text-soft);opacity:0.5;">TX-LINKED</span></td>`;
+        } else {
+          actionHtml = `<td style="display:table-cell">
+            <button class="btn-danger" style="margin-right:0.3rem" onclick="reversePnl('${p.id}')">REV</button>
+            <button class="btn-danger" onclick="deletePnl('${p.id}')">DEL</button>
+          </td>`;
+        }
+      } else {
+        actionHtml = '<td style="display:none"></td>';
+      }
+      b.innerHTML += `<tr>
+        <td style="color:var(--text-soft)">${dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}</td>
+        <td class="type-${p.type==='income'?'in':'out'}">${p.type.toUpperCase()}</td>
+        <td>${escapeHtml(p.category)}</td>
+        <td style="color:var(--text-soft)">${escapeHtml(p.source)}</td>
+        <td class="amount">${p.type==='income'?'+':'-'}${fmt(p.amount)}</td>
+        <td style="color:var(--text-soft);max-width:200px;overflow:hidden;text-overflow:ellipsis">${escapeHtml(p.note||'')}</td>
+        ${actionHtml}
+      </tr>`;
+      if (p.type === 'income') sumInc += p.amount; else sumExp += p.amount;
+    });
+  }
+
   if (sumText) sumText.innerHTML = `Total Income: <span style="color: var(--success)">${fmt(sumInc)} MMK</span> | Total Expense: <span style="color: var(--danger)">${fmt(sumExp)} MMK</span>`;
+}
+
+function reversePnl(id) {
+  if (!isAdmin()) { showToast('ADMIN ONLY'); return; }
+  const p = state.pnl.find(x => x.id === id);
+  if(!p) return;
+
+  if (p.id && p.id.startsWith('pnl_tx_')) {
+    showToast('CANNOT REVERSE TX-LINKED ENTRY');
+    return;
+  }
+
+  const newType = p.type === 'income' ? 'expense' : 'income';
+
+  showModal('REVERSE P&L ENTRY · စာရင်းပြောင်းပြန်တင်ရန်',
+    'ဤ စာရင်းကို ပြောင်းပြန် မှတ်တမ်းတင်မည်။ မူရင်းစာရင်း၏ <strong style="color:var(--accent)">ဆန့်ကျင်ဘက် စာရင်း</strong> တစ်ခု အလိုလို ဖန်တီးပြီး ငွေလက်ကျန်ကိုလည်း ပြောင်းလဲပါမည်။',
+    [
+      {k: 'Original Type', v: p.type.toUpperCase()},
+      {k: 'Reversed Type', v: newType.toUpperCase()},
+      {k: 'Category', v: p.category},
+      {k: 'Source', v: p.source},
+      {k: 'Amount', v: fmt(p.amount) + ' MMK'}
+    ], true, (note) => {
+      if (p.type === 'income') {
+        state.balances[p.source] = (state.balances[p.source]||0) - p.amount;
+      } else {
+        state.balances[p.source] = (state.balances[p.source]||0) + p.amount;
+      }
+      state.pnl.push({
+        id: 'pnl_' + Date.now(),
+        ts: Date.now(),
+        type: newType,
+        category: p.category,
+        source: p.source,
+        amount: p.amount,
+        note: 'REVERSE: ' + (note || p.note || '')
+      });
+      addLog('REV_PNL', `Reversed ${p.type} ${fmt(p.amount)} in ${p.category}. Reason: ${note || 'N/A'}`);
+      renderAll();
+      showToast('P&L REVERSED');
+    }, 'REVERSE', 'ပြောင်းပြန်တင်သည့် အကြောင်းပြချက် (optional)');
+}
+
+function deletePnl(id) {
+  if (!isAdmin()) { showToast('ADMIN ONLY'); return; }
+  const p = state.pnl.find(x => x.id === id);
+  if(!p) return;
+
+  if (p.id && p.id.startsWith('pnl_tx_')) {
+    showToast('DELETE VIA LEDGER (TX-LINKED)');
+    return;
+  }
+
+  showModal('WARNING: DELETE P&L ENTRY · စာရင်းဖျက်ရန်',
+    'ဤ စာရင်းကို ဖျက်လိုက်ပါက <strong style="color:var(--danger)">ငွေလက်ကျန် ပမာဏများ အလိုလို ပြန်လည် ပြောင်းလဲသွားပါမည်</strong>။ ဖျက်ရန် သေချာပါသလား?',
+    [
+      {k: 'Type', v: p.type.toUpperCase()},
+      {k: 'Category', v: p.category},
+      {k: 'Source', v: p.source},
+      {k: 'Amount', v: fmt(p.amount) + ' MMK'},
+      {k: 'Note', v: p.note || '-'}
+    ], true, (note) => {
+      if (p.type === 'income') {
+        state.balances[p.source] = (state.balances[p.source]||0) - p.amount;
+      } else {
+        state.balances[p.source] = (state.balances[p.source]||0) + p.amount;
+      }
+      state.pnl = state.pnl.filter(x => x.id !== id);
+      addLog('DEL_PNL', `Deleted ${p.type} ${fmt(p.amount)} in ${p.category}. Reason: ${note || 'N/A'}`);
+      renderAll();
+      showToast('P&L DELETED');
+    }, 'DELETE', 'ဖျက်သည့် အကြောင်းပြချက် (optional)');
 }
 
 function renderCategories() {
@@ -1350,9 +1482,12 @@ function addCategory(type) {
   document.getElementById(inputId).value = '';
 }
 function removeCategory(type, c) {
-  state.categories[type] = state.categories[type].filter(x => x !== c);
-  addLog('DEL_CATEGORY', `Removed ${type} category: ${c}`);
-  renderCategories();
+  showModal('DELETE CATEGORY · ခေါင်းစဉ်ဖျက်ရန်', `'${c}' ကို ဖျက်လိုက်ပါမည်။`, null, true, () => {
+    state.categories[type] = state.categories[type].filter(x => x !== c);
+    addLog('DEL_CATEGORY', `Removed ${type} category: ${c}`);
+    renderCategories();
+    showToast('CATEGORY DELETED');
+  }, 'DELETE');
 }
 
 function renderAccountList() {
@@ -1368,8 +1503,15 @@ function addAccount() {
   document.getElementById('newAccountName').value=''; document.getElementById('newAccountBalance').value='0';
 }
 function removeAccount(a) {
-  if(state.accounts.length<=1) return; if((state.balances[a]||0)!==0) { showToast('BALANCE NOT ZERO'); return; }
-  state.accounts = state.accounts.filter(x=>x!==a); delete state.balances[a]; addLog('DEL_ACCOUNT', `Removed account ${a}`); renderAll();
+  if(state.accounts.length<=1) return; 
+  if((state.balances[a]||0)!==0) { showToast('BALANCE NOT ZERO'); return; }
+  showModal('DELETE ACCOUNT · အကောင့်ဖျက်ရန်', `'${a}' အကောင့်ကို ဖျက်လိုက်ပါမည်။`, null, true, () => {
+    state.accounts = state.accounts.filter(x=>x!==a); 
+    delete state.balances[a]; 
+    addLog('DEL_ACCOUNT', `Removed account ${a}`); 
+    renderAll();
+    showToast('ACCOUNT DELETED');
+  }, 'DELETE');
 }
 function changePIN() {
   const r = document.getElementById('pinChangeRole').value, p = document.getElementById('pinChangeNew').value;
@@ -1437,18 +1579,26 @@ function recordLoan() {
   document.getElementById('loanName').value=''; document.getElementById('loanAmount').value=''; document.getElementById('loanNote').value=''; document.getElementById('loanRepayDate').value='';
 }
 function reverseLoan(id) {
+  if (!isAdmin()) return;
   const l = state.loans.find(x => x.id === id); if(!l) return;
   const newDir = l.direction === 'lend' ? 'borrow' : 'lend';
-  if(newDir === 'lend' && (state.balances[l.source]||0) < l.amount) { showToast('INSUFFICIENT BALANCE TO REVERSE'); return; }
-  if(newDir === 'lend') state.balances[l.source] -= l.amount; else state.balances[l.source] += l.amount;
-  state.loans.push({...l, id: 'loan_'+Date.now(), direction: newDir, ts: Date.now(), note: 'REVERSE: ' + (l.note||'')});
-  addLog('REV_LOAN', `Reversed loan ${id}`); renderAll(); showToast('LOAN REVERSED');
+  if(newDir === 'lend' && (state.balances[l.source]||0) < l.amount) { showToast('INSUFFICIENT BALANCE'); return; }
+  showModal('REVERSE LOAN · ချေးငွေပြောင်းပြန်တင်ရန်', 'မူရင်းချေးငွေ၏ ဆန့်ကျင်ဘက် မှတ်တမ်း တစ်ခု တင်ပါမည်။', [{k:'Original', v:l.direction.toUpperCase()}, {k:'Reversed', v:newDir.toUpperCase()}, {k:'Amount', v:fmt(l.amount)}], true, (note) => {
+    if(newDir === 'lend') state.balances[l.source] -= l.amount; else state.balances[l.source] += l.amount;
+    state.loans.push({...l, id: 'loan_'+Date.now(), direction: newDir, ts: Date.now(), note: 'REVERSE: ' + (note || l.note || '')});
+    addLog('REV_LOAN', `Reversed loan ${id}. Note: ${note||''}`);
+    renderAll(); showToast('LOAN REVERSED');
+  }, 'REVERSE', 'ပြောင်းပြန်တင်သည့်အကြောင်းပြချက် (optional)');
 }
 function deleteLoan(id) {
+  if (!isAdmin()) return;
   const l = state.loans.find(x => x.id === id); if(!l) return;
-  if(l.direction === 'lend') state.balances[l.source] += l.amount; else state.balances[l.source] -= l.amount;
-  state.loans = state.loans.filter(x => x.id !== id);
-  addLog('DEL_LOAN', `Deleted loan ${id}`); renderAll(); showToast('LOAN DELETED');
+  showModal('WARNING: DELETE LOAN · ချေးငွေဖျက်ရန်', 'ဤ ချေးငွေ မှတ်တမ်းကို ဖျက်လိုက်ပါက ငွေပမာဏများ ပြန်လည်ပြောင်းလဲသွားပါမည်။', [{k:'Name', v:l.borrowerName}, {k:'Amount', v:fmt(l.amount)}], true, (note) => {
+    if(l.direction === 'lend') state.balances[l.source] += l.amount; else state.balances[l.source] -= l.amount;
+    state.loans = state.loans.filter(x => x.id !== id);
+    addLog('DEL_LOAN', `Deleted loan ${id}. Note: ${note||''}`);
+    renderAll(); showToast('LOAN DELETED');
+  }, 'DELETE', 'ဖျက်သည့်အကြောင်းပြချက် (optional)');
 }
 
 function renderCapital() {
@@ -1471,11 +1621,14 @@ function renderCapital() {
   }).join('');
 }
 function deleteCapital(id) {
+  if (!isAdmin()) return;
   const c = state.capital.find(x => x.id === id); if(!c) return;
-  state.balances[c.account] -= c.amount;
-  state.capital = state.capital.filter(x => x.id !== id);
-  addLog('DEL_CAPITAL', `Deleted capital of ${fmt(c.amount)} from ${c.account}`);
-  renderAll(); showToast('CAPITAL DELETED');
+  showModal('WARNING: DELETE CAPITAL · ငွေအရင်းအနှီးဖျက်ရန်', 'ဤ မှတ်တမ်းကို ဖျက်လိုက်ပါက လက်ကျန်ငွေ လျော့သွားပါမည်။', [{k:'Account', v:c.account}, {k:'Amount', v:fmt(c.amount)}], true, (note) => {
+    state.balances[c.account] -= c.amount;
+    state.capital = state.capital.filter(x => x.id !== id);
+    addLog('DEL_CAPITAL', `Deleted capital ${fmt(c.amount)} from ${c.account}. Note: ${note||''}`);
+    renderAll(); showToast('CAPITAL DELETED');
+  }, 'DELETE', 'ဖျက်သည့်အကြောင်းပြချက် (optional)');
 }
 
 function renderLogs() {
@@ -1488,7 +1641,7 @@ function renderLogs() {
   }).join('');
 }
 
-// ============ EXPORT (ရှင်းလင်းသော ဇယားနှင့် Total Sum ထည့်ပေးခြင်း) ============
+// ============ EXPORT ============
 function exportData(format) {
   const s = document.getElementById('exportStart').value, e = document.getElementById('exportEnd').value;
   const expType = document.getElementById('exportType').value;
@@ -1555,7 +1708,6 @@ function exportData(format) {
 
   if (data.length === 0) { showToast('NO DATA TO EXPORT'); return; }
 
-  // တွက်ချက်ထားသော Total Row ကို ထည့်ပေးခြင်း
   const keys = Object.keys(data[0]);
   const totalRow = {};
   keys.forEach(k => {
@@ -1589,7 +1741,6 @@ function exportData(format) {
       return '';
     })];
     
-    // ဇယားကို ပိုရှင်းလင်းစေရန် ပြင်ဆင်ခြင်း
     doc.autoTable({
       startY: 20,
       head: head,
@@ -1731,7 +1882,6 @@ document.getElementById('ledgerEnd').onchange = renderTx;
 document.getElementById('reportMonth').onchange = renderReports;
 document.getElementById('reportYear').onchange = renderReports;
 
-// Date Filter ပြောင်းလိုက်လျှင် P&L အသစ်ပြန်ဆွဲရန်
 if (document.getElementById('pnlStart')) document.getElementById('pnlStart').onchange = renderPnl;
 if (document.getElementById('pnlEnd')) document.getElementById('pnlEnd').onchange = renderPnl;
 
