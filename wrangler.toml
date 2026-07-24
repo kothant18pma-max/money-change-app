@@ -1,0 +1,7 @@
+name = "money-change-app"
+compatibility_date = "2023-10-30"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "money_change_db"
+database_id = 750ae4d5-684e-4f39-a777-a7875d743c4a
