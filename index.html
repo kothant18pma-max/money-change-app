@@ -341,7 +341,6 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
                 <label>Income <span class="mm">Charges ဝန်ဆောင်ခ</span></label>
                 <input type="number" id="income" placeholder="0" value="0">
               </div>
-              <!-- Payment Method မှ Received Method သို့ ပြင်ဆင်ထားသည် -->
               <div class="form-row">
                 <label>Received Method <span class="mm">ရရှိမည့်နည်းလမ်း</span></label>
                 <select id="incomeSource"></select>
@@ -357,7 +356,7 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
       </div>
     </div>
 
-    <!-- TRANSFERS (အပေါ်အောက် စီထား) -->
+    <!-- TRANSFERS -->
     <div class="app-section" id="section-transfer">
       <div class="card">
         <div class="card-header">Internal Transfer · ငွေလွှဲပြောင်းခြင်း</div>
@@ -530,6 +529,21 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
         </div>
         <div class="card">
           <div class="card-header">P&L Summary · အမြတ်/ကုန်ကျ စာရင်း</div>
+          <!-- Date Filter ထည့်ပေးခြင်း -->
+          <div class="form-row-2" style="margin-bottom: 1rem;">
+            <div class="form-row">
+              <label>Start Date <span class="mm">စတင်ရက်</span></label>
+              <input type="date" id="pnlStart">
+            </div>
+            <div class="form-row">
+              <label>End Date <span class="mm">ပြီးဆုံးရက်</span></label>
+              <input type="date" id="pnlEnd">
+            </div>
+          </div>
+          <!-- Sum Total ပြပေးခြင်း (ညာဘက်) -->
+          <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem; font: 700 1.1rem/1.4 'JetBrains Mono', monospace; color: var(--accent);">
+            <span id="pnlSumText">Total Income: 0 MMK | Total Expense: 0 MMK</span>
+          </div>
           <div class="table-wrap">
             <table>
               <thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Source</th><th>Amount</th><th>Note</th></tr></thead>
@@ -593,7 +607,7 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
           <button class="btn-secondary" onclick="exportData('excel')">⬇ EXPORT EXCEL</button>
           <button class="btn-secondary" onclick="exportData('pdf')">⬇ EXPORT PDF</button>
         </div>
-        <div class="hint">Report Type ကို ရွေးချယ်ပြီး သက်ဆိုင်ရာ အသေးစိတ် စာရင်းများကို ထုတ်ယူနိုင်ပါသည်။</div>
+        <div class="hint">Report Type ကို ရွေးချယ်ပြီး သက်ဆိုင်ရာ အသေးစိတ် စာရင်းများကို ထုတ်ယူနိုင်ပါသည်။ ဇယားထဲတွင် စုစုပေါင်း ပမာဏ (Total) ကိုပါ အလိုလို ပေါင်းပြပေးပါမည်။</div>
       </div>
     </div>
 
@@ -1035,7 +1049,6 @@ document.getElementById('logoutBtn').onclick = () => {
 };
 
 // ============ SIDEBAR AUTO-HIDE & FULLSCREEN ============
-// ပြင်ဆင်ချက် - Data Entry လုပ်နေချိန် (input/select ကို focus လုပ်လိုက်ရင်) Auto Hide ဖြစ်ပြီး MENU ကိုသာ နှိပ်မှ ပြန်ဖွင့်မယ်
 document.getElementById('menuToggle').onclick = () => document.body.classList.toggle('sidebar-hidden');
 
 function setupAutoHideSidebar() {
@@ -1279,15 +1292,37 @@ function renderReports() {
   </div>`;
 }
 
+// ============ RENDER: PNL (Date Filter နဲ့ Total Sum ထည့်ပေးထားခြင်း) ============
 function renderPnl() {
   const b = document.getElementById('pnlBody'); b.innerHTML = '';
-  state.pnl.slice().reverse().forEach(p => {
+  const sumText = document.getElementById('pnlSumText');
+  if(!b) return;
+  
+  const ds = document.getElementById('pnlStart')?.value;
+  const de = document.getElementById('pnlEnd')?.value;
+  let filteredPnl = state.pnl.slice().reverse();
+  
+  let sumInc = 0, sumExp = 0;
+  
+  if (ds && de) {
+    const start = new Date(ds); start.setHours(0,0,0,0);
+    const end = new Date(de); end.setHours(23,59,59,999);
+    filteredPnl = filteredPnl.filter(p => {
+      const d = new Date(p.ts);
+      return d >= start && d <= end;
+    });
+  }
+  
+  filteredPnl.forEach(p => {
     const dt = new Date(p.ts);
     b.innerHTML += `<tr><td style="color:var(--text-soft)">${dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}</td>
       <td class="type-${p.type==='income'?'in':'out'}">${p.type.toUpperCase()}</td><td>${escapeHtml(p.category)}</td>
       <td style="color:var(--text-soft)">${escapeHtml(p.source)}</td><td class="amount">${p.type==='income'?'+':'-'}${fmt(p.amount)}</td>
       <td style="color:var(--text-soft)">${escapeHtml(p.note||'')}</td></tr>`;
+    if (p.type === 'income') sumInc += p.amount; else sumExp += p.amount;
   });
+  
+  if (sumText) sumText.innerHTML = `Total Income: <span style="color: var(--success)">${fmt(sumInc)} MMK</span> | Total Expense: <span style="color: var(--danger)">${fmt(sumExp)} MMK</span>`;
 }
 
 function renderCategories() {
@@ -1453,6 +1488,7 @@ function renderLogs() {
   }).join('');
 }
 
+// ============ EXPORT (ရှင်းလင်းသော ဇယားနှင့် Total Sum ထည့်ပေးခြင်း) ============
 function exportData(format) {
   const s = document.getElementById('exportStart').value, e = document.getElementById('exportEnd').value;
   const expType = document.getElementById('exportType').value;
@@ -1519,8 +1555,25 @@ function exportData(format) {
 
   if (data.length === 0) { showToast('NO DATA TO EXPORT'); return; }
 
+  // တွက်ချက်ထားသော Total Row ကို ထည့်ပေးခြင်း
+  const keys = Object.keys(data[0]);
+  const totalRow = {};
+  keys.forEach(k => {
+    let sum = 0;
+    let isNumeric = false;
+    data.forEach(row => {
+      if (typeof row[k] === 'number') {
+        isNumeric = true;
+        sum += row[k];
+      }
+    });
+    totalRow[k] = isNumeric ? sum : '';
+  });
+  if (keys.length > 0) totalRow[keys[0]] = 'TOTAL';
+
   if (format === 'excel') {
-    const ws = XLSX.utils.json_to_sheet(data);
+    const wsData = [...data, totalRow];
+    const ws = XLSX.utils.json_to_sheet(wsData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, sheetName);
     XLSX.writeFile(wb, `${fileName}_${Date.now()}.xlsx`);
@@ -1528,9 +1581,25 @@ function exportData(format) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     doc.text(`${fileName} Export`, 14, 15);
-    const head = [Object.keys(data[0])];
+    const head = [keys];
     const body = data.map(d => Object.values(d));
-    doc.autoTable({ startY: 20, head: head, body: body });
+    const foot = [keys.map((k, i) => {
+      if (i === 0) return 'TOTAL';
+      if (typeof totalRow[k] === 'number') return fmt(totalRow[k]);
+      return '';
+    })];
+    
+    // ဇယားကို ပိုရှင်းလင်းစေရန် ပြင်ဆင်ခြင်း
+    doc.autoTable({
+      startY: 20,
+      head: head,
+      body: body,
+      foot: foot,
+      headStyles: { fillColor: [18, 18, 18], textColor: [200, 170, 130], fontStyle: 'bold' },
+      footStyles: { fillColor: [200, 170, 130], textColor: [10, 10, 10], fontStyle: 'bold' },
+      bodyStyles: { textColor: 50 },
+      alternateRowStyles: { fillColor: [245, 245, 245] }
+    });
     doc.save(`${fileName}_${Date.now()}.pdf`);
   }
   showToast('EXPORTED');
@@ -1661,6 +1730,10 @@ document.getElementById('ledgerStart').onchange = renderTx;
 document.getElementById('ledgerEnd').onchange = renderTx;
 document.getElementById('reportMonth').onchange = renderReports;
 document.getElementById('reportYear').onchange = renderReports;
+
+// Date Filter ပြောင်းလိုက်လျှင် P&L အသစ်ပြန်ဆွဲရန်
+if (document.getElementById('pnlStart')) document.getElementById('pnlStart').onchange = renderPnl;
+if (document.getElementById('pnlEnd')) document.getElementById('pnlEnd').onchange = renderPnl;
 
 if (document.getElementById('transferFrom')) document.getElementById('transferFrom').onchange = updateTransferBalances;
 if (document.getElementById('transferTo')) document.getElementById('transferTo').onchange = updateTransferBalances;
