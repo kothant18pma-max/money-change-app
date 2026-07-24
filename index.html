@@ -332,17 +332,18 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
                 <input type="number" id="amount" placeholder="100000" required>
               </div>
               <div class="form-row">
-                <label>Account <span class="mm">အကောင့်</span></label>
+                <label>Account <span class="mm">ငွေသွင်း/ထုတ်အကောင့်ရွေးရန်</span></label>
                 <select id="txAccount"></select>
               </div>
             </div>
             <div class="form-row-2">
               <div class="form-row">
-                <label>Income <span class="mm">အမြတ်</span></label>
+                <label>Income <span class="mm">Charges ဝန်ဆောင်ခ</span></label>
                 <input type="number" id="income" placeholder="0" value="0">
               </div>
+              <!-- Payment Method မှ Received Method သို့ ပြင်ဆင်ထားသည် -->
               <div class="form-row">
-                <label>Income To <span class="mm">အမြတ်ဝင်မည့်နေရာ</span></label>
+                <label>Received Method <span class="mm">ရရှိမည့်နည်းလမ်း</span></label>
                 <select id="incomeSource"></select>
               </div>
             </div>
@@ -1034,22 +1035,13 @@ document.getElementById('logoutBtn').onclick = () => {
 };
 
 // ============ SIDEBAR AUTO-HIDE & FULLSCREEN ============
+// ပြင်ဆင်ချက် - Data Entry လုပ်နေချိန် (input/select ကို focus လုပ်လိုက်ရင်) Auto Hide ဖြစ်ပြီး MENU ကိုသာ နှိပ်မှ ပြန်ဖွင့်မယ်
 document.getElementById('menuToggle').onclick = () => document.body.classList.toggle('sidebar-hidden');
 
-let sidebarBlurTimer = null;
 function setupAutoHideSidebar() {
   document.addEventListener('focusin', (e) => {
     if (e.target.matches('input, select, textarea')) {
-      clearTimeout(sidebarBlurTimer);
       document.body.classList.add('sidebar-hidden');
-    }
-  });
-  document.addEventListener('focusout', (e) => {
-    if (e.target.matches('input, select, textarea')) {
-      clearTimeout(sidebarBlurTimer);
-      sidebarBlurTimer = setTimeout(() => {
-        document.body.classList.remove('sidebar-hidden');
-      }, 300);
     }
   });
 }
