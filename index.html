@@ -22,11 +22,13 @@
   --line-soft: rgba(255,255,255,0.06);
   --danger: #d99a9a;
   --success: #9bc8a0;
+  --warning: #e8a87c;
+  --info: #7a9cc6;
   --ease-quiet: cubic-bezier(.22, 1, .36, 1);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { background: var(--bg); color: var(--text); font-family: 'Inter', 'Noto Sans Myanmar', sans-serif; font-weight: 400; line-height: 1.6; overflow-x: hidden; height: 100%; font-size: 17.6px; }
+html, body { background: var(--bg); color: var(--text); font-family: 'Inter', 'Noto Sans Myanmar', sans-serif; font-weight: 400; line-height: 1.6; overflow-x: hidden; height: 100%; }
 
 canvas.rain { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.2; pointer-events: none; }
 
@@ -35,62 +37,62 @@ canvas.rain { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-ind
 .login-overlay.is-hidden { display: none; }
 .login-card { border: 1px solid var(--line); background: rgba(18,18,18,0.85); padding: 2.5rem 2.2rem; max-width: 360px; width: 100%; text-align: center; position: relative; }
 .login-card::before { content: ''; position: absolute; left: 0; top: 0; width: 2px; height: 100%; background: var(--accent); }
-.login-brand { font: 700 15.4px/1 'JetBrains Mono', monospace; letter-spacing: 0.22em; margin-bottom: 0.5rem; }
+.login-brand { font: 700 14px/1 'JetBrains Mono', monospace; letter-spacing: 0.22em; margin-bottom: 0.5rem; }
 .login-brand span { color: var(--accent); }
-.login-sub { font: 400 13.2px/1.4 'Noto Sans Myanmar', sans-serif; color: var(--text-soft); margin-bottom: 1.75rem; }
+.login-sub { font: 400 12px/1.4 'Noto Sans Myanmar', sans-serif; color: var(--text-soft); margin-bottom: 1.75rem; }
 .role-tabs { display: grid; grid-template-columns: 1fr 1fr; margin-bottom: 1.5rem; border: 1px solid var(--line); }
-.role-tab { background: transparent; border: none; padding: 0.85rem; font: 700 12.1px/1 'JetBrains Mono', monospace; letter-spacing: 0.18em; color: var(--text-soft); cursor: pointer; transition: all 300ms var(--ease-quiet); }
+.role-tab { background: transparent; border: none; padding: 0.85rem; font: 700 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.18em; color: var(--text-soft); cursor: pointer; transition: all 300ms var(--ease-quiet); }
 .role-tab.active { background: var(--accent); color: var(--bg); }
-.pin-display { font: 700 2.2rem/1 'JetBrains Mono', monospace; letter-spacing: 0.4em; color: var(--accent); margin: 1.25rem 0 1.5rem; min-height: 2.5rem; display: flex; justify-content: center; align-items: center; gap: 0.5rem; }
+.pin-display { font: 700 2rem/1 'JetBrains Mono', monospace; letter-spacing: 0.4em; color: var(--accent); margin: 1.25rem 0 1.5rem; min-height: 2.5rem; display: flex; justify-content: center; align-items: center; gap: 0.5rem; }
 .pin-dot { width: 14px; height: 14px; border: 1px solid var(--accent); border-radius: 50%; display: inline-block; }
 .pin-dot.filled { background: var(--accent); }
 .pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; margin-bottom: 1rem; }
-.pin-key { background: transparent; border: 1px solid var(--line); padding: 0.9rem 0; font: 700 1.155rem/1 'JetBrains Mono', monospace; color: var(--text); cursor: pointer; transition: all 200ms; }
+.pin-key { background: transparent; border: 1px solid var(--line); padding: 0.9rem 0; font: 700 1.05rem/1 'JetBrains Mono', monospace; color: var(--text); cursor: pointer; transition: all 200ms; }
 .pin-key:hover { border-color: var(--accent); color: var(--accent); }
 .pin-key:active { background: var(--accent); color: var(--bg); }
-.pin-key.util { color: var(--text-soft); font-size: 0.935rem; }
-.login-hint { font: 400 11px/1.5 'JetBrains Mono', monospace; color: var(--text-soft); opacity: 0.6; margin-top: 1rem; }
-.login-error { font: 400 12.1px/1 'JetBrains Mono', monospace; color: var(--danger); margin-top: 0.75rem; min-height: 1rem; }
+.pin-key.util { color: var(--text-soft); font-size: 0.85rem; }
+.login-hint { font: 400 10px/1.5 'JetBrains Mono', monospace; color: var(--text-soft); opacity: 0.6; margin-top: 1rem; }
+.login-error { font: 400 11px/1 'JetBrains Mono', monospace; color: var(--danger); margin-top: 0.75rem; min-height: 1rem; }
 
 /* ============ APP LAYOUT ============ */
 .app-layout { display: flex; min-height: 100vh; position: relative; z-index: 2; }
 .sidebar { width: 240px; background: rgba(10,10,10,0.95); border-right: 1px solid var(--line); padding: 1.5rem 0; display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; left: 0; z-index: 50; overflow-y: auto; transition: transform 400ms var(--ease-quiet); }
 body.sidebar-hidden .sidebar { transform: translateX(-240px); }
 .sidebar-brand { padding: 0 1.5rem 1.5rem; border-bottom: 1px solid var(--line-soft); margin-bottom: 1rem; }
-.sidebar-brand .title { font: 700 14.3px/1 'JetBrains Mono', monospace; letter-spacing: 0.18em; }
+.sidebar-brand .title { font: 700 13px/1 'JetBrains Mono', monospace; letter-spacing: 0.18em; }
 .sidebar-brand .title span { color: var(--accent); }
-.sidebar-brand .role { font: 400 11px/1 'JetBrains Mono', monospace; color: var(--text-soft); margin-top: 0.5rem; letter-spacing: 0.15em; }
+.sidebar-brand .role { font: 400 10px/1 'JetBrains Mono', monospace; color: var(--text-soft); margin-top: 0.5rem; letter-spacing: 0.15em; }
 
-.nav-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.9rem 1.5rem; font: 400 0.99rem/1 'Inter', 'Noto Sans Myanmar', sans-serif; color: var(--text-soft); cursor: pointer; border-left: 2px solid transparent; transition: all 300ms var(--ease-quiet); text-decoration: none; }
+.nav-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.9rem 1.5rem; font: 400 0.9rem/1 'Inter', 'Noto Sans Myanmar', sans-serif; color: var(--text-soft); cursor: pointer; border-left: 2px solid transparent; transition: all 300ms var(--ease-quiet); text-decoration: none; }
 .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); }
 .nav-item.active { color: var(--accent); border-left-color: var(--accent); background: rgba(200,170,130,0.05); }
-.nav-item .ico { font: 700 13.2px/1 'JetBrains Mono', monospace; width: 20px; text-align: center; }
-.nav-section-label { padding: 1.5rem 1.5rem 0.5rem; font: 400 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-soft); opacity: 0.5; }
+.nav-item .ico { font: 700 12px/1 'JetBrains Mono', monospace; width: 20px; text-align: center; }
+.nav-section-label { padding: 1.5rem 1.5rem 0.5rem; font: 400 10px/1 'JetBrains Mono', monospace; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-soft); opacity: 0.5; }
 
 .main-content { margin-left: 240px; flex: 1; padding: 2rem; width: 100%; transition: margin-left 400ms var(--ease-quiet); }
 body.sidebar-hidden .main-content { margin-left: 0; }
 
 .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--line-soft); gap: 1rem; }
 .topbar-left { display: flex; align-items: center; gap: 1rem; }
-.menu-toggle { background: transparent; border: 1px solid var(--line); color: var(--accent); padding: 0.5rem 0.8rem; font: 700 13.2px/1 'JetBrains Mono', monospace; cursor: pointer; transition: all 300ms; border-radius: 4px; }
+.menu-toggle { background: transparent; border: 1px solid var(--line); color: var(--accent); padding: 0.5rem 0.8rem; font: 700 12px/1 'JetBrains Mono', monospace; cursor: pointer; transition: all 300ms; border-radius: 4px; }
 .menu-toggle:hover { background: var(--accent); color: var(--bg); }
-.topbar-title { font: 700 1.65rem/1 'JetBrains Mono', monospace; letter-spacing: -0.02em; display: flex; align-items: center; gap: 1rem; }
+.topbar-title { font: 700 1.5rem/1 'JetBrains Mono', monospace; letter-spacing: -0.02em; display: flex; align-items: center; gap: 1rem; }
 .topbar-title span { color: var(--accent); }
 
-.fullscreen-btn { background: transparent; border: 1px solid var(--line); color: var(--accent); padding: 0.4rem 0.6rem; font: 700 15.4px/1 'JetBrains Mono', monospace; cursor: pointer; transition: all 300ms; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; }
+.fullscreen-btn { background: transparent; border: 1px solid var(--line); color: var(--accent); padding: 0.4rem 0.6rem; font: 700 14px/1 'JetBrains Mono', monospace; cursor: pointer; transition: all 300ms; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; }
 .fullscreen-btn:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
 
 .topbar-right { display: flex; align-items: center; gap: 1rem; }
-.clock { font: 400 13.2px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; color: var(--text-soft); }
-.logout-btn { background: transparent; border: 1px solid var(--line); padding: 0.5rem 1rem; font: 700 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; color: var(--text-soft); cursor: pointer; transition: all 300ms; border-radius: 4px; }
+.clock { font: 400 12px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; color: var(--text-soft); }
+.logout-btn { background: transparent; border: 1px solid var(--line); padding: 0.5rem 1rem; font: 700 10px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; color: var(--text-soft); cursor: pointer; transition: all 300ms; border-radius: 4px; }
 .logout-btn:hover { border-color: var(--danger); color: var(--danger); }
 
 /* ============ ALERTS ============ */
 .alert-banner { background: rgba(217, 154, 154, 0.1); border: 1px solid var(--danger); padding: 1rem 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; border-radius: 4px; }
-.alert-banner .icon { color: var(--danger); font-size: 1.32rem; }
+.alert-banner .icon { color: var(--danger); font-size: 1.2rem; }
 .alert-banner .content { flex: 1; }
-.alert-banner .title { font: 700 12.1px/1 'JetBrains Mono', monospace; color: var(--danger); letter-spacing: 0.15em; margin-bottom: 0.3rem; }
-.alert-banner .desc { font: 400 0.935rem/1.4 'Noto Sans Myanmar', sans-serif; color: var(--text); }
+.alert-banner .title { font: 700 11px/1 'JetBrains Mono', monospace; color: var(--danger); letter-spacing: 0.15em; margin-bottom: 0.3rem; }
+.alert-banner .desc { font: 400 0.85rem/1.4 'Noto Sans Myanmar', sans-serif; color: var(--text); }
 .alert-banner .desc strong { color: var(--danger); }
 
 /* ============ SECTIONS ============ */
@@ -104,23 +106,24 @@ body.sidebar-hidden .main-content { margin-left: 0; }
 @media (max-width: 900px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
 
 .card { border: 1px solid var(--line); background: rgba(18,18,18,0.5); padding: 1.75rem; margin-bottom: 1.5rem; border-radius: 4px; }
-.card-header { font: 400 12.1px/1 'JetBrains Mono', monospace; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--line-soft); }
+.card-header { font: 400 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--line-soft); }
 
 .form-row { margin-bottom: 1.2rem; }
-.form-row label { display: block; font: 400 12.1px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); margin-bottom: 0.6rem; }
+.form-row label { display: block; font: 400 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); margin-bottom: 0.6rem; }
 .form-row label .mm { font-family: 'Noto Sans Myanmar', sans-serif; letter-spacing: 0.02em; color: rgba(218,218,218,0.6); margin-left: 0.5rem; text-transform: none; }
 
-.form-row input, .form-row select { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 0.75rem 0.85rem; font: 400 0.99rem/1 'JetBrains Mono', monospace; color: var(--text); outline: none; transition: all 300ms var(--ease-quiet); }
+.form-row input, .form-row select { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 0.75rem 0.85rem; font: 400 0.9rem/1 'JetBrains Mono', monospace; color: var(--text); outline: none; transition: all 300ms var(--ease-quiet); }
 .form-row input::placeholder { color: rgba(255,255,255,0.3); }
 .form-row input:focus, .form-row select:focus { border-color: var(--accent); background: rgba(200,170,130,0.1); box-shadow: 0 0 0 1px var(--accent-soft); }
 .form-row select option { background: var(--bg); color: var(--text); }
 .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.form-row input.readonly { opacity: 0.6; cursor: default; }
 
-.balance-hint { font: 400 0.825rem/1 'JetBrains Mono', monospace; color: var(--accent-dim); margin-top: 0.4rem; letter-spacing: 0.05em; padding-left: 0.2rem; }
+.balance-hint { font: 400 0.75rem/1 'JetBrains Mono', monospace; color: var(--accent-dim); margin-top: 0.4rem; letter-spacing: 0.05em; padding-left: 0.2rem; }
 .balance-hint.empty { opacity: 0; }
 
 .toggle-group { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; overflow: hidden; }
-.toggle-btn { background: rgba(255,255,255,0.05); border: none; padding: 0.85rem; font: 700 12.1px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; color: var(--text-soft); cursor: pointer; transition: all 300ms; }
+.toggle-btn { background: rgba(255,255,255,0.05); border: none; padding: 0.85rem; font: 700 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; color: var(--text-soft); cursor: pointer; transition: all 300ms; }
 .toggle-btn.active { background: var(--accent); color: var(--bg); }
 .toggle-btn:hover:not(.active) { color: var(--accent); }
 .toggle-group.no-default .toggle-btn { background: rgba(255,255,255,0.05); }
@@ -128,37 +131,39 @@ body.sidebar-hidden .main-content { margin-left: 0; }
 .toggle-group.no-default .toggle-btn.active::before { content: '● '; opacity: 1; }
 
 .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-.chip { background: transparent; border: 1px solid var(--line); padding: 0.6rem 1rem; font: 400 13.2px/1 'JetBrains Mono', monospace; letter-spacing: 0.05em; color: var(--text-soft); cursor: pointer; transition: all 300ms; display: inline-flex; align-items: center; gap: 0.5rem; border-radius: 4px; }
+.chip { background: transparent; border: 1px solid var(--line); padding: 0.6rem 1rem; font: 400 12px/1 'JetBrains Mono', monospace; letter-spacing: 0.05em; color: var(--text-soft); cursor: pointer; transition: all 300ms; display: inline-flex; align-items: center; gap: 0.5rem; border-radius: 4px; }
 .chip.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
 .chip:hover:not(.active) { border-color: var(--text); color: var(--text); }
 
-.btn-primary { width: 100%; background: var(--accent); color: var(--bg); border: none; padding: 1rem; font: 700 13.2px/1 'JetBrains Mono', monospace; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; transition: all 300ms; margin-top: 0.5rem; border-radius: 4px; }
+.btn-primary { width: 100%; background: var(--accent); color: var(--bg); border: none; padding: 1rem; font: 700 12px/1 'JetBrains Mono', monospace; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; transition: all 300ms; margin-top: 0.5rem; border-radius: 4px; }
 .btn-primary:hover { background: var(--text); }
 .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
-.btn-secondary { background: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 0.8rem 1.5rem; font: 700 12.1px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; cursor: pointer; transition: all 300ms; display: inline-flex; align-items: center; gap: 0.5rem; border-radius: 4px; }
+.btn-secondary { background: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 0.8rem 1.5rem; font: 700 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; cursor: pointer; transition: all 300ms; display: inline-flex; align-items: center; gap: 0.5rem; border-radius: 4px; }
 .btn-secondary:hover { background: var(--accent); color: var(--bg); }
-.btn-danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 0.3rem 0.5rem; font: 700 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; cursor: pointer; transition: all 300ms; border-radius: 4px; }
+.btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 0.3rem 0.5rem; font: 700 10px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; cursor: pointer; transition: all 300ms; border-radius: 4px; }
 .btn-danger:hover { background: var(--danger); color: var(--bg); }
+.btn-sm { padding: 0.3rem 0.6rem; font-size: 10px; }
 
 /* ============ BALANCES ============ */
 .balance-stack { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
 .balance-row { padding: 1.2rem 1.5rem; display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--line-soft); position: relative; transition: background 300ms; }
 .balance-row:last-child { border-bottom: none; }
 .balance-row:hover { background: rgba(200,170,130,0.03); }
-.balance-row .label { font: 400 12.1px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); }
+.balance-row .label { font: 400 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); }
 .balance-row .label .mm { font-family: 'Noto Sans Myanmar', sans-serif; text-transform: none; margin-left: 0.5rem; color: rgba(218,218,218,0.5); }
-.balance-row .val { font: 700 1.43rem/1 'JetBrains Mono', monospace; letter-spacing: -0.02em; }
+.balance-row .val { font: 700 1.3rem/1 'JetBrains Mono', monospace; letter-spacing: -0.02em; }
 .balance-row .val small { font-size: 0.55em; color: var(--text-soft); letter-spacing: 0.1em; font-weight: 400; margin-left: 0.3rem; }
 .balance-row.is-cash .val { color: var(--accent); }
 .balance-row.is-digital-total { background: rgba(255,255,255,0.03); border-top: 1px solid var(--line); }
-.balance-row.is-digital-total .val { color: var(--text); font-size: 1.54rem; }
+.balance-row.is-digital-total .val { color: var(--text); font-size: 1.4rem; }
 .balance-row.is-total { background: rgba(200,170,130,0.05); border-top: 1px solid var(--accent-soft); }
-.balance-row.is-total .val { color: var(--accent); font-size: 1.65rem; }
+.balance-row.is-total .val { color: var(--accent); font-size: 1.5rem; }
 
 /* ============ TABLES ============ */
 .table-wrap { border: 1px solid var(--line); overflow-x: auto; border-radius: 4px; }
-table { width: 100%; border-collapse: collapse; font: 400 0.935rem/1.4 'JetBrains Mono', monospace; min-width: 800px; }
-thead th { text-align: left; padding: 1rem 1.2rem; font: 400 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); border-bottom: 1px solid var(--line); background: rgba(255,255,255,0.02); white-space: nowrap; }
+table { width: 100%; border-collapse: collapse; font: 400 0.85rem/1.4 'JetBrains Mono', monospace; min-width: 800px; }
+thead th { text-align: left; padding: 1rem 1.2rem; font: 400 10px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); border-bottom: 1px solid var(--line); background: rgba(255,255,255,0.02); white-space: nowrap; }
 tbody tr { border-bottom: 1px solid var(--line-soft); transition: background 200ms; }
 tbody tr:last-child { border-bottom: none; }
 tbody tr:hover { background: rgba(200,170,130,0.04); }
@@ -167,7 +172,7 @@ td.idx { color: var(--text-soft); opacity: 0.6; }
 td.type-in { color: var(--success); font-weight: 700; }
 td.type-out { color: var(--danger); font-weight: 700; }
 td.amount { color: var(--accent); font-weight: 700; }
-.empty-state { padding: 3rem 2rem; text-align: center; font: 400 0.935rem/1.6 'JetBrains Mono', monospace; color: var(--text-soft); opacity: 0.5; }
+.empty-state { padding: 3rem 2rem; text-align: center; font: 400 0.85rem/1.6 'JetBrains Mono', monospace; color: var(--text-soft); opacity: 0.5; }
 
 /* ============ SUMMARY ============ */
 .summary-date-controls { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; margin-bottom: 1.5rem; }
@@ -175,17 +180,17 @@ td.amount { color: var(--accent); font-weight: 700; }
 .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
 .summary-cell { background: var(--bg); padding: 1.5rem; transition: background 300ms; }
 .summary-cell:hover { background: rgba(200,170,130,0.02); }
-.summary-cell .name { font: 700 14.3px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 1.2rem; }
-.summary-cell .stat { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--line-soft); font-size: 0.88rem; }
+.summary-cell .name { font: 700 13px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 1.2rem; }
+.summary-cell .stat { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--line-soft); font-size: 0.8rem; }
 .summary-cell .stat:last-of-type { border-bottom: none; }
-.summary-cell .stat .k { color: var(--text-soft); font-size: 0.77rem; letter-spacing: 0.05em; }
+.summary-cell .stat .k { color: var(--text-soft); font-size: 0.7rem; letter-spacing: 0.05em; }
 .summary-cell .stat .v { color: var(--text); }
 .summary-cell .stat.in .v { color: var(--success); }
 .summary-cell .stat.out .v { color: var(--danger); }
 .summary-cell .stat.net .v { color: var(--accent); font-weight: 700; }
 .summary-cell .foot { margin-top: 1rem; padding-top: 0.8rem; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: baseline; }
-.summary-cell .foot .k { font: 400 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); }
-.summary-cell .foot .v { font: 700 1.43rem/1 'JetBrains Mono', monospace; color: var(--accent); }
+.summary-cell .foot .k { font: 400 10px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); }
+.summary-cell .foot .v { font: 700 1.3rem/1 'JetBrains Mono', monospace; color: var(--accent); }
 
 .export-controls { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; margin-bottom: 2rem; }
 .export-controls .form-row { margin-bottom: 0; min-width: 150px; }
@@ -193,34 +198,70 @@ td.amount { color: var(--accent); font-weight: 700; }
 /* ============ PERMISSIONS ============ */
 .perm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
 @media (max-width: 600px) { .perm-grid { grid-template-columns: 1fr; } }
-.perm-item { display: flex; align-items: center; gap: 0.7rem; font: 400 0.935rem/1 'Inter', 'Noto Sans Myanmar', sans-serif; color: var(--text); cursor: pointer; padding: 0.5rem; border: 1px solid var(--line); border-radius: 4px; transition: all 300ms; }
+.perm-item { display: flex; align-items: center; gap: 0.7rem; font: 400 0.85rem/1 'Inter', 'Noto Sans Myanmar', sans-serif; color: var(--text); cursor: pointer; padding: 0.5rem; border: 1px solid var(--line); border-radius: 4px; transition: all 300ms; }
 .perm-item:hover { border-color: var(--accent); }
 .perm-item input { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+
+/* ============ STATUS BADGES ============ */
+.status-badge { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.6rem; border-radius: 3px; font: 700 9px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; }
+.status-badge::before { content: '●'; font-size: 8px; }
+.status-badge.pending { background: rgba(217, 154, 154, 0.12); color: var(--danger); border: 1px solid rgba(217, 154, 154, 0.3); }
+.status-badge.partial { background: rgba(232, 168, 124, 0.12); color: var(--warning); border: 1px solid rgba(232, 168, 124, 0.3); }
+.status-badge.settled { background: rgba(155, 200, 160, 0.12); color: var(--success); border: 1px solid rgba(155, 200, 160, 0.3); }
+.status-badge.overpaid { background: rgba(122, 156, 198, 0.12); color: var(--info); border: 1px solid rgba(122, 156, 198, 0.3); }
+
+/* ============ LOAN LIST ============ */
+.loan-list { max-height: 450px; overflow-y: auto; border: 1px solid var(--line); border-radius: 4px; }
+.loan-list-item { padding: 0.85rem 1rem; border-bottom: 1px solid var(--line-soft); cursor: pointer; transition: all 200ms; display: grid; grid-template-columns: auto 1fr auto auto; gap: 0.8rem; align-items: center; }
+.loan-list-item:last-child { border-bottom: none; }
+.loan-list-item:hover { background: rgba(200,170,130,0.04); }
+.loan-list-item.selected { background: rgba(200,170,130,0.1); border-left: 3px solid var(--accent); }
+.loan-list-transid { font: 700 10px/1 'JetBrains Mono', monospace; color: var(--accent); }
+.loan-list-name { font: 400 0.85rem/1.2 'Inter', sans-serif; color: var(--text); }
+.loan-list-remaining { font: 700 0.85rem/1 'JetBrains Mono', monospace; color: var(--text); text-align: right; }
+
+/* ============ LOAN DETAILS ============ */
+.loan-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1.5rem; }
+@media (max-width: 500px) { .loan-details-grid { grid-template-columns: 1fr; } }
+.loan-detail-item { padding: 0.75rem; background: rgba(255,255,255,0.03); border-radius: 4px; border: 1px solid var(--line-soft); }
+.loan-detail-item .k { font: 400 9px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); margin-bottom: 0.4rem; }
+.loan-detail-item .v { font: 700 0.95rem/1 'JetBrains Mono', monospace; color: var(--text); }
+.loan-detail-item.highlight { background: rgba(200,170,130,0.08); border-color: var(--accent-soft); }
+.loan-detail-item.highlight .v { color: var(--accent); font-size: 1.1rem; }
+.loan-detail-item .v.success { color: var(--success); }
+
+.payment-error { font: 400 0.75rem/1.4 'Noto Sans Myanmar', sans-serif; color: var(--danger); margin-top: 0.5rem; display: none; }
+.payment-error.show { display: block; }
+
+.payment-history-table { width: 100%; border-collapse: collapse; font: 400 0.8rem/1.4 'JetBrains Mono', monospace; }
+.payment-history-table th { text-align: left; padding: 0.6rem; font: 400 9px/1 'JetBrains Mono', monospace; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-soft); border-bottom: 1px solid var(--line); }
+.payment-history-table td { padding: 0.6rem; color: var(--text); border-bottom: 1px solid var(--line-soft); }
 
 /* ============ MODAL ============ */
 .modal-overlay { position: fixed; inset: 0; background: rgba(10,10,10,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 500; padding: 2rem; }
 .modal-overlay.active { display: flex; }
-.modal-box { background: rgba(18,18,18,0.95); border: 1px solid var(--accent); padding: 2.5rem; max-width: 420px; width: 100%; text-align: center; position: relative; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+.modal-box { background: rgba(18,18,18,0.95); border: 1px solid var(--accent); padding: 2.5rem; max-width: 420px; width: 100%; text-align: center; position: relative; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto; }
 .modal-box.warning { border-color: var(--danger); }
-.modal-icon { font-size: 2.75rem; margin-bottom: 1rem; color: var(--accent); }
+.modal-box.large { max-width: 720px; text-align: left; }
+.modal-icon { font-size: 2.5rem; margin-bottom: 1rem; color: var(--accent); }
 .modal-box.warning .modal-icon { color: var(--danger); }
-.modal-title { font: 700 1.32rem/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; margin-bottom: 1rem; color: var(--text); }
-.modal-text { font: 400 0.99rem/1.6 'Noto Sans Myanmar', sans-serif; color: var(--text-soft); margin-bottom: 1.5rem; }
-.modal-details { background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; text-align: left; font: 400 0.935rem/1.5 'JetBrains Mono', monospace; color: var(--text); }
+.modal-title { font: 700 1.2rem/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; margin-bottom: 1rem; color: var(--text); }
+.modal-text { font: 400 0.9rem/1.6 'Noto Sans Myanmar', sans-serif; color: var(--text-soft); margin-bottom: 1.5rem; }
+.modal-details { background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; text-align: left; font: 400 0.85rem/1.5 'JetBrains Mono', monospace; color: var(--text); }
 .modal-details .row { display: flex; justify-content: space-between; }
 .modal-details .row span { color: var(--text-soft); }
 .modal-actions { display: flex; gap: 1rem; }
-.modal-actions button { flex: 1; padding: 0.9rem; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; font: 700 12.1px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; transition: all 300ms; border-radius: 4px; }
+.modal-actions button { flex: 1; padding: 0.9rem; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; font: 700 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; transition: all 300ms; border-radius: 4px; }
 .modal-actions button:hover { border-color: var(--text); }
 .modal-actions button.btn-confirm { background: var(--accent); color: var(--bg); border-color: var(--accent); }
 .modal-actions button.btn-confirm:hover { background: var(--text); }
 .modal-actions button.btn-delete { background: var(--danger); color: var(--bg); border-color: var(--danger); }
 .modal-actions button.btn-delete:hover { opacity: 0.8; }
 
-.toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--text); color: var(--bg); padding: 0.8rem 1.4rem; font: 700 12.1px/1 'JetBrains Mono', monospace; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0; pointer-events: none; transition: opacity 300ms, transform 300ms var(--ease-quiet); z-index: 200; border-radius: 4px; }
+.toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--text); color: var(--bg); padding: 0.8rem 1.4rem; font: 700 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0; pointer-events: none; transition: opacity 300ms, transform 300ms var(--ease-quiet); z-index: 200; border-radius: 4px; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-.hint { font: 400 0.825rem/1.5 'Noto Sans Myanmar', sans-serif; color: var(--text-soft); opacity: 0.6; margin-top: 1rem; }
+.hint { font: 400 0.75rem/1.5 'Noto Sans Myanmar', sans-serif; color: var(--text-soft); opacity: 0.6; margin-top: 1rem; }
 
 /* Role Visibility */
 .admin-only { display: none !important; }
@@ -230,12 +271,20 @@ body.role-admin .nav-section-label.admin-only { display: block !important; }
 body.role-admin .app-section.admin-only { display: none !important; }
 body.role-admin .app-section.admin-only.active { display: block !important; }
 
+.loan-panel { display: none; }
+.loan-panel.active { display: block; }
+
 @media (max-width: 768px) {
   .sidebar { transform: translateX(-240px); }
   body.sidebar-hidden .sidebar { transform: translateX(0); }
   .main-content { margin-left: 0; }
   body.sidebar-hidden .main-content { margin-left: 240px; }
-  .topbar-title { font-size: 1.32rem; }
+  .topbar-title { font-size: 1.2rem; }
+  .loan-list-item { grid-template-columns: 1fr auto; gap: 0.4rem; }
+  .loan-list-transid { grid-column: 1; }
+  .loan-list-name { grid-column: 1; }
+  .loan-list-remaining { grid-column: 2; grid-row: 1 / 3; }
+  .loan-list-item .status-badge { grid-column: 2; }
 }
 </style>
 </head>
@@ -315,8 +364,8 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
                 <input type="text" id="customerName" placeholder="U Mya" required>
               </div>
               <div class="form-row">
-                <label>Phone <span class="mm">ဖုန်း (လိုအပ်ပါက)</span></label>
-                <input type="tel" id="phone" placeholder="09-xxx">
+                <label>Phone <span class="mm">ဖုန်း</span></label>
+                <input type="tel" id="phone" placeholder="09-xxx" required>
               </div>
             </div>
             <div class="form-row">
@@ -332,17 +381,17 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
                 <input type="number" id="amount" placeholder="100000" required>
               </div>
               <div class="form-row">
-                <label>Account <span class="mm">ငွေသွင်း/ထုတ်အကောင့်ရွေးရန်</span></label>
+                <label>Account <span class="mm">အကောင့်</span></label>
                 <select id="txAccount"></select>
               </div>
             </div>
             <div class="form-row-2">
               <div class="form-row">
-                <label>Income <span class="mm">Charges ဝန်ဆောင်ခ</span></label>
+                <label>Income <span class="mm">အမြတ်</span></label>
                 <input type="number" id="income" placeholder="0" value="0">
               </div>
               <div class="form-row">
-                <label>Received Method <span class="mm">ရရှိမည့်နည်းလမ်း</span></label>
+                <label>Income To <span class="mm">အမြတ်ဝင်မည့်နေရာ</span></label>
                 <select id="incomeSource"></select>
               </div>
             </div>
@@ -358,40 +407,42 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
 
     <!-- TRANSFERS -->
     <div class="app-section" id="section-transfer">
-      <div class="card">
-        <div class="card-header">Internal Transfer · ငွေလွှဲပြောင်းခြင်း</div>
-        <form id="transferForm">
-          <div class="form-row-2">
-            <div class="form-row">
-              <label>From Account <span class="mm">မှ</span></label>
-              <select id="transferFrom"></select>
-              <div class="balance-hint empty" id="transferFromBal"></div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">Internal Transfer · ငွေလွှဲပြောင်းခြင်း</div>
+          <form id="transferForm">
+            <div class="form-row-2">
+              <div class="form-row">
+                <label>From Account <span class="mm">မှ</span></label>
+                <select id="transferFrom"></select>
+                <div class="balance-hint empty" id="transferFromBal"></div>
+              </div>
+              <div class="form-row">
+                <label>To Account <span class="mm">သို့</span></label>
+                <select id="transferTo"></select>
+                <div class="balance-hint empty" id="transferToBal"></div>
+              </div>
             </div>
             <div class="form-row">
-              <label>To Account <span class="mm">သို့</span></label>
-              <select id="transferTo"></select>
-              <div class="balance-hint empty" id="transferToBal"></div>
+              <label>Amount <span class="mm">ပမာဏ</span></label>
+              <input type="number" id="transferAmount" placeholder="10000" required>
             </div>
+            <div class="form-row">
+              <label>Note <span class="mm">မှတ်ချက်</span></label>
+              <input type="text" id="transferNote" placeholder="Bank to Wallet / Cash to Wallet">
+            </div>
+            <button type="submit" class="btn-primary">RECORD TRANSFER</button>
+          </form>
+          <div class="hint">ဘဏ်မှ Wallet သို့လည်းကောင်း၊ Wallet မှ ငွေသားအဖြစ် ထုတ်ယူလည်းကောင်း အလွယ်တကူ လွှဲပြောင်းနိုင်ပါသည်။</div>
+        </div>
+        <div class="card">
+          <div class="card-header">Recent Transfers · လွှဲပြောင်းမှု မှတ်တမ်း</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Date</th><th>From</th><th>To</th><th>Amount</th><th>Note</th></tr></thead>
+              <tbody id="transferBody"></tbody>
+            </table>
           </div>
-          <div class="form-row">
-            <label>Amount <span class="mm">ပမာဏ</span></label>
-            <input type="number" id="transferAmount" placeholder="10000" required>
-          </div>
-          <div class="form-row">
-            <label>Note <span class="mm">မှတ်ချက်</span></label>
-            <input type="text" id="transferNote" placeholder="Bank to Wallet / Cash to Wallet">
-          </div>
-          <button type="submit" class="btn-primary">RECORD TRANSFER</button>
-        </form>
-        <div class="hint">ဘဏ်မှ Wallet သို့လည်းကောင်း၊ Wallet မှ ငွေသားအဖြစ် ထုတ်ယူလည်းကောင်း အလွယ်တကူ လွှဲပြောင်းနိုင်ပါသည်။</div>
-      </div>
-      <div class="card">
-        <div class="card-header">Recent Transfers · လွှဲပြောင်းမှု မှတ်တမ်း</div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Date</th><th>From</th><th>To</th><th>Amount</th><th>Note</th></tr></thead>
-            <tbody id="transferBody"></tbody>
-          </table>
         </div>
       </div>
     </div>
@@ -493,13 +544,12 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
       </div>
     </div>
 
-    <!-- INCOME/EXPENSE (Re-arranged & Action Column Added) -->
+    <!-- INCOME/EXPENSE -->
     <div class="app-section" id="section-pnl">
-      <!-- အပေါ်က Card: Add Income/Expense Form -->
-      <div class="card">
-        <div class="card-header">Add Income / Expense · အမြတ်/ကုန်ကျစရိတ် ထည့်ရန်</div>
-        <form id="pnlForm">
-          <div class="form-row-2">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">Add Income / Expense · အမြတ်/ကုန်ကျစရိတ် ထည့်ရန်</div>
+          <form id="pnlForm">
             <div class="form-row">
               <label>Type <span class="mm">အမျိုးအစား</span></label>
               <div class="toggle-group" id="pnlTypeToggle">
@@ -507,58 +557,35 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
                 <button type="button" data-type="expense" class="toggle-btn">EXPENSE</button>
               </div>
             </div>
-            <div class="form-row">
-              <label>Category <span class="mm">ခေါင်းစဉ်</span></label>
-              <select id="pnlCategory"></select>
-            </div>
-          </div>
-          <div class="form-row-2">
-            <div class="form-row">
-              <label>Source <span class="mm">ငွေထွက်/ဝင် နေရာ</span></label>
-              <select id="pnlSource"></select>
+            <div class="form-row-2">
+              <div class="form-row">
+                <label>Category <span class="mm">ခေါင်းစဉ်</span></label>
+                <select id="pnlCategory"></select>
+              </div>
+              <div class="form-row">
+                <label>Source <span class="mm">ငွေထွက်/ဝင် နေရာ</span></label>
+                <select id="pnlSource"></select>
+              </div>
             </div>
             <div class="form-row">
               <label>Amount <span class="mm">ပမာဏ</span></label>
               <input type="number" id="pnlAmount" placeholder="10000" required>
             </div>
-          </div>
-          <div class="form-row">
-            <label>Note <span class="mm">မှတ်ချက်</span></label>
-            <input type="text" id="pnlNote" placeholder="မှတ်ချက်ရေးပါ (အကြောင်းအရာ)">
-          </div>
-          <button type="submit" class="btn-primary">RECORD</button>
-        </form>
-        <div class="hint" style="margin-top: 1rem;">
-          ⚠ စာရင်းသွင်းပြီးနောက် <strong style="color: var(--accent);">Admin</strong> ကသာ Reversal / Delete လုပ်ခွင့်ရှိပါသည်။ User များအနေဖြင့် စာရင်းသွင်းခွင့်သာ ရှိပါသည်။
+            <div class="form-row">
+              <label>Note <span class="mm">မှတ်ချက်</span></label>
+              <input type="text" id="pnlNote" placeholder="Description">
+            </div>
+            <button type="submit" class="btn-primary">RECORD</button>
+          </form>
         </div>
-      </div>
-
-      <!-- အောက်က Card: P&L Table -->
-      <div class="card">
-        <div class="card-header">P&L Summary · အမြတ်/ကုန်ကျ စာရင်း</div>
-        <div class="form-row-2" style="margin-bottom: 1rem;">
-          <div class="form-row">
-            <label>Start Date <span class="mm">စတင်ရက်</span></label>
-            <input type="date" id="pnlStart">
+        <div class="card">
+          <div class="card-header">P&L Summary · အမြတ်/ကုန်ကျ စာရင်း</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Source</th><th>Amount</th><th>Note</th></tr></thead>
+              <tbody id="pnlBody"></tbody>
+            </table>
           </div>
-          <div class="form-row">
-            <label>End Date <span class="mm">ပြီးဆုံးရက်</span></label>
-            <input type="date" id="pnlEnd">
-          </div>
-        </div>
-        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem; font: 700 1.1rem/1.4 'JetBrains Mono', monospace; color: var(--accent);">
-          <span id="pnlSumText">Total Income: 0 MMK | Total Expense: 0 MMK</span>
-        </div>
-        <div class="table-wrap">
-          <table id="pnlTable">
-            <thead><tr>
-              <th>Date</th><th>Type</th><th>Category</th><th>Source</th>
-              <th>Amount</th><th>Note</th>
-              <th class="pnl-action-col" style="display:none">Action</th>
-            </tr></thead>
-            <tbody id="pnlBody"></tbody>
-          </table>
-          <div class="empty-state" id="pnlEmpty" style="display:none">No Income/Expense records yet.</div>
         </div>
       </div>
     </div>
@@ -616,7 +643,7 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
           <button class="btn-secondary" onclick="exportData('excel')">⬇ EXPORT EXCEL</button>
           <button class="btn-secondary" onclick="exportData('pdf')">⬇ EXPORT PDF</button>
         </div>
-        <div class="hint">Report Type ကို ရွေးချယ်ပြီး သက်ဆိုင်ရာ အသေးစိတ် စာရင်းများကို ထုတ်ယူနိုင်ပါသည်။ ဇယားထဲတွင် စုစုပေါင်း ပမာဏ (Total) ကိုပါ အလိုလို ပေါင်းပြပေးပါမည်။</div>
+        <div class="hint">Report Type ကို ရွေးချယ်ပြီး သက်ဆိုင်ရာ အသေးစိတ် စာရင်းများကို ထုတ်ယူနိုင်ပါသည်။</div>
       </div>
     </div>
 
@@ -624,7 +651,7 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
     <div class="app-section" id="section-backup">
       <div class="card">
         <div class="card-header">Backup & Restore · ဒေတာ သိမ်းဆည်း/ပြန်လည်ရယူရန်</div>
-        <p style="margin-bottom:1.5rem; color:var(--text-soft); font-size:0.99rem">Data မပျောက်ပျစ်ောင်အတွက် နေ့စဉ် ဒီမှာ Download လုပ်ပြီး Google Drive တွင် တင်သိမ်းပါ။</p>
+        <p style="margin-bottom:1.5rem; color:var(--text-soft); font-size:0.9rem">Data မပျောက်ပျစ်ောင်အတွက် နေ့စဉ် ဒီမှာ Download လုပ်ပြီး Google Drive တွင် တင်သိမ်းပါ။</p>
         <div style="display:flex; gap:1rem; flex-wrap:wrap">
           <button class="btn-secondary" onclick="downloadBackup()">⬇ DOWNLOAD BACKUP (.JSON)</button>
           <button class="btn-secondary" onclick="document.getElementById('restoreFile').click()">⬆ RESTORE BACKUP</button>
@@ -677,7 +704,7 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
           <label>Target Account</label>
           <select id="adjustTarget"></select>
         </div>
-        <div style="font: 700 1.65rem/1 'JetBrains Mono', monospace; color: var(--accent); margin: 0.5rem 0 1.5rem;" id="adjustCurrent">— MMK</div>
+        <div style="font: 700 1.5rem/1 'JetBrains Mono', monospace; color: var(--accent); margin: 0.5rem 0 1.5rem;" id="adjustCurrent">— MMK</div>
         <div class="form-row-2">
           <div class="form-row">
             <label>New Balance</label>
@@ -700,51 +727,106 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
 
     <!-- LOANS (ADMIN) -->
     <div class="app-section admin-only" id="section-loans">
-      <div class="grid-2">
-        <div class="card">
-          <div class="card-header">Record Loan · ချေးငွေ မှတ်တမ်း</div>
-          <div class="form-row">
-            <label>Loan Type <span class="mm">အမျိုးအစား</span></label>
-            <div class="toggle-group" id="loanTypeToggle">
-              <button type="button" data-type="borrow" class="toggle-btn active">ချေးယူ (Borrow)</button>
-              <button type="button" data-type="lend" class="toggle-btn">ချေးပေး (Lend)</button>
-            </div>
-          </div>
-          <div class="form-row-2">
-            <div class="form-row">
-              <label>Person/Bank Name <span class="mm">အမည်</span></label>
-              <input type="text" id="loanName" placeholder="U Aung / AYA Bank">
-            </div>
-            <div class="form-row">
-              <label>Amount <span class="mm">ပမာဏ</span></label>
-              <input type="number" id="loanAmount" placeholder="50000">
-            </div>
-          </div>
-          <div class="form-row-2">
-            <div class="form-row">
-              <label>Source <span class="mm">အကြာင်းအရင်း</span></label>
-              <select id="loanSource"></select>
-            </div>
-            <div class="form-row">
-              <label>Repayment Date <span class="mm">ပြန်ဆပ်ရမည့်ရက်</span></label>
-              <input type="date" id="loanRepayDate">
-            </div>
-          </div>
-          <div class="form-row">
-            <label>Note <span class="mm">မှတ်ချက်</span></label>
-            <input type="text" id="loanNote" placeholder="Reason / Terms">
-          </div>
-          <button class="btn-primary" onclick="recordLoan()">RECORD LOAN</button>
-        </div>
-        <div class="card">
-          <div class="card-header">Outstanding Loans · လက်ကျန် ချေးငွေများ</div>
-          <div class="summary-grid" id="loanOutstanding" style="grid-template-columns:1fr"></div>
+      <div class="card" style="margin-bottom:1.5rem">
+        <div class="toggle-group" id="loanModeToggle" style="margin-bottom:0">
+          <button type="button" data-mode="new" class="toggle-btn active">NEW LOAN</button>
+          <button type="button" data-mode="repay" class="toggle-btn">REPAYMENT / COLLECTION</button>
         </div>
       </div>
+
+      <!-- New Loan Panel -->
+      <div class="loan-panel active" id="loanPanelNew">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">Record Loan · ချေးငွေ မှတ်တမ်း</div>
+            <form id="loanForm">
+              <div class="form-row">
+                <label>Transaction ID <span class="mm">အမှတ်အစား (အလိုလိုထွက်ပါမယ်)</span></label>
+                <input type="text" id="loanTxIdPreview" class="readonly" readonly>
+              </div>
+              <div class="form-row">
+                <label>Loan Type <span class="mm">အမျိုးအစား</span></label>
+                <div class="toggle-group" id="loanTypeToggle">
+                  <button type="button" data-type="borrow" class="toggle-btn active">ချေးယူ (Borrow)</button>
+                  <button type="button" data-type="lend" class="toggle-btn">ချေးပေး (Lend)</button>
+                </div>
+              </div>
+              <div class="form-row-2">
+                <div class="form-row">
+                  <label>Person/Bank Name <span class="mm">အမည်</span></label>
+                  <input type="text" id="loanName" placeholder="U Aung / AYA Bank" required>
+                </div>
+                <div class="form-row">
+                  <label>Amount <span class="mm">ပမာဏ</span></label>
+                  <input type="number" id="loanAmount" placeholder="50000" required>
+                </div>
+              </div>
+              <div class="form-row-2">
+                <div class="form-row">
+                  <label>Source <span class="mm">ငွေလွှဲမည့်နေရာ</span></label>
+                  <select id="loanSource"></select>
+                </div>
+                <div class="form-row">
+                  <label>Repayment Date <span class="mm">ပြန်ဆပ်ရမည့်ရက်</span></label>
+                  <input type="date" id="loanRepayDate">
+                </div>
+              </div>
+              <div class="form-row">
+                <label>Note <span class="mm">မှတ်ချက်</span></label>
+                <input type="text" id="loanNote" placeholder="Reason / Terms">
+              </div>
+              <button type="submit" class="btn-primary">RECORD LOAN</button>
+            </form>
+            <div class="hint">ချေးယူ(Borrow) = ငွေဝင်လာပါမယ်။ ချေးပေး(Lend) = ငွေထွက်သွားပါမယ်။</div>
+          </div>
+          <div class="card">
+            <div class="card-header">Outstanding Loans · လက်ကျန် ချေးငွေများ</div>
+            <div class="summary-grid" id="loanOutstanding" style="grid-template-columns:1fr"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Repayment Panel -->
+      <div class="loan-panel" id="loanPanelRepay">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">Select Transaction · မှတ်တမ်း ရွေးချယ်ရန်</div>
+            <div class="form-row">
+              <label>Search <span class="mm">ID ဒါမှမဟုတ် အမည်ဖြင့် ရှာရန်</span></label>
+              <input type="text" id="loanSearch" placeholder="LN-000001 or U Aung">
+            </div>
+            <div class="chips" id="loanFilterBar" style="margin-bottom:1rem">
+              <button class="chip active" data-lfilter="all">ALL</button>
+              <button class="chip" data-lfilter="pending">PENDING</button>
+              <button class="chip" data-lfilter="partial">PARTIALLY PAID</button>
+              <button class="chip" data-lfilter="settled">FULLY SETTLED</button>
+            </div>
+            <div class="loan-list" id="loanList"></div>
+          </div>
+          <div class="card">
+            <div class="card-header">Repayment / Collection · ပြန်ဆပ် / ပြန်တောင်း</div>
+            <div id="repayPanel">
+              <div class="empty-state" style="padding:3rem 1rem">← ဘယ်ဖက်မှ မှတ်တမ်းတစ်ခုကို ရွေးချယ်ပါ။</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Full History -->
       <div class="card">
-        <div class="card-header">Full History · အပြည့်အစုံ (Reverse/Delete လုပ်နိုင်ပါသည်)</div>
+        <div class="card-header">Full History · အပြည့်အစုံ</div>
+        <div class="form-row">
+          <label>Search <span class="mm">ID ဒါမှမဟုတ် အမည်ဖြင့် ရှာရန်</span></label>
+          <input type="text" id="loanHistorySearch" placeholder="LN-000001 or U Aung">
+        </div>
+        <div class="chips" id="loanHistoryFilterBar" style="margin-bottom:1.5rem">
+          <button class="chip active" data-hlfilter="all">ALL</button>
+          <button class="chip" data-hlfilter="pending">PENDING</button>
+          <button class="chip" data-hlfilter="partial">PARTIALLY PAID</button>
+          <button class="chip" data-hlfilter="settled">FULLY SETTLED</button>
+        </div>
         <div class="table-wrap">
-          <table><thead><tr><th>Date</th><th>Type</th><th>Name</th><th>Amount</th><th>Source</th><th>Repay Date</th><th>Action</th></tr></thead><tbody id="loanHistory"></tbody></table>
+          <table><thead><tr><th>Trans ID</th><th>Date</th><th>Type</th><th>Name</th><th>Original</th><th>Paid</th><th>Remaining</th><th>Status</th><th>Payments</th><th>Action</th></tr></thead><tbody id="loanHistory"></tbody></table>
         </div>
       </div>
     </div>
@@ -818,9 +900,21 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
   </div>
 </div>
 
+<!-- LOAN DETAILS MODAL -->
+<div class="modal-overlay" id="loanModalOverlay">
+  <div class="modal-box large">
+    <div class="modal-title" id="loanModalTitle" style="text-align:center; margin-bottom:1.5rem;">LOAN DETAILS</div>
+    <div id="loanModalContent"></div>
+    <div class="modal-actions" style="margin-top:1.5rem;">
+      <button class="btn-confirm" onclick="closeLoanModal()">CLOSE</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast">RECORDED</div>
 
 <script>
+const STORAGE_KEY = 'moneychange_v16';
 let state = {
   accounts: ['Kpay(TZ)', 'Wave(TZ)', 'Bank(TZ)'],
   balances: { 'Kpay(TZ)': 0, 'Wave(TZ)': 0, 'Bank(TZ)': 0, 'cash': 0 },
@@ -831,6 +925,7 @@ let state = {
   logs: [],
   transfers: [],
   capital: [],
+  loanTxCounter: 1,
   categories: {
     income: ['Commission', 'Salary', 'Other Income'],
     expense: ['Rent', 'Food', 'Transport', 'Utility', 'Other Expense']
@@ -844,49 +939,50 @@ let state = {
   currentAccount: 'Kpay(TZ)',
   currentPnlType: 'income',
   currentLoanType: 'borrow',
+  currentLoanMode: 'new',
   currentReportType: 'monthly',
+  selectedLoanId: null,
+  loanSearchQuery: '',
+  loanFilter: 'all',
+  loanHistorySearch: '',
+  loanHistoryFilter: 'all',
   filter: 'all'
 };
 let currentRole = null;
 
-async function loadState() {
-  try {
-    const response = await fetch('/api/state');
-    if (response.ok) {
-      const saved = await response.text();
-      if (saved) {
-        const p = JSON.parse(saved);
-        state = {...state, ...p};
-        if (typeof state.balances.cash !== 'number') state.balances.cash = 0;
-        state.accounts.forEach(a => { if (typeof state.balances[a] !== 'number') state.balances[a] = 0; });
-        if (!state.accounts.includes(state.currentAccount)) state.currentAccount = state.accounts[0];
-        if (!state.categories || Array.isArray(state.categories)) {
-          state.categories = { income: ['Commission', 'Salary', 'Other Income'], expense: ['Rent', 'Food', 'Transport', 'Utility', 'Other Expense'] };
-        }
-        if (!state.userPermissions) {
-          state.userPermissions = { canDelete: false, canAdjust: false, canLoans: false, canCapital: false, canCategories: false, canReports: true, canExport: true, canBackup: false };
-        }
-        if (!state.logs) state.logs = [];
-        if (!state.transfers) state.transfers = [];
-        if (!state.capital) state.capital = [];
-        state.currentType = null;
+function loadState() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try {
+      const p = JSON.parse(saved);
+      state = {...state, ...p};
+      if (typeof state.balances.cash !== 'number') state.balances.cash = 0;
+      state.accounts.forEach(a => { if (typeof state.balances[a] !== 'number') state.balances[a] = 0; });
+      if (!state.accounts.includes(state.currentAccount)) state.currentAccount = state.accounts[0];
+      if (!state.categories || Array.isArray(state.categories)) {
+        state.categories = { income: ['Commission', 'Salary', 'Other Income'], expense: ['Rent', 'Food', 'Transport', 'Utility', 'Other Expense'] };
       }
-    }
-  } catch (e) { console.error('Load state error:', e); }
-}
-
-async function saveState() {
-  try {
-    await fetch('/api/state', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(state)
-    });
-  } catch (e) { 
-    console.error('Save state error:', e); 
-    showToast('SAVE FAILED - NETWORK ERROR'); 
+      if (!state.userPermissions) {
+        state.userPermissions = { canDelete: false, canAdjust: false, canLoans: false, canCapital: false, canCategories: false, canReports: true, canExport: true, canBackup: false };
+      }
+      if (!state.logs) state.logs = [];
+      if (!state.transfers) state.transfers = [];
+      if (!state.capital) state.capital = [];
+      if (!state.loanTxCounter) state.loanTxCounter = 1;
+      if (!state.loans) state.loans = [];
+      // Migrate old loans
+      state.loans.forEach(l => {
+        if (!l.transactionId) {
+          l.transactionId = `LN-${String(state.loanTxCounter).padStart(6, '0')}`;
+          state.loanTxCounter++;
+        }
+        if (!l.payments) l.payments = [];
+      });
+      state.currentType = null;
+    } catch (e) {}
   }
 }
+function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
 function fmt(n) { if (typeof n !== 'number' || isNaN(n)) n = 0; return Math.round(n).toLocaleString('en-US'); }
 function isToday(ts) { const d = new Date(ts), n = new Date(); return d.toDateString() === n.toDateString(); }
@@ -930,33 +1026,25 @@ function updateTransferBalances() {
   const fromBal = document.getElementById('transferFromBal');
   const toBal = document.getElementById('transferToBal');
   if (fromBal) {
-    if (fromVal) {
-      fromBal.textContent = `Balance: ${fmt(state.balances[fromVal] || 0)} MMK`;
-      fromBal.classList.remove('empty');
-    } else { fromBal.classList.add('empty'); }
+    if (fromVal) { fromBal.textContent = `Balance: ${fmt(state.balances[fromVal] || 0)} MMK`; fromBal.classList.remove('empty'); }
+    else { fromBal.classList.add('empty'); }
   }
   if (toBal) {
-    if (toVal) {
-      toBal.textContent = `Balance: ${fmt(state.balances[toVal] || 0)} MMK`;
-      toBal.classList.remove('empty');
-    } else { toBal.classList.add('empty'); }
+    if (toVal) { toBal.textContent = `Balance: ${fmt(state.balances[toVal] || 0)} MMK`; toBal.classList.remove('empty'); }
+    else { toBal.classList.add('empty'); }
   }
 }
 
-function can(action) {
-  if (isAdmin()) return true;
-  return state.userPermissions && state.userPermissions[action];
-}
+// ============ PERMISSIONS ============
+function can(action) { if (isAdmin()) return true; return state.userPermissions && state.userPermissions[action]; }
 
 function updateMenuVisibility() {
   const p = state.userPermissions || {};
   document.querySelectorAll('.nav-item').forEach(item => {
     const sec = item.dataset.section;
-    if (sec === 'logs' || sec === 'accounts') {
-      item.style.display = isAdmin() ? 'flex' : 'none';
-    } else if (sec === 'dashboard' || sec === 'transfer' || sec === 'summary' || sec === 'ledger' || sec === 'pnl') {
-      item.style.display = 'flex';
-    } else {
+    if (sec === 'logs' || sec === 'accounts') { item.style.display = isAdmin() ? 'flex' : 'none'; }
+    else if (sec === 'dashboard' || sec === 'transfer' || sec === 'summary' || sec === 'ledger' || sec === 'pnl') { item.style.display = 'flex'; }
+    else {
       let perm = false;
       if (sec === 'adjust') perm = p.canAdjust;
       else if (sec === 'loans') perm = p.canLoans;
@@ -972,14 +1060,10 @@ function updateMenuVisibility() {
 
 function loadPermissionsUI() {
   const p = state.userPermissions || {};
-  if (document.getElementById('permDelete')) document.getElementById('permDelete').checked = p.canDelete || false;
-  if (document.getElementById('permAdjust')) document.getElementById('permAdjust').checked = p.canAdjust || false;
-  if (document.getElementById('permLoans')) document.getElementById('permLoans').checked = p.canLoans || false;
-  if (document.getElementById('permCapital')) document.getElementById('permCapital').checked = p.canCapital || false;
-  if (document.getElementById('permCategories')) document.getElementById('permCategories').checked = p.canCategories || false;
-  if (document.getElementById('permReports')) document.getElementById('permReports').checked = p.canReports || false;
-  if (document.getElementById('permExport')) document.getElementById('permExport').checked = p.canExport || false;
-  if (document.getElementById('permBackup')) document.getElementById('permBackup').checked = p.canBackup || false;
+  ['Delete','Adjust','Loans','Capital','Categories','Reports','Export','Backup'].forEach(k => {
+    const el = document.getElementById('perm' + k);
+    if (el) el.checked = p['can' + k] || false;
+  });
 }
 
 function savePermissions() {
@@ -993,53 +1077,34 @@ function savePermissions() {
     canExport: document.getElementById('permExport').checked,
     canBackup: document.getElementById('permBackup').checked
   };
-  saveState();
-  updateMenuVisibility();
-  showToast('PERMISSIONS SAVED');
+  saveState(); updateMenuVisibility(); showToast('PERMISSIONS SAVED');
 }
 
-// Modified showModal to support Note Input for Delete/Reversals
-function showModal(title, text, details = null, isWarning = false, confirmCallback = null, confirmText = 'DELETE', inputPlaceholder = null) {
+// ============ MODAL ============
+function showModal(title, text, details = null, isWarning = false, confirmCallback = null) {
   const box = document.getElementById('modalBox');
   const icon = document.getElementById('modalIcon');
   const titleEl = document.getElementById('modalTitle');
   const textEl = document.getElementById('modalText');
   const detailsEl = document.getElementById('modalDetails');
-  const actionsEl = document.querySelector('.modal-actions');
+  const actionsEl = document.querySelector('#modalOverlay .modal-actions');
   box.className = 'modal-box' + (isWarning ? ' warning' : '');
   icon.textContent = isWarning ? '!' : '✓';
-  titleEl.textContent = title;
-  textEl.innerHTML = text;
-  if (details) {
-    detailsEl.style.display = 'block';
-    detailsEl.innerHTML = details.map(d => `<div class="row"><span>${d.k}</span><strong>${d.v}</strong></div>`).join('');
-  } else { detailsEl.style.display = 'none'; }
-
-  // Remove any existing modal input
-  const oldInput = document.getElementById('modalInputWrap');
-  if (oldInput) oldInput.remove();
-
+  titleEl.textContent = title; textEl.innerHTML = text;
+  if (details) { detailsEl.style.display = 'block'; detailsEl.innerHTML = details.map(d => `<div class="row"><span>${d.k}</span><strong>${d.v}</strong></div>`).join(''); }
+  else { detailsEl.style.display = 'none'; }
   if (confirmCallback) {
-    if (inputPlaceholder) {
-      const inputWrap = document.createElement('div');
-      inputWrap.id = 'modalInputWrap';
-      inputWrap.style.cssText = 'margin-bottom:1.5rem;';
-      inputWrap.innerHTML = `<label style="display:block;font:400 12.1px/1 'JetBrains Mono',monospace;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-soft);margin-bottom:0.6rem;">Note <span class="mm" style="font-family:'Noto Sans Myanmar',sans-serif;text-transform:none;color:rgba(218,218,218,0.6);margin-left:0.5rem;">မှတ်ချက်</span></label><input type="text" id="modalInput" placeholder="${inputPlaceholder}" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);border-radius:4px;padding:0.75rem;font:400 0.9rem 'JetBrains Mono',monospace;color:var(--text);outline:none;">`;
-      actionsEl.parentNode.insertBefore(inputWrap, actionsEl);
-    }
-    actionsEl.innerHTML = `<button onclick="closeModal()">CANCEL</button><button class="btn-delete" id="modalConfirmBtn">${confirmText}</button>`;
-    document.getElementById('modalConfirmBtn').onclick = () => {
-      const inputVal = inputPlaceholder ? (document.getElementById('modalInput')?.value || '') : null;
-      confirmCallback(inputVal);
-      closeModal();
-    };
+    actionsEl.innerHTML = `<button onclick="closeModal()">CANCEL</button><button class="btn-delete" id="modalConfirmBtn">DELETE</button>`;
+    document.getElementById('modalConfirmBtn').onclick = () => { confirmCallback(); closeModal(); };
   } else {
     actionsEl.innerHTML = `<button class="btn-confirm" onclick="closeModal()">OK</button>`;
   }
   document.getElementById('modalOverlay').classList.add('active');
 }
 function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); }
+function closeLoanModal() { document.getElementById('loanModalOverlay').classList.remove('active'); }
 
+// ============ LOGIN ============
 let loginRole = 'admin', pinEntry = '';
 function renderPinDisplay() { let h=''; for(let i=0;i<4;i++){h+=`<span class="pin-dot ${i<pinEntry.length?'filled':''}"></span>`;} document.getElementById('pinDisplay').innerHTML=h; }
 function tryLogin() {
@@ -1074,43 +1139,36 @@ document.getElementById('logoutBtn').onclick = () => {
   document.getElementById('loginOverlay').classList.remove('is-hidden'); renderPinDisplay();
 };
 
-// ============ SIDEBAR AUTO-HIDE & FULLSCREEN ============
+// ============ SIDEBAR & FULLSCREEN ============
 document.getElementById('menuToggle').onclick = () => document.body.classList.toggle('sidebar-hidden');
-
+let sidebarBlurTimer = null;
 function setupAutoHideSidebar() {
   document.addEventListener('focusin', (e) => {
+    if (e.target.matches('input, select, textarea')) { clearTimeout(sidebarBlurTimer); document.body.classList.add('sidebar-hidden'); }
+  });
+  document.addEventListener('focusout', (e) => {
     if (e.target.matches('input, select, textarea')) {
-      document.body.classList.add('sidebar-hidden');
+      clearTimeout(sidebarBlurTimer);
+      sidebarBlurTimer = setTimeout(() => { document.body.classList.remove('sidebar-hidden'); }, 300);
     }
   });
 }
-
 const fsBtn = document.getElementById('fullscreenBtn');
 if (fsBtn) {
   fsBtn.onclick = () => {
-    if (!document.fullscreenElement) {
-      if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(err => showToast('Fullscreen not allowed'));
-    } else {
-      if (document.exitFullscreen) document.exitFullscreen();
-    }
+    if (!document.fullscreenElement) { if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(err => showToast('Fullscreen not allowed')); }
+    else { if (document.exitFullscreen) document.exitFullscreen(); }
   };
 }
 
 document.querySelectorAll('.nav-item').forEach(item => {
-  item.onclick = () => {
-    if (item.style.display === 'none') return;
-    showSection(item.dataset.section);
-    document.body.classList.add('sidebar-hidden');
-  };
+  item.onclick = () => { if (item.style.display === 'none') return; showSection(item.dataset.section); };
 });
-
 function showSection(id) {
   const nav = document.querySelector(`.nav-item[data-section="${id}"]`);
   if (!nav || nav.style.display === 'none') return;
-  
   document.querySelectorAll('.app-section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  
   const sec = document.getElementById('section-' + id);
   if (sec) sec.classList.add('active');
   nav.classList.add('active');
@@ -1118,14 +1176,19 @@ function showSection(id) {
   checkAlerts();
 }
 
+// ============ ALERTS ============
 function checkAlerts() {
   const today = new Date(); today.setHours(0,0,0,0);
   const alerts = [];
   state.loans.forEach(l => {
     if (l.repaymentDate) {
+      const status = getLoanStatus(l);
+      if (status === 'settled' || status === 'overpaid') return;
       const due = new Date(l.repaymentDate); due.setHours(0,0,0,0);
       const diff = Math.round((due - today) / 86400000);
-      if (diff >= 0 && diff <= 2) { alerts.push({name: l.borrowerName, amount: l.amount, dueDate: l.repaymentDate, diff, type: l.direction}); }
+      if (diff >= 0 && diff <= 2) {
+        alerts.push({ name: l.borrowerName, amount: getLoanRemaining(l), dueDate: l.repaymentDate, diff, type: l.direction, transId: l.transactionId });
+      }
     }
   });
   const c = document.getElementById('alertContainer');
@@ -1135,25 +1198,46 @@ function checkAlerts() {
       <div class="icon">!</div>
       <div class="content">
         <div class="title">UPCOMING REPAYMENT · ပြန်ဆပ်ရမည့် ရက် နီးကပ်လာသည်</div>
-        <div class="desc"><strong>${escapeHtml(a.name)}</strong> သို့ ${a.type === 'borrow' ? 'ပြန်ဆပ်ရန်' : 'ပြန်တောင်းရန်'} <strong>${fmt(a.amount)} MMK</strong> · ရက်စွဲ: ${a.dueDate} (${a.diff === 0 ? 'ယနေ့' : a.diff + ' ရက်အလို'})</div>
+        <div class="desc"><strong>${escapeHtml(a.transId)}</strong> · ${escapeHtml(a.name)} သို့ ${a.type === 'borrow' ? 'ပြန်ဆပ်ရန်' : 'ပြန်တောင်းရန်'} <strong>${fmt(a.amount)} MMK</strong> · ရက်စွဲ: ${a.dueDate} (${a.diff === 0 ? 'ယနေ့' : a.diff + ' ရက်အလို'})</div>
       </div>
     </div>`).join('');
 }
 
+// ============ LOAN HELPERS ============
+function generateLoanId() {
+  const id = `LN-${String(state.loanTxCounter).padStart(6, '0')}`;
+  return id;
+}
+function getLoanTotalPaid(loan) { return (loan.payments || []).reduce((s, p) => s + p.amount, 0); }
+function getLoanRemaining(loan) { return loan.amount - getLoanTotalPaid(loan); }
+function getLoanStatus(loan) {
+  const remaining = getLoanRemaining(loan);
+  const totalPaid = getLoanTotalPaid(loan);
+  if (remaining < 0) return 'overpaid';
+  if (remaining === 0) return 'settled';
+  if (totalPaid > 0) return 'partial';
+  return 'pending';
+}
+function getLoanStatusText(s) { return { pending:'PENDING', partial:'PARTIALLY PAID', settled:'FULLY SETTLED', overpaid:'OVERPAID' }[s] || 'PENDING'; }
+function getLoanLastPaymentDate(loan) {
+  if (!loan.payments || loan.payments.length === 0) return null;
+  return loan.payments[loan.payments.length - 1].date;
+}
+
+// ============ RENDER: DASHBOARD ============
 function renderBalances() {
   const w = document.getElementById('balanceStack'); w.innerHTML = '';
   w.innerHTML += `<div class="balance-row is-cash"><span class="label">Cash <span class="mm">ငွေသား</span></span><span class="val">${fmt(state.balances.cash)}<small>MMK</small></span></div>`;
   let totalDigital = 0;
-  state.accounts.forEach(a => {
-    totalDigital += (state.balances[a] || 0);
-    w.innerHTML += `<div class="balance-row"><span class="label">${escapeHtml(a)}</span><span class="val">${fmt(state.balances[a]||0)}<small>MMK</small></span></div>`;
-  });
+  state.accounts.forEach(a => { totalDigital += (state.balances[a] || 0); w.innerHTML += `<div class="balance-row"><span class="label">${escapeHtml(a)}</span><span class="val">${fmt(state.balances[a]||0)}<small>MMK</small></span></div>`; });
   w.innerHTML += `<div class="balance-row is-digital-total"><span class="label">Digital Money Total <span class="mm">ဒီဂျစ်တယ် စုစုပေါင်း</span></span><span class="val">${fmt(totalDigital)}<small>MMK</small></span></div>`;
+  const tInc = state.transactions.filter(t => isToday(t.ts)).reduce((s,t) => s+(t.income||0), 0);
   const tPnlInc = state.pnl.filter(p => isToday(p.ts) && p.type==='income').reduce((s,p)=>s+p.amount,0);
   const tPnlExp = state.pnl.filter(p => isToday(p.ts) && p.type==='expense').reduce((s,p)=>s+p.amount,0);
-  w.innerHTML += `<div class="balance-row is-total"><span class="label">Today's Net Income <span class="mm">ယနေ့ သာသမျှ</span></span><span class="val">${fmt(tPnlInc - tPnlExp)}<small>MMK</small></span></div>`;
+  w.innerHTML += `<div class="balance-row is-total"><span class="label">Today's Net Income <span class="mm">ယနေ့ သာသမျှ</span></span><span class="val">${fmt(tInc + tPnlInc - tPnlExp)}<small>MMK</small></span></div>`;
 }
 
+// ============ RENDER: TRANSFERS ============
 function renderTransfers() {
   const b = document.getElementById('transferBody');
   if (!b) return;
@@ -1165,97 +1249,73 @@ function renderTransfers() {
   }).join('');
 }
 
+// ============ RENDER: SUMMARY ============
 function renderSummary() {
   const w = document.getElementById('summaryGrid'); w.innerHTML = '';
   const ds = document.getElementById('sumDateStart')?.value, de = document.getElementById('sumDateEnd')?.value;
-  let useToday = true;
-  let startD = null, endD = null;
-  if (ds && de) {
-    useToday = false;
-    startD = new Date(ds); startD.setHours(0,0,0,0);
-    endD = new Date(de); endD.setHours(23,59,59,999);
-  }
-  const filterFn = (ts) => {
-    if (useToday) return isToday(ts);
-    const d = new Date(ts); return d >= startD && d <= endD;
-  };
+  let useToday = true, startD = null, endD = null;
+  if (ds && de) { useToday = false; startD = new Date(ds); startD.setHours(0,0,0,0); endD = new Date(de); endD.setHours(23,59,59,999); }
+  const filterFn = (ts) => { if (useToday) return isToday(ts); const d = new Date(ts); return d >= startD && d <= endD; };
   let cIn=0, cOut=0;
   state.transactions.filter(t => filterFn(t.ts)).forEach(t => { if(t.type==='in') cIn+=t.amount; else cOut+=t.amount; });
   let pInc = state.pnl.filter(p => filterFn(p.ts) && p.type==='income').reduce((s,p)=>s+p.amount,0);
   let pExp = state.pnl.filter(p => filterFn(p.ts) && p.type==='expense').reduce((s,p)=>s+p.amount,0);
   const dateLabel = useToday ? 'TODAY' : `${ds} → ${de}`;
-  w.innerHTML += `<div class="summary-cell">
-    <div class="name">CASH · ငွေသား (${dateLabel})</div>
+  w.innerHTML += `<div class="summary-cell"><div class="name">CASH · ငွေသား (${dateLabel})</div>
     <div class="stat in"><span class="k">CASH IN</span><span class="v">+${fmt(cIn)}</span></div>
     <div class="stat out"><span class="k">CASH OUT</span><span class="v">-${fmt(cOut)}</span></div>
     <div class="stat in"><span class="k">P&L INCOME</span><span class="v">+${fmt(pInc)}</span></div>
     <div class="stat out"><span class="k">P&L EXPENSE</span><span class="v">-${fmt(pExp)}</span></div>
     <div class="stat net"><span class="k">NET FLOW</span><span class="v">${fmt(cIn - cOut + pInc - pExp)}</span></div>
-    <div class="foot"><span class="k">Balance</span><span class="v">${fmt(state.balances.cash)}</span></div>
-  </div>`;
+    <div class="foot"><span class="k">Balance</span><span class="v">${fmt(state.balances.cash)}</span></div></div>`;
   state.accounts.forEach(a => {
     let dIn=0, dOut=0;
     state.transactions.filter(t => filterFn(t.ts) && t.account===a).forEach(t => { if(t.type==='in') dOut+=t.amount; else dIn+=t.amount; });
     let aPInc = state.pnl.filter(p => filterFn(p.ts) && p.type==='income' && p.source===a).reduce((s,p)=>s+p.amount,0);
     let aPExp = state.pnl.filter(p => filterFn(p.ts) && p.type==='expense' && p.source===a).reduce((s,p)=>s+p.amount,0);
-    w.innerHTML += `<div class="summary-cell">
-      <div class="name">${escapeHtml(a)}</div>
+    w.innerHTML += `<div class="summary-cell"><div class="name">${escapeHtml(a)}</div>
       <div class="stat in"><span class="k">DIGITAL IN</span><span class="v">+${fmt(dIn)}</span></div>
       <div class="stat out"><span class="k">DIGITAL OUT</span><span class="v">-${fmt(dOut)}</span></div>
       <div class="stat in"><span class="k">P&L INCOME</span><span class="v">+${fmt(aPInc)}</span></div>
       <div class="stat out"><span class="k">P&L EXPENSE</span><span class="v">-${fmt(aPExp)}</span></div>
       <div class="stat net"><span class="k">NET FLOW</span><span class="v">${fmt(dIn - dOut + aPInc - aPExp)}</span></div>
-      <div class="foot"><span class="k">Balance</span><span class="v">${fmt(state.balances[a]||0)}</span></div>
-    </div>`;
+      <div class="foot"><span class="k">Balance</span><span class="v">${fmt(state.balances[a]||0)}</span></div></div>`;
   });
   const s = document.getElementById('sumStart'), e = document.getElementById('sumEnd');
   if (!s.value) { const d = new Date(); d.setDate(1); s.value = d.toISOString().split('T')[0]; }
   if (!e.value) { e.value = new Date().toISOString().split('T')[0]; }
-  let start = new Date(s.value); start.setHours(0,0,0,0);
-  let end = new Date(e.value); end.setHours(23,59,59,999);
+  let start = new Date(s.value); start.setHours(0,0,0,0); let end = new Date(e.value); end.setHours(23,59,59,999);
   const map = {};
   state.transactions.filter(t => { const d=new Date(t.ts); return d>=start && d<=end; }).forEach(t => {
-    const d = new Date(t.ts);
-    const dateStr = d.toLocaleDateString('en-GB');
-    const acc = t.account;
+    const d = new Date(t.ts); const dateStr = d.toLocaleDateString('en-GB'); const acc = t.account;
     if(!map[dateStr+'|'+acc]) map[dateStr+'|'+acc] = {dateStr, account: acc, txOut: 0, txIn: 0, pnlInc: 0, pnlExp: 0};
     if(t.type === 'in') map[dateStr+'|'+acc].txOut += t.amount; else map[dateStr+'|'+acc].txIn += t.amount;
     if(t.income > 0 && t.incomeSource === acc) map[dateStr+'|'+acc].pnlInc += t.income;
   });
   state.pnl.filter(p => { const d=new Date(p.ts); return d>=start && d<=end; }).forEach(p => {
-    const d = new Date(p.ts);
-    const dateStr = d.toLocaleDateString('en-GB');
-    const acc = p.source;
+    const d = new Date(p.ts); const dateStr = d.toLocaleDateString('en-GB'); const acc = p.source;
     if(!map[dateStr+'|'+acc]) map[dateStr+'|'+acc] = {dateStr, account: acc, txOut: 0, txIn: 0, pnlInc: 0, pnlExp: 0};
     if(p.type === 'income') map[dateStr+'|'+acc].pnlInc += p.amount; else map[dateStr+'|'+acc].pnlExp += p.amount;
   });
   const b = document.getElementById('dailyBody');
   if(Object.keys(map).length === 0) { b.innerHTML = '<tr><td colspan="7" class="empty-state">No records in this range</td></tr>'; return; }
   b.innerHTML = Object.values(map).sort((a,b) => a.dateStr.localeCompare(b.dateStr) || a.account.localeCompare(b.account)).map(m => `
-    <tr>
-      <td style="color:var(--text-soft)">${m.dateStr}</td><td>${escapeHtml(m.account)}</td>
+    <tr><td style="color:var(--text-soft)">${m.dateStr}</td><td>${escapeHtml(m.account)}</td>
       <td class="type-out">${fmt(m.txOut)}</td><td class="type-in">${fmt(m.txIn)}</td>
       <td class="type-in">${fmt(m.pnlInc)}</td><td class="type-out">${fmt(m.pnlExp)}</td>
-      <td class="amount" style="color:${(m.txIn + m.pnlInc - m.txOut - m.pnlExp)>=0?'var(--success)':'var(--danger)'}">${fmt(m.txIn + m.pnlInc - m.txOut - m.pnlExp)}</td>
-    </tr>`).join('');
+      <td class="amount" style="color:${(m.txIn + m.pnlInc - m.txOut - m.pnlExp)>=0?'var(--success)':'var(--danger)'}">${fmt(m.txIn + m.pnlInc - m.txOut - m.pnlExp)}</td></tr>`).join('');
 }
 
+// ============ RENDER: LEDGER ============
 function renderTx() {
   const b = document.getElementById('txBody'), e = document.getElementById('emptyState'), t = document.getElementById('txTable');
   b.innerHTML = ''; let txs = state.transactions.slice().reverse();
   if (state.filter === 'in') txs = txs.filter(t => t.type==='in');
   else if (state.filter === 'out') txs = txs.filter(t => t.type==='out');
   const ds = document.getElementById('ledgerStart').value, de = document.getElementById('ledgerEnd').value;
-  if (ds && de) {
-    const start = new Date(ds); start.setHours(0,0,0,0);
-    const end = new Date(de); end.setHours(23,59,59,999);
-    txs = txs.filter(t => { const d = new Date(t.ts); return d >= start && d <= end; });
-  }
-  
+  if (ds && de) { const start = new Date(ds); start.setHours(0,0,0,0); const end = new Date(de); end.setHours(23,59,59,999); txs = txs.filter(t => { const d = new Date(t.ts); return d >= start && d <= end; }); }
   const showDel = can('canDelete');
-  const delTh = document.querySelector('#txTable th.action-col');
-  if (delTh) delTh.style.display = showDel ? 'table-cell' : 'none';
-  
+  const delTh = document.querySelector('#txTable th.action-col'); if (delTh) delTh.style.display = showDel ? 'table-cell' : 'none';
   if (txs.length === 0) { e.style.display='block'; t.style.display='none'; return; } else { e.style.display='none'; t.style.display=''; }
   txs.forEach((t, i) => {
     const dt = new Date(t.ts);
@@ -1265,26 +1325,26 @@ function renderTx() {
       <td style="color:var(--text-soft)">${ds2}</td><td>${escapeHtml(t.customerName)}</td><td style="color:var(--text-soft)">${escapeHtml(t.phone)}</td>
       <td class="type-${t.type}">${t.type==='in'?'CASH IN':'CASH OUT'}</td><td style="color:var(--text-soft)">${escapeHtml(t.account)}</td>
       <td class="amount">${fmt(t.amount)}</td><td style="color:var(--accent)">+${fmt(t.income||0)} (${escapeHtml(t.incomeSource||'cash')})</td>
-      <td style="display:${showDel ? 'table-cell' : 'none'}"><button class="btn-danger" onclick="confirmDeleteTx('${t.id}')">DEL</button></td>
-    </tr>`;
+      <td style="display:${showDel ? 'table-cell' : 'none'}"><button class="btn-danger" onclick="confirmDeleteTx('${t.id}')">DEL</button></td></tr>`;
   });
 }
 function confirmDeleteTx(id) {
   if (!can('canDelete')) return;
   const t = state.transactions.find(x => x.id === id); if(!t) return;
   showModal('WARNING: DELETE TRANSACTION', 'ဤ မှတ်တမ်းကို ဖျက်လိုက်ပါက ငွေပမာဏများ အလိုလို ပြန်လည် ပြောင်းလဲသွားပါမည်။ ဖျက်ရန် သေချာပါသလား?',
-    [{k: 'Type', v: t.type === 'in' ? 'Cash In' : 'Cash Out'}, {k: 'Amount', v: fmt(t.amount) + ' MMK'}, {k: 'Customer', v: t.customerName}], true, (note) => deleteTx(id, note), 'DELETE', 'ဖျက်သည့် အကြောင်းပြချက် (optional)');
+    [{k: 'Type', v: t.type === 'in' ? 'Cash In' : 'Cash Out'}, {k: 'Amount', v: fmt(t.amount) + ' MMK'}, {k: 'Customer', v: t.customerName}], true, () => deleteTx(id));
 }
-function deleteTx(id, note) {
+function deleteTx(id) {
   const t = state.transactions.find(x => x.id === id); if(!t) return;
   if (t.type==='in') { state.balances.cash -= t.amount; state.balances[t.account] += t.amount; } else { state.balances.cash += t.amount; state.balances[t.account] -= t.amount; }
   if(t.income) state.balances[t.incomeSource || 'cash'] -= t.income;
   state.transactions = state.transactions.filter(x => x.id!==id);
   state.pnl = state.pnl.filter(p => p.id !== 'pnl_tx_' + id);
-  addLog('DELETE_TX', `Deleted ${t.type} of ${fmt(t.amount)} for ${t.customerName}. Note: ${note || 'N/A'}`);
-  renderAll(); showToast('DELETED');
+  addLog('DELETE_TX', `Deleted ${t.type} of ${fmt(t.amount)} for ${t.customerName}`);
+  saveState(); renderAll(); showToast('DELETED');
 }
 
+// ============ RENDER: REPORTS ============
 function renderReports() {
   const ySel = document.getElementById('reportYear'), mSel = document.getElementById('reportMonth'), mWrap = document.getElementById('monthSelectWrap');
   const years = [...new Set(state.transactions.map(t => new Date(t.ts).getFullYear()))];
@@ -1307,189 +1367,48 @@ function renderReports() {
   const tInc = txs.reduce((s,t)=>s+(t.income||0), 0);
   const pInc = pnls.filter(p=>p.type==='income').reduce((s,p)=>s+p.amount, 0);
   const pExp = pnls.filter(p=>p.type==='expense').reduce((s,p)=>s+p.amount, 0);
-  grid.innerHTML = `<div class="summary-cell">
-    <div class="name">SUMMARY REPORT</div>
+  grid.innerHTML = `<div class="summary-cell"><div class="name">SUMMARY REPORT</div>
     <div class="stat in"><span class="k">TOTAL CASH IN</span><span class="v">+${fmt(cIn)}</span></div>
     <div class="stat out"><span class="k">TOTAL CASH OUT</span><span class="v">-${fmt(cOut)}</span></div>
     <div class="stat in"><span class="k">TX INCOME</span><span class="v">+${fmt(tInc)}</span></div>
     <div class="stat in"><span class="k">OTHER INCOME</span><span class="v">+${fmt(pInc)}</span></div>
     <div class="stat out"><span class="k">EXPENSE</span><span class="v">-${fmt(pExp)}</span></div>
-    <div class="stat net"><span class="k">NET PROFIT</span><span class="v">${fmt(pInc - pExp)}</span></div>
-  </div>`;
+    <div class="stat net"><span class="k">NET PROFIT</span><span class="v">${fmt(tInc + pInc - pExp)}</span></div></div>`;
 }
 
 // ============ RENDER: PNL ============
 function renderPnl() {
-  const b = document.getElementById('pnlBody');
-  const e = document.getElementById('pnlEmpty');
-  const t = document.getElementById('pnlTable');
-  const sumText = document.getElementById('pnlSumText');
-  if(!b) return;
-
-  b.innerHTML = '';
-  const ds = document.getElementById('pnlStart')?.value;
-  const de = document.getElementById('pnlEnd')?.value;
-  let filteredPnl = state.pnl.slice().reverse();
-
-  let sumInc = 0, sumExp = 0;
-
-  if (ds && de) {
-    const start = new Date(ds); start.setHours(0,0,0,0);
-    const end = new Date(de); end.setHours(23,59,59,999);
-    filteredPnl = filteredPnl.filter(p => {
-      const d = new Date(p.ts);
-      return d >= start && d <= end;
-    });
-  }
-
-  // Admin only: show Action column
-  const showAction = isAdmin();
-  const actionTh = document.querySelector('#pnlTable th.pnl-action-col');
-  if (actionTh) actionTh.style.display = showAction ? 'table-cell' : 'none';
-
-  if (filteredPnl.length === 0) {
-    e.style.display = 'block';
-    t.style.display = 'none';
-  } else {
-    e.style.display = 'none';
-    t.style.display = '';
-    filteredPnl.forEach(p => {
-      const dt = new Date(p.ts);
-      const isLinked = p.id && p.id.startsWith('pnl_tx_');
-      let actionHtml = '';
-      if (showAction) {
-        if (isLinked) {
-          actionHtml = `<td style="display:table-cell"><span style="font:400 10px/1 'JetBrains Mono',monospace;color:var(--text-soft);opacity:0.5;">TX-LINKED</span></td>`;
-        } else {
-          actionHtml = `<td style="display:table-cell">
-            <button class="btn-danger" style="margin-right:0.3rem" onclick="reversePnl('${p.id}')">REV</button>
-            <button class="btn-danger" onclick="deletePnl('${p.id}')">DEL</button>
-          </td>`;
-        }
-      } else {
-        actionHtml = '<td style="display:none"></td>';
-      }
-      b.innerHTML += `<tr>
-        <td style="color:var(--text-soft)">${dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}</td>
-        <td class="type-${p.type==='income'?'in':'out'}">${p.type.toUpperCase()}</td>
-        <td>${escapeHtml(p.category)}</td>
-        <td style="color:var(--text-soft)">${escapeHtml(p.source)}</td>
-        <td class="amount">${p.type==='income'?'+':'-'}${fmt(p.amount)}</td>
-        <td style="color:var(--text-soft);max-width:200px;overflow:hidden;text-overflow:ellipsis">${escapeHtml(p.note||'')}</td>
-        ${actionHtml}
-      </tr>`;
-      if (p.type === 'income') sumInc += p.amount; else sumExp += p.amount;
-    });
-  }
-
-  if (sumText) sumText.innerHTML = `Total Income: <span style="color: var(--success)">${fmt(sumInc)} MMK</span> | Total Expense: <span style="color: var(--danger)">${fmt(sumExp)} MMK</span>`;
+  const b = document.getElementById('pnlBody'); b.innerHTML = '';
+  state.pnl.slice().reverse().forEach(p => {
+    const dt = new Date(p.ts);
+    b.innerHTML += `<tr><td style="color:var(--text-soft)">${dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}</td>
+      <td class="type-${p.type==='income'?'in':'out'}">${p.type.toUpperCase()}</td><td>${escapeHtml(p.category)}</td>
+      <td style="color:var(--text-soft)">${escapeHtml(p.source)}</td><td class="amount">${p.type==='income'?'+':'-'}${fmt(p.amount)}</td>
+      <td style="color:var(--text-soft)">${escapeHtml(p.note||'')}</td></tr>`;
+  });
 }
 
-function reversePnl(id) {
-  if (!isAdmin()) { showToast('ADMIN ONLY'); return; }
-  const p = state.pnl.find(x => x.id === id);
-  if(!p) return;
-
-  if (p.id && p.id.startsWith('pnl_tx_')) {
-    showToast('CANNOT REVERSE TX-LINKED ENTRY');
-    return;
-  }
-
-  const newType = p.type === 'income' ? 'expense' : 'income';
-
-  showModal('REVERSE P&L ENTRY · စာရင်းပြောင်းပြန်တင်ရန်',
-    'ဤ စာရင်းကို ပြောင်းပြန် မှတ်တမ်းတင်မည်။ မူရင်းစာရင်း၏ <strong style="color:var(--accent)">ဆန့်ကျင်ဘက် စာရင်း</strong> တစ်ခု အလိုလို ဖန်တီးပြီး ငွေလက်ကျန်ကိုလည်း ပြောင်းလဲပါမည်။',
-    [
-      {k: 'Original Type', v: p.type.toUpperCase()},
-      {k: 'Reversed Type', v: newType.toUpperCase()},
-      {k: 'Category', v: p.category},
-      {k: 'Source', v: p.source},
-      {k: 'Amount', v: fmt(p.amount) + ' MMK'}
-    ], true, (note) => {
-      if (p.type === 'income') {
-        state.balances[p.source] = (state.balances[p.source]||0) - p.amount;
-      } else {
-        state.balances[p.source] = (state.balances[p.source]||0) + p.amount;
-      }
-      state.pnl.push({
-        id: 'pnl_' + Date.now(),
-        ts: Date.now(),
-        type: newType,
-        category: p.category,
-        source: p.source,
-        amount: p.amount,
-        note: 'REVERSE: ' + (note || p.note || '')
-      });
-      addLog('REV_PNL', `Reversed ${p.type} ${fmt(p.amount)} in ${p.category}. Reason: ${note || 'N/A'}`);
-      renderAll();
-      showToast('P&L REVERSED');
-    }, 'REVERSE', 'ပြောင်းပြန်တင်သည့် အကြောင်းပြချက် (optional)');
-}
-
-function deletePnl(id) {
-  if (!isAdmin()) { showToast('ADMIN ONLY'); return; }
-  const p = state.pnl.find(x => x.id === id);
-  if(!p) return;
-
-  if (p.id && p.id.startsWith('pnl_tx_')) {
-    showToast('DELETE VIA LEDGER (TX-LINKED)');
-    return;
-  }
-
-  showModal('WARNING: DELETE P&L ENTRY · စာရင်းဖျက်ရန်',
-    'ဤ စာရင်းကို ဖျက်လိုက်ပါက <strong style="color:var(--danger)">ငွေလက်ကျန် ပမာဏများ အလိုလို ပြန်လည် ပြောင်းလဲသွားပါမည်</strong>။ ဖျက်ရန် သေချာပါသလား?',
-    [
-      {k: 'Type', v: p.type.toUpperCase()},
-      {k: 'Category', v: p.category},
-      {k: 'Source', v: p.source},
-      {k: 'Amount', v: fmt(p.amount) + ' MMK'},
-      {k: 'Note', v: p.note || '-'}
-    ], true, (note) => {
-      if (p.type === 'income') {
-        state.balances[p.source] = (state.balances[p.source]||0) - p.amount;
-      } else {
-        state.balances[p.source] = (state.balances[p.source]||0) + p.amount;
-      }
-      state.pnl = state.pnl.filter(x => x.id !== id);
-      addLog('DEL_PNL', `Deleted ${p.type} ${fmt(p.amount)} in ${p.category}. Reason: ${note || 'N/A'}`);
-      renderAll();
-      showToast('P&L DELETED');
-    }, 'DELETE', 'ဖျက်သည့် အကြောင်းပြချက် (optional)');
-}
-
+// ============ RENDER: CATEGORIES ============
 function renderCategories() {
   const sel = document.getElementById('pnlCategory');
-  if (sel) {
-    const cats = state.categories[state.currentPnlType] || [];
-    sel.innerHTML = cats.map(c => `<option>${escapeHtml(c)}</option>`).join('');
-  }
+  if (sel) { const cats = state.categories[state.currentPnlType] || []; sel.innerHTML = cats.map(c => `<option>${escapeHtml(c)}</option>`).join(''); }
   const incList = document.getElementById('incomeCatList');
   const expList = document.getElementById('expenseCatList');
-  if (incList) {
-    incList.innerHTML = state.categories.income.map(c => `<div class="chip" style="cursor:default">${escapeHtml(c)} <span style="margin-left:0.5rem;cursor:pointer;color:var(--danger)" onclick="removeCategory('income', '${escapeHtml(c)}')">✕</span></div>`).join('');
-  }
-  if (expList) {
-    expList.innerHTML = state.categories.expense.map(c => `<div class="chip" style="cursor:default">${escapeHtml(c)} <span style="margin-left:0.5rem;cursor:pointer;color:var(--danger)" onclick="removeCategory('expense', '${escapeHtml(c)}')">✕</span></div>`).join('');
-  }
+  if (incList) incList.innerHTML = state.categories.income.map(c => `<div class="chip" style="cursor:default">${escapeHtml(c)} <span style="margin-left:0.5rem;cursor:pointer;color:var(--danger)" onclick="removeCategory('income', '${escapeHtml(c)}')">✕</span></div>`).join('');
+  if (expList) expList.innerHTML = state.categories.expense.map(c => `<div class="chip" style="cursor:default">${escapeHtml(c)} <span style="margin-left:0.5rem;cursor:pointer;color:var(--danger)" onclick="removeCategory('expense', '${escapeHtml(c)}')">✕</span></div>`).join('');
 }
 function addCategory(type) {
   const inputId = type === 'income' ? 'newIncomeCat' : 'newExpenseCat';
   const n = document.getElementById(inputId).value.trim();
   if (!n || state.categories[type].includes(n)) { showToast('INVALID NAME'); return; }
-  state.categories[type].push(n);
-  addLog('ADD_CATEGORY', `Added ${type} category: ${n}`);
-  renderCategories();
+  state.categories[type].push(n); addLog('ADD_CATEGORY', `Added ${type} category: ${n}`); saveState(); renderCategories();
   document.getElementById(inputId).value = '';
 }
 function removeCategory(type, c) {
-  showModal('DELETE CATEGORY · ခေါင်းစဉ်ဖျက်ရန်', `'${c}' ကို ဖျက်လိုက်ပါမည်။`, null, true, () => {
-    state.categories[type] = state.categories[type].filter(x => x !== c);
-    addLog('DEL_CATEGORY', `Removed ${type} category: ${c}`);
-    renderCategories();
-    showToast('CATEGORY DELETED');
-  }, 'DELETE');
+  state.categories[type] = state.categories[type].filter(x => x !== c); addLog('DEL_CATEGORY', `Removed ${type} category: ${c}`); saveState(); renderCategories();
 }
 
+// ============ RENDER: ACCOUNTS ============
 function renderAccountList() {
   const w = document.getElementById('accountList'); w.innerHTML = '';
   state.accounts.forEach(a => {
@@ -1499,26 +1418,20 @@ function renderAccountList() {
 function addAccount() {
   const n = document.getElementById('newAccountName').value.trim(), b = parseFloat(document.getElementById('newAccountBalance').value)||0;
   if(!n || state.accounts.includes(n)) { showToast('INVALID NAME'); return; }
-  state.accounts.push(n); state.balances[n] = b; addLog('ADD_ACCOUNT', `Added account ${n} with balance ${b}`); renderAll();
+  state.accounts.push(n); state.balances[n] = b; addLog('ADD_ACCOUNT', `Added account ${n} with balance ${b}`); saveState(); renderAll();
   document.getElementById('newAccountName').value=''; document.getElementById('newAccountBalance').value='0';
 }
 function removeAccount(a) {
-  if(state.accounts.length<=1) return; 
-  if((state.balances[a]||0)!==0) { showToast('BALANCE NOT ZERO'); return; }
-  showModal('DELETE ACCOUNT · အကောင့်ဖျက်ရန်', `'${a}' အကောင့်ကို ဖျက်လိုက်ပါမည်။`, null, true, () => {
-    state.accounts = state.accounts.filter(x=>x!==a); 
-    delete state.balances[a]; 
-    addLog('DEL_ACCOUNT', `Removed account ${a}`); 
-    renderAll();
-    showToast('ACCOUNT DELETED');
-  }, 'DELETE');
+  if(state.accounts.length<=1) return; if((state.balances[a]||0)!==0) { showToast('BALANCE NOT ZERO'); return; }
+  state.accounts = state.accounts.filter(x=>x!==a); delete state.balances[a]; addLog('DEL_ACCOUNT', `Removed account ${a}`); saveState(); renderAll();
 }
 function changePIN() {
   const r = document.getElementById('pinChangeRole').value, p = document.getElementById('pinChangeNew').value;
   if(!/^\d{4}$/.test(p)) { showToast('MUST BE 4 DIGITS'); return; }
-  state.users[r] = p; addLog('CHANGE_PIN', `Changed PIN for ${r}`); showToast('PIN CHANGED');
+  state.users[r] = p; addLog('CHANGE_PIN', `Changed PIN for ${r}`); saveState(); showToast('PIN CHANGED');
 }
 
+// ============ RENDER: ADJUST ============
 function renderAdjust() {
   renderSources('adjustTarget'); updateAdjustCurrent();
   const h = document.getElementById('adjustHistory');
@@ -1534,21 +1447,38 @@ function applyAdjustment() {
   if(isNaN(n)||n<0) { showToast('INVALID VALUE'); return; }
   const o = state.balances[t]||0; const d = n-o;
   state.balances[t] = n; state.adjustments.push({id:'adj_'+Date.now(),target:t,oldBalance:o,newBalance:n,diff:d,note,ts:Date.now()});
-  addLog('ADJUST', `Adjusted ${t} from ${o} to ${n} (${d}) - ${note}`); renderAll(); showToast('ADJUSTED');
+  addLog('ADJUST', `Adjusted ${t} from ${o} to ${n} (${d}) - ${note}`); saveState(); renderAll(); showToast('ADJUSTED');
   document.getElementById('adjustNew').value=''; document.getElementById('adjustNote').value='';
 }
 
+// ============ LOANS: RENDER & LOGIC ============
 function renderLoans() {
   renderSources('loanSource');
+  
+  // Update Tx ID preview
+  const preview = document.getElementById('loanTxIdPreview');
+  if (preview) preview.value = generateLoanId() + ' (Auto)';
+  
+  // Update mode panels
+  document.querySelectorAll('#loanModeToggle button').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === state.currentLoanMode);
+  });
+  document.getElementById('loanPanelNew').classList.toggle('active', state.currentLoanMode === 'new');
+  document.getElementById('loanPanelRepay').classList.toggle('active', state.currentLoanMode === 'repay');
+  
+  // Render outstanding summary (for new loan mode)
+  const o = document.getElementById('loanOutstanding');
   const map = {};
   state.loans.forEach(l => {
-    if(!map[l.borrowerName]) map[l.borrowerName] = {lent:0,borrowed:0,lastTs:0,repayDate:''};
-    if(l.direction==='lend') map[l.borrowerName].lent += l.amount; else map[l.borrowerName].borrowed += l.amount;
+    const status = getLoanStatus(l);
+    if (status === 'settled' || status === 'overpaid') return;
+    if(!map[l.borrowerName]) map[l.borrowerName] = {lent:0, borrowed:0, lastTs:0, repayDate:''};
+    if(l.direction==='lend') map[l.borrowerName].lent += getLoanRemaining(l);
+    else map[l.borrowerName].borrowed += getLoanRemaining(l);
     if(l.ts > map[l.borrowerName].lastTs) { map[l.borrowerName].lastTs = l.ts; map[l.borrowerName].repayDate = l.repaymentDate; }
   });
-  const o = document.getElementById('loanOutstanding');
   const keys = Object.keys(map);
-  if(keys.length===0) { o.innerHTML = '<div class="empty-state">No loans</div>'; }
+  if(keys.length===0) { o.innerHTML = '<div class="empty-state">No outstanding loans</div>'; }
   else {
     o.innerHTML = keys.map(n => {
       const d = map[n];
@@ -1558,79 +1488,434 @@ function renderLoans() {
         ${d.repayDate?`<div class="stat"><span class="k">REPAY DATE</span><span class="v" style="color:var(--accent)">${d.repayDate}</span></div>`:''}</div>`;
     }).join('');
   }
-  const h = document.getElementById('loanHistory');
-  if(state.loans.length===0) { h.innerHTML = '<tr><td colspan="7" class="empty-state">No history</td></tr>'; return; }
-  h.innerHTML = state.loans.slice().reverse().map(l => {
-    const dt = new Date(l.ts);
-    return `<tr><td style="color:var(--text-soft)">${dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'2-digit'})}</td>
-      <td class="type-${l.direction==='borrow'?'in':'out'}">${l.direction.toUpperCase()}</td><td>${escapeHtml(l.borrowerName)}</td>
-      <td class="amount">${fmt(l.amount)}</td><td style="color:var(--text-soft)">${escapeHtml(l.source)}</td>
-      <td style="color:var(--accent)">${l.repaymentDate||'-'}</td>
-      <td><button class="btn-danger" style="margin-right:0.5rem" onclick="reverseLoan('${l.id}')">REV</button><button class="btn-danger" onclick="deleteLoan('${l.id}')">DEL</button></td></tr>`;
-  }).join('');
-}
-function recordLoan() {
-  const n = document.getElementById('loanName').value.trim(), a = parseFloat(document.getElementById('loanAmount').value), s = document.getElementById('loanSource').value, d = state.currentLoanType, note = document.getElementById('loanNote').value, rd = document.getElementById('loanRepayDate').value;
-  if(!n||!a||a<=0) { showToast('CHECK INPUTS'); return; }
-  if(d==='lend' && (state.balances[s]||0) < a) { showToast('INSUFFICIENT BALANCE'); return; }
-  if(d==='lend') state.balances[s] -= a; else state.balances[s] += a;
-  state.loans.push({id:'loan_'+Date.now(),borrowerName:n,amount:a,source:s,direction:d,note,repaymentDate:rd,ts:Date.now()});
-  addLog('ADD_LOAN', `${d} ${a} to/from ${n} via ${s}`); renderAll(); checkAlerts(); showToast('LOAN RECORDED');
-  document.getElementById('loanName').value=''; document.getElementById('loanAmount').value=''; document.getElementById('loanNote').value=''; document.getElementById('loanRepayDate').value='';
-}
-function reverseLoan(id) {
-  if (!isAdmin()) return;
-  const l = state.loans.find(x => x.id === id); if(!l) return;
-  const newDir = l.direction === 'lend' ? 'borrow' : 'lend';
-  if(newDir === 'lend' && (state.balances[l.source]||0) < l.amount) { showToast('INSUFFICIENT BALANCE'); return; }
-  showModal('REVERSE LOAN · ချေးငွေပြောင်းပြန်တင်ရန်', 'မူရင်းချေးငွေ၏ ဆန့်ကျင်ဘက် မှတ်တမ်း တစ်ခု တင်ပါမည်။', [{k:'Original', v:l.direction.toUpperCase()}, {k:'Reversed', v:newDir.toUpperCase()}, {k:'Amount', v:fmt(l.amount)}], true, (note) => {
-    if(newDir === 'lend') state.balances[l.source] -= l.amount; else state.balances[l.source] += l.amount;
-    state.loans.push({...l, id: 'loan_'+Date.now(), direction: newDir, ts: Date.now(), note: 'REVERSE: ' + (note || l.note || '')});
-    addLog('REV_LOAN', `Reversed loan ${id}. Note: ${note||''}`);
-    renderAll(); showToast('LOAN REVERSED');
-  }, 'REVERSE', 'ပြောင်းပြန်တင်သည့်အကြောင်းပြချက် (optional)');
-}
-function deleteLoan(id) {
-  if (!isAdmin()) return;
-  const l = state.loans.find(x => x.id === id); if(!l) return;
-  showModal('WARNING: DELETE LOAN · ချေးငွေဖျက်ရန်', 'ဤ ချေးငွေ မှတ်တမ်းကို ဖျက်လိုက်ပါက ငွေပမာဏများ ပြန်လည်ပြောင်းလဲသွားပါမည်။', [{k:'Name', v:l.borrowerName}, {k:'Amount', v:fmt(l.amount)}], true, (note) => {
-    if(l.direction === 'lend') state.balances[l.source] += l.amount; else state.balances[l.source] -= l.amount;
-    state.loans = state.loans.filter(x => x.id !== id);
-    addLog('DEL_LOAN', `Deleted loan ${id}. Note: ${note||''}`);
-    renderAll(); showToast('LOAN DELETED');
-  }, 'DELETE', 'ဖျက်သည့်အကြောင်းပြချက် (optional)');
+  
+  // Render repayment loan list
+  renderLoanList();
+  // Render repayment panel
+  renderRepayPanel();
+  // Render full history
+  renderLoanHistory();
 }
 
-function renderCapital() {
-  const b = document.getElementById('capitalBody');
-  if (!b) return;
-  if (!state.capital || state.capital.length === 0) {
-    b.innerHTML = '<tr><td colspan="5" class="empty-state">No capital records</td></tr>';
+function renderLoanList() {
+  const w = document.getElementById('loanList');
+  if (!w) return;
+  
+  let loans = state.loans.slice().reverse();
+  
+  // Filter by search
+  if (state.loanSearchQuery) {
+    const q = state.loanSearchQuery.toLowerCase();
+    loans = loans.filter(l => 
+      (l.transactionId && l.transactionId.toLowerCase().includes(q)) ||
+      (l.borrowerName && l.borrowerName.toLowerCase().includes(q))
+    );
+  }
+  
+  // Filter by status
+  if (state.loanFilter !== 'all') {
+    loans = loans.filter(l => getLoanStatus(l) === state.loanFilter);
+  }
+  
+  if (loans.length === 0) {
+    w.innerHTML = '<div class="empty-state" style="padding:2rem 1rem">No transactions found</div>';
     return;
   }
-  b.innerHTML = state.capital.slice().reverse().map(c => {
-    const dt = new Date(c.ts);
-    const ds = dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' });
+  
+  w.innerHTML = loans.map(l => {
+    const status = getLoanStatus(l);
+    const remaining = getLoanRemaining(l);
+    return `<div class="loan-list-item ${state.selectedLoanId === l.id ? 'selected' : ''}" onclick="selectLoan('${l.id}')">
+      <div>
+        <div class="loan-list-transid">${escapeHtml(l.transactionId)}</div>
+        <div class="loan-list-name">${escapeHtml(l.borrowerName)}</div>
+      </div>
+      <div></div>
+      <div class="loan-list-remaining">${fmt(remaining)}<br><small style="color:var(--text-soft);font-size:0.7rem">MMK</small></div>
+      <span class="status-badge ${status}">${getLoanStatusText(status)}</span>
+    </div>`;
+  }).join('');
+}
+
+function selectLoan(id) {
+  state.selectedLoanId = id;
+  renderLoanList();
+  renderRepayPanel();
+}
+
+function renderRepayPanel() {
+  const w = document.getElementById('repayPanel');
+  if (!w) return;
+  
+  if (!state.selectedLoanId) {
+    w.innerHTML = '<div class="empty-state" style="padding:3rem 1rem">← ဘယ်ဖက်မှ မှတ်တမ်းတစ်ခုကို ရွေးချယ်ပါ။</div>';
+    return;
+  }
+  
+  const loan = state.loans.find(l => l.id === state.selectedLoanId);
+  if (!loan) {
+    w.innerHTML = '<div class="empty-state" style="padding:3rem 1rem">Transaction not found</div>';
+    return;
+  }
+  
+  const status = getLoanStatus(loan);
+  const totalPaid = getLoanTotalPaid(loan);
+  const remaining = getLoanRemaining(loan);
+  const lastPay = getLoanLastPaymentDate(loan);
+  const payCount = (loan.payments || []).length;
+  const isSettled = status === 'settled' || status === 'overpaid';
+  const actionLabel = loan.direction === 'borrow' ? 'REPAYMENT' : 'COLLECTION';
+  
+  let html = `
+    <div class="loan-details-grid">
+      <div class="loan-detail-item"><div class="k">Transaction ID</div><div class="v" style="color:var(--accent)">${escapeHtml(loan.transactionId)}</div></div>
+      <div class="loan-detail-item"><div class="k">Status</div><div class="v"><span class="status-badge ${status}">${getLoanStatusText(status)}</span></div></div>
+      <div class="loan-detail-item"><div class="k">Person / Bank</div><div class="v">${escapeHtml(loan.borrowerName)}</div></div>
+      <div class="loan-detail-item"><div class="k">Type</div><div class="v">${loan.direction.toUpperCase()}</div></div>
+      <div class="loan-detail-item"><div class="k">Original Amount</div><div class="v">${fmt(loan.amount)} MMK</div></div>
+      <div class="loan-detail-item"><div class="k">Total Paid</div><div class="v success">${fmt(totalPaid)} MMK</div></div>
+      <div class="loan-detail-item highlight"><div class="k">Remaining Balance</div><div class="v">${fmt(remaining)} MMK</div></div>
+      <div class="loan-detail-item"><div class="k">Payments Made</div><div class="v">${payCount} payment(s)</div></div>
+      ${lastPay ? `<div class="loan-detail-item"><div class="k">Last Payment</div><div class="v">${lastPay}</div></div>` : ''}
+    </div>
+  `;
+  
+  if (!isSettled) {
+    const today = new Date().toISOString().split('T')[0];
+    html += `
+      <div style="margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--line);">
+        <div class="card-header" style="margin-bottom:1rem;">Record ${actionLabel}</div>
+        <div class="form-row-2">
+          <div class="form-row">
+            <label>Payment Date <span class="mm">ရက်စွဲ</span></label>
+            <input type="date" id="repayDate" value="${today}">
+          </div>
+          <div class="form-row">
+            <label>Payment Amount <span class="mm">ပမာဏ</span></label>
+            <input type="number" id="repayAmount" value="${remaining}" min="1" max="${remaining}">
+            <button type="button" class="btn-secondary btn-sm" style="margin-top:0.4rem;" onclick="document.getElementById('repayAmount').value=${remaining}; updatePaymentValidation();">PAY FULL AMOUNT</button>
+          </div>
+        </div>
+        <div class="payment-error" id="repayError"></div>
+        <button class="btn-primary" id="confirmPaymentBtn" onclick="confirmPayment()">CONFIRM ${actionLabel}</button>
+      </div>
+    `;
+  } else {
+    html += `<div style="margin-top:1.5rem; padding:1.5rem; background:rgba(155,200,160,0.08); border:1px solid var(--success); border-radius:4px; text-align:center;">
+      <div style="font:700 14px/1 'JetBrains Mono',monospace; color:var(--success);">✓ FULLY SETTLED</div>
+      <div style="font:400 0.85rem/1.4 'Noto Sans Myanmar',sans-serif; color:var(--text-soft); margin-top:0.5rem;">ဤ ချေးငွေသည် အပြည့်အဝ ပြန်ဆပ်ပြီးပါပြီ။</div>
+    </div>`;
+  }
+  
+  // Payment history
+  if (loan.payments && loan.payments.length > 0) {
+    html += `
+      <div style="margin-top:1.5rem;">
+        <div class="card-header" style="margin-bottom:1rem;">Payment History · ပြန်ဆပ်မှု မှတ်တမ်း</div>
+        <div class="table-wrap">
+          <table class="payment-history-table">
+            <thead><tr><th>#</th><th>Date</th><th>Amount</th><th>Running Balance</th></tr></thead>
+            <tbody>
+              ${loan.payments.map((p, i) => `<tr>
+                <td style="color:var(--text-soft)">${i + 1}</td>
+                <td>${escapeHtml(p.date)}</td>
+                <td class="amount">${fmt(p.amount)}</td>
+                <td>${fmt(p.runningBalance)}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  }
+  
+  w.innerHTML = html;
+  
+  // Setup validation
+  if (!isSettled) {
+    const amountInput = document.getElementById('repayAmount');
+    if (amountInput) {
+      amountInput.addEventListener('input', updatePaymentValidation);
+      updatePaymentValidation();
+    }
+  }
+}
+
+function updatePaymentValidation() {
+  const amountInput = document.getElementById('repayAmount');
+  const confirmBtn = document.getElementById('confirmPaymentBtn');
+  const errorEl = document.getElementById('repayError');
+  if (!amountInput || !confirmBtn) return;
+  
+  const amount = parseFloat(amountInput.value) || 0;
+  const loan = state.loans.find(l => l.id === state.selectedLoanId);
+  if (!loan) { confirmBtn.disabled = true; return; }
+  
+  const remaining = getLoanRemaining(loan);
+  
+  if (amount <= 0) {
+    errorEl.textContent = 'Payment amount must be greater than 0.';
+    errorEl.classList.add('show');
+    confirmBtn.disabled = true;
+  } else if (amount > remaining) {
+    errorEl.textContent = `Payment amount cannot be greater than the remaining balance (${fmt(remaining)} MMK).`;
+    errorEl.classList.add('show');
+    confirmBtn.disabled = true;
+  } else {
+    errorEl.classList.remove('show');
+    confirmBtn.disabled = false;
+  }
+}
+
+function confirmPayment() {
+  const loan = state.loans.find(l => l.id === state.selectedLoanId);
+  if (!loan) return;
+  
+  const amount = parseFloat(document.getElementById('repayAmount').value) || 0;
+  const dateStr = document.getElementById('repayDate').value || new Date().toISOString().split('T')[0];
+  const remaining = getLoanRemaining(loan);
+  
+  if (amount <= 0 || amount > remaining) {
+    showToast('INVALID PAYMENT AMOUNT');
+    return;
+  }
+  
+  // Update balance
+  if (loan.direction === 'borrow') {
+    state.balances[loan.source] = (state.balances[loan.source] || 0) - amount;
+  } else {
+    state.balances[loan.source] = (state.balances[loan.source] || 0) + amount;
+  }
+  
+  const newRemaining = remaining - amount;
+  loan.payments.push({
+    id: 'pay_' + Date.now(),
+    date: dateStr,
+    amount: amount,
+    runningBalance: newRemaining
+  });
+  
+  const newStatus = getLoanStatus(loan);
+  addLog('LOAN_PAYMENT', `Payment of ${fmt(amount)} for ${loan.transactionId} (${loan.borrowerName}). Status: ${getLoanStatusText(newStatus)}`);
+  saveState();
+  renderAll();
+  
+  const details = [
+    {k: 'Transaction ID', v: loan.transactionId},
+    {k: 'Payment Amount', v: fmt(amount) + ' MMK'},
+    {k: 'Remaining Balance', v: fmt(newRemaining) + ' MMK'},
+    {k: 'Status', v: getLoanStatusText(newStatus)}
+  ];
+  showModal('PAYMENT RECORDED', `${loan.direction === 'borrow' ? 'ပြန်ဆပ်မှု' : 'ပြန်တောင်းမှု'} အောင်မြင်စွာ မှတ်တမ်းတင်ပြီးပါပြီ။`, details);
+}
+
+function renderLoanHistory() {
+  const h = document.getElementById('loanHistory');
+  if (!h) return;
+  
+  let loans = state.loans.slice().reverse();
+  
+  // Filter by search
+  if (state.loanHistorySearch) {
+    const q = state.loanHistorySearch.toLowerCase();
+    loans = loans.filter(l => 
+      (l.transactionId && l.transactionId.toLowerCase().includes(q)) ||
+      (l.borrowerName && l.borrowerName.toLowerCase().includes(q))
+    );
+  }
+  
+  // Filter by status
+  if (state.loanHistoryFilter !== 'all') {
+    loans = loans.filter(l => getLoanStatus(l) === state.loanHistoryFilter);
+  }
+  
+  if (loans.length === 0) {
+    h.innerHTML = '<tr><td colspan="10" class="empty-state">No loan records</td></tr>';
+    return;
+  }
+  
+  h.innerHTML = loans.map(l => {
+    const dt = new Date(l.ts);
+    const ds = dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'2-digit'});
+    const status = getLoanStatus(l);
+    const totalPaid = getLoanTotalPaid(l);
+    const remaining = getLoanRemaining(l);
+    const payCount = (l.payments || []).length;
+    const lastPay = getLoanLastPaymentDate(l);
+    
     return `<tr>
+      <td style="color:var(--accent);font-weight:700">${escapeHtml(l.transactionId)}</td>
       <td style="color:var(--text-soft)">${ds}</td>
-      <td>${escapeHtml(c.account)}</td>
-      <td class="amount">+${fmt(c.amount)}</td>
-      <td style="color:var(--text-soft)">${escapeHtml(c.note || '')}</td>
-      <td><button class="btn-danger" onclick="deleteCapital('${c.id}')">DEL</button></td>
+      <td class="type-${l.direction==='borrow'?'in':'out'}">${l.direction.toUpperCase()}</td>
+      <td>${escapeHtml(l.borrowerName)}</td>
+      <td class="amount">${fmt(l.amount)}</td>
+      <td style="color:var(--success)">${fmt(totalPaid)}</td>
+      <td style="color:${remaining > 0 ? 'var(--danger)' : 'var(--success)'}">${fmt(remaining)}</td>
+      <td><span class="status-badge ${status}">${getLoanStatusText(status)}</span></td>
+      <td style="color:var(--text-soft);font-size:0.75rem">${payCount} payment(s)${lastPay ? '<br>Last: ' + lastPay : ''}</td>
+      <td>
+        <button class="btn-secondary btn-sm" style="margin-right:0.3rem" onclick="viewLoanDetails('${l.id}')">VIEW</button>
+        <button class="btn-danger" onclick="confirmDeleteLoan('${l.id}')">DEL</button>
+      </td>
     </tr>`;
   }).join('');
 }
-function deleteCapital(id) {
-  if (!isAdmin()) return;
-  const c = state.capital.find(x => x.id === id); if(!c) return;
-  showModal('WARNING: DELETE CAPITAL · ငွေအရင်းအနှီးဖျက်ရန်', 'ဤ မှတ်တမ်းကို ဖျက်လိုက်ပါက လက်ကျန်ငွေ လျော့သွားပါမည်။', [{k:'Account', v:c.account}, {k:'Amount', v:fmt(c.amount)}], true, (note) => {
-    state.balances[c.account] -= c.amount;
-    state.capital = state.capital.filter(x => x.id !== id);
-    addLog('DEL_CAPITAL', `Deleted capital ${fmt(c.amount)} from ${c.account}. Note: ${note||''}`);
-    renderAll(); showToast('CAPITAL DELETED');
-  }, 'DELETE', 'ဖျက်သည့်အကြောင်းပြချက် (optional)');
+
+function viewLoanDetails(loanId) {
+  const loan = state.loans.find(l => l.id === loanId);
+  if (!loan) return;
+  
+  const status = getLoanStatus(loan);
+  const totalPaid = getLoanTotalPaid(loan);
+  const remaining = getLoanRemaining(loan);
+  const lastPay = getLoanLastPaymentDate(loan);
+  const payCount = (loan.payments || []).length;
+  
+  const content = document.getElementById('loanModalContent');
+  content.innerHTML = `
+    <div class="loan-details-grid">
+      <div class="loan-detail-item"><div class="k">Transaction ID</div><div class="v" style="color:var(--accent)">${escapeHtml(loan.transactionId)}</div></div>
+      <div class="loan-detail-item"><div class="k">Status</div><div class="v"><span class="status-badge ${status}">${getLoanStatusText(status)}</span></div></div>
+      <div class="loan-detail-item"><div class="k">Person / Bank</div><div class="v">${escapeHtml(loan.borrowerName)}</div></div>
+      <div class="loan-detail-item"><div class="k">Type</div><div class="v">${loan.direction.toUpperCase()}</div></div>
+      <div class="loan-detail-item"><div class="k">Original Amount</div><div class="v">${fmt(loan.amount)} MMK</div></div>
+      <div class="loan-detail-item"><div class="k">Source</div><div class="v">${escapeHtml(loan.source)}</div></div>
+      <div class="loan-detail-item"><div class="k">Total Paid</div><div class="v success">${fmt(totalPaid)} MMK</div></div>
+      <div class="loan-detail-item highlight"><div class="k">Remaining Balance</div><div class="v">${fmt(remaining)} MMK</div></div>
+      <div class="loan-detail-item"><div class="k">Payments Made</div><div class="v">${payCount} payment(s)</div></div>
+      <div class="loan-detail-item"><div class="k">Last Payment</div><div class="v">${lastPay || '-'}</div></div>
+      <div class="loan-detail-item"><div class="k">Repayment Date</div><div class="v">${loan.repaymentDate || '-'}</div></div>
+      <div class="loan-detail-item"><div class="k">Note</div><div class="v">${escapeHtml(loan.note || '-')}</div></div>
+    </div>
+    <div style="margin-top:1.5rem;">
+      <div class="card-header" style="margin-bottom:1rem;">Payment History · ပြန်ဆပ်မှု မှတ်တမ်း</div>
+      ${loan.payments && loan.payments.length > 0 ? `
+        <div class="table-wrap">
+          <table class="payment-history-table">
+            <thead><tr><th>#</th><th>Date</th><th>Amount</th><th>Running Balance</th></tr></thead>
+            <tbody>
+              ${loan.payments.map((p, i) => `<tr>
+                <td style="color:var(--text-soft)">${i + 1}</td>
+                <td>${escapeHtml(p.date)}</td>
+                <td class="amount">${fmt(p.amount)}</td>
+                <td>${fmt(p.runningBalance)}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      ` : '<div class="empty-state">No payments recorded yet</div>'}
+    </div>
+  `;
+  
+  document.getElementById('loanModalOverlay').classList.add('active');
 }
 
+function recordLoan() {
+  const n = document.getElementById('loanName').value.trim();
+  const a = parseFloat(document.getElementById('loanAmount').value);
+  const s = document.getElementById('loanSource').value;
+  const d = state.currentLoanType;
+  const note = document.getElementById('loanNote').value;
+  const rd = document.getElementById('loanRepayDate').value;
+  
+  if(!n || !a || a <= 0) { showToast('CHECK INPUTS'); return; }
+  if(d === 'lend' && (state.balances[s] || 0) < a) { showToast('INSUFFICIENT BALANCE'); return; }
+  
+  const txId = generateLoanId();
+  state.loanTxCounter++;
+  
+  if(d === 'lend') state.balances[s] = (state.balances[s] || 0) - a;
+  else state.balances[s] = (state.balances[s] || 0) + a;
+  
+  state.loans.push({
+    id: 'loan_' + Date.now(),
+    transactionId: txId,
+    borrowerName: n,
+    amount: a,
+    source: s,
+    direction: d,
+    note,
+    repaymentDate: rd,
+    ts: Date.now(),
+    payments: []
+  });
+  
+  addLog('ADD_LOAN', `${d} ${fmt(a)} - ${txId} - ${n} via ${s}`);
+  saveState(); renderAll(); checkAlerts();
+  
+  const details = [
+    {k: 'Transaction ID', v: txId},
+    {k: 'Type', v: d === 'borrow' ? 'BORROW (ချေးယူ)' : 'LEND (ချေးပေး)'},
+    {k: 'Name', v: n},
+    {k: 'Amount', v: fmt(a) + ' MMK'},
+    {k: 'Source', v: s},
+    {k: 'Status', v: 'PENDING'}
+  ];
+  showModal('LOAN RECORDED', 'ချေးငွေ မှတ်တမ်း အောင်မြင်စွာ တင်ပြီးပါပြီ။', details);
+  
+  document.getElementById('loanName').value = '';
+  document.getElementById('loanAmount').value = '';
+  document.getElementById('loanNote').value = '';
+  document.getElementById('loanRepayDate').value = '';
+}
+
+function confirmDeleteLoan(id) {
+  const l = state.loans.find(x => x.id === id);
+  if (!l) return;
+  const status = getLoanStatus(l);
+  const totalPaid = getLoanTotalPaid(l);
+  showModal('WARNING: DELETE LOAN', `ဤ ချေးငွေမှတ်တမ်းကို ဖျက်လိုက်ပါက မူလငွေနှင့် ပြန်ဆပ်မှုအားလုံး၏ သက်ရောက်မှုများ ပြန်လည်ပြောင်းသွားပါမည်။`,
+    [
+      {k: 'Transaction ID', v: l.transactionId},
+      {k: 'Name', v: l.borrowerName},
+      {k: 'Original Amount', v: fmt(l.amount) + ' MMK'},
+      {k: 'Total Paid', v: fmt(totalPaid) + ' MMK'},
+      {k: 'Payments', v: (l.payments || []).length + ' payment(s)'}
+    ], true, () => deleteLoan(id));
+}
+
+function deleteLoan(id) {
+  const l = state.loans.find(x => x.id === id);
+  if (!l) return;
+  
+  // Reverse original loan effect
+  if (l.direction === 'lend') state.balances[l.source] = (state.balances[l.source] || 0) + l.amount;
+  else state.balances[l.source] = (state.balances[l.source] || 0) - l.amount;
+  
+  // Reverse all payment effects
+  (l.payments || []).forEach(p => {
+    if (l.direction === 'lend') state.balances[l.source] = (state.balances[l.source] || 0) - p.amount;
+    else state.balances[l.source] = (state.balances[l.source] || 0) + p.amount;
+  });
+  
+  state.loans = state.loans.filter(x => x.id !== id);
+  if (state.selectedLoanId === id) state.selectedLoanId = null;
+  addLog('DEL_LOAN', `Deleted loan ${l.transactionId} (${l.direction} ${fmt(l.amount)})`);
+  saveState(); renderAll(); showToast('LOAN DELETED');
+}
+
+// ============ RENDER: CAPITAL ============
+function renderCapital() {
+  const b = document.getElementById('capitalBody');
+  if (!b) return;
+  if (!state.capital || state.capital.length === 0) { b.innerHTML = '<tr><td colspan="5" class="empty-state">No capital records</td></tr>'; return; }
+  b.innerHTML = state.capital.slice().reverse().map(c => {
+    const dt = new Date(c.ts);
+    return `<tr><td style="color:var(--text-soft)">${dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'2-digit'})}</td>
+      <td>${escapeHtml(c.account)}</td><td class="amount">+${fmt(c.amount)}</td>
+      <td style="color:var(--text-soft)">${escapeHtml(c.note || '')}</td>
+      <td><button class="btn-danger" onclick="deleteCapital('${c.id}')">DEL</button></td></tr>`;
+  }).join('');
+}
+function deleteCapital(id) {
+  const c = state.capital.find(x => x.id === id); if(!c) return;
+  state.balances[c.account] -= c.amount;
+  state.capital = state.capital.filter(x => x.id !== id);
+  addLog('DEL_CAPITAL', `Deleted capital of ${fmt(c.amount)} from ${c.account}`);
+  saveState(); renderAll(); showToast('CAPITAL DELETED');
+}
+
+// ============ RENDER: LOGS ============
 function renderLogs() {
   const b = document.getElementById('logsBody');
   if(state.logs.length === 0) { b.innerHTML = '<tr><td colspan="4" class="empty-state">No logs yet</td></tr>'; return; }
@@ -1649,14 +1934,10 @@ function exportData(format) {
   let start = s ? new Date(s) : new Date(0);
   let end = e ? new Date(e) : new Date(8640000000000000);
   start.setHours(0,0,0,0); end.setHours(23,59,59,999);
-
-  let data = [];
-  let fileName = 'Export';
-  let sheetName = 'Data';
-
+  let data = [], fileName = 'Export', sheetName = 'Data';
+  
   if (expType === 'flow') {
-    fileName = 'Account_Flow';
-    sheetName = 'Account Flow';
+    fileName = 'Account_Flow'; sheetName = 'Account Flow';
     const map = {};
     state.transactions.filter(t => { const d=new Date(t.ts); return d>=start && d<=end; }).forEach(t => {
       const d = new Date(t.ts), dateStr = d.toLocaleDateString('en-GB'), accKey = t.account;
@@ -1673,59 +1954,36 @@ function exportData(format) {
     });
     data = Object.values(map).sort((a,b) => a.Date.localeCompare(b.Date) || a.Account.localeCompare(b.Account));
   } else if (expType === 'pnl') {
-    fileName = 'PnL_Details';
-    sheetName = 'Income/Expense';
+    fileName = 'PnL_Details'; sheetName = 'Income/Expense';
     data = state.pnl.filter(p => { const d = new Date(p.ts); return d>=start && d<=end; }).map(p => ({
-      Date: new Date(p.ts).toLocaleDateString('en-GB'),
-      Type: p.type.toUpperCase(),
-      Category: p.category,
-      Source: p.source,
-      Amount: p.amount,
-      Note: p.note || ''
+      Date: new Date(p.ts).toLocaleDateString('en-GB'), Type: p.type.toUpperCase(), Category: p.category, Source: p.source, Amount: p.amount, Note: p.note || ''
     }));
   } else if (expType === 'loans') {
-    fileName = 'Loan_Details';
-    sheetName = 'Loans';
+    fileName = 'Loan_Details'; sheetName = 'Loans';
     data = state.loans.filter(l => { const d = new Date(l.ts); return d>=start && d<=end; }).map(l => ({
+      'Transaction ID': l.transactionId || '-',
       Date: new Date(l.ts).toLocaleDateString('en-GB'),
       Type: l.direction.toUpperCase(),
       Name: l.borrowerName,
-      Amount: l.amount,
+      'Original Amount': l.amount,
+      'Total Paid': getLoanTotalPaid(l),
+      Remaining: getLoanRemaining(l),
+      Status: getLoanStatusText(getLoanStatus(l)),
       Source: l.source,
       RepayDate: l.repaymentDate || '-',
+      PaymentCount: (l.payments || []).length,
+      LastPayment: getLoanLastPaymentDate(l) || '-',
       Note: l.note || ''
     }));
   } else if (expType === 'capital') {
-    fileName = 'Capital_Details';
-    sheetName = 'Capital';
+    fileName = 'Capital_Details'; sheetName = 'Capital';
     data = state.capital.filter(c => { const d = new Date(c.ts); return d>=start && d<=end; }).map(c => ({
-      Date: new Date(c.ts).toLocaleDateString('en-GB'),
-      Account: c.account,
-      Amount: c.amount,
-      Note: c.note || ''
+      Date: new Date(c.ts).toLocaleDateString('en-GB'), Account: c.account, Amount: c.amount, Note: c.note || ''
     }));
   }
-
   if (data.length === 0) { showToast('NO DATA TO EXPORT'); return; }
-
-  const keys = Object.keys(data[0]);
-  const totalRow = {};
-  keys.forEach(k => {
-    let sum = 0;
-    let isNumeric = false;
-    data.forEach(row => {
-      if (typeof row[k] === 'number') {
-        isNumeric = true;
-        sum += row[k];
-      }
-    });
-    totalRow[k] = isNumeric ? sum : '';
-  });
-  if (keys.length > 0) totalRow[keys[0]] = 'TOTAL';
-
   if (format === 'excel') {
-    const wsData = [...data, totalRow];
-    const ws = XLSX.utils.json_to_sheet(wsData);
+    const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, sheetName);
     XLSX.writeFile(wb, `${fileName}_${Date.now()}.xlsx`);
@@ -1733,29 +1991,15 @@ function exportData(format) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     doc.text(`${fileName} Export`, 14, 15);
-    const head = [keys];
+    const head = [Object.keys(data[0])];
     const body = data.map(d => Object.values(d));
-    const foot = [keys.map((k, i) => {
-      if (i === 0) return 'TOTAL';
-      if (typeof totalRow[k] === 'number') return fmt(totalRow[k]);
-      return '';
-    })];
-    
-    doc.autoTable({
-      startY: 20,
-      head: head,
-      body: body,
-      foot: foot,
-      headStyles: { fillColor: [18, 18, 18], textColor: [200, 170, 130], fontStyle: 'bold' },
-      footStyles: { fillColor: [200, 170, 130], textColor: [10, 10, 10], fontStyle: 'bold' },
-      bodyStyles: { textColor: 50 },
-      alternateRowStyles: { fillColor: [245, 245, 245] }
-    });
+    doc.autoTable({ startY: 20, head: head, body: body });
     doc.save(`${fileName}_${Date.now()}.pdf`);
   }
   showToast('EXPORTED');
 }
 
+// ============ BACKUP ============
 function downloadBackup() {
   const blob = new Blob([JSON.stringify(state, null, 2)], {type: 'application/json'});
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
@@ -1767,33 +2011,22 @@ function restoreBackup(e) {
   r.readAsText(f);
 }
 
+// ============ FORM EVENTS ============
 document.getElementById('txForm').onsubmit = e => { e.preventDefault();
   if (!state.currentType) { showToast('SELECT TYPE FIRST · အမျိုးအစား ရွေးပါ'); return; }
   const c = document.getElementById('customerName').value.trim(), p = document.getElementById('phone').value.trim(), a = parseFloat(document.getElementById('amount').value), i = parseFloat(document.getElementById('income').value)||0;
   const ac = document.getElementById('txAccount').value, incSrc = document.getElementById('incomeSource').value;
-  if(!c||!a||a<=0) { showToast('CHECK INPUTS'); return; }
+  if(!c||!p||!a||a<=0) { showToast('CHECK INPUTS'); return; }
   if(state.currentType==='in') { if((state.balances[ac]||0)<a){ showToast('INSUFFICIENT BAL'); return; } state.balances.cash+=a; state.balances[ac]-=a; }
   else { if((state.balances.cash||0)<a){ showToast('INSUFFICIENT CASH'); return; } state.balances.cash-=a; state.balances[ac]+=a; }
-  
   const tx = {id:'tx_'+Date.now(),ts:Date.now(),customerName:c,phone:p,type:state.currentType,account:ac,amount:a,income:i,incomeSource:incSrc};
   state.transactions.push(tx);
-  
   if (i > 0) {
     state.balances[incSrc] += i;
-    state.pnl.push({
-      id: 'pnl_tx_' + tx.id,
-      ts: tx.ts,
-      type: 'income',
-      category: 'Commission',
-      source: incSrc,
-      amount: i,
-      note: `Income from ${c}`
-    });
+    state.pnl.push({ id: 'pnl_tx_' + tx.id, ts: tx.ts, type: 'income', category: 'Commission', source: incSrc, amount: i, note: `Income from ${c}` });
   }
-  
   addLog('ADD_TX', `${state.currentType === 'in' ? 'Cash In' : 'Cash Out'} ${fmt(a)} for ${c}. Income: ${fmt(i)}`);
-  renderAll();
-  
+  saveState(); renderAll();
   const details = [
     {k: 'Type', v: state.currentType === 'in' ? 'CASH IN' : 'CASH OUT'},
     {k: 'Customer', v: c}, {k: 'Amount', v: fmt(a) + ' MMK'}, {k: 'Account', v: ac}, {k: 'Income', v: fmt(i) + ' MMK (' + incSrc + ')'}
@@ -1811,39 +2044,29 @@ document.getElementById('transferForm').onsubmit = e => { e.preventDefault();
   state.balances[from] -= amount; state.balances[to] += amount;
   if (!state.transfers) state.transfers = [];
   state.transfers.push({ id: 'tr_'+Date.now(), ts: Date.now(), from, to, amount, note });
-  addLog('TRANSFER', `Transferred ${fmt(amount)} from ${from} to ${to}`); renderAll();
+  addLog('TRANSFER', `Transferred ${fmt(amount)} from ${from} to ${to}`); saveState(); renderAll();
   showModal('TRANSFER COMPLETE', 'ငွေလွှဲပြောင်းမှု အောင်မြင်ပါသည်။', [{k: 'From', v: from}, {k: 'To', v: to}, {k: 'Amount', v: fmt(amount) + ' MMK'}]);
   document.getElementById('transferAmount').value=''; document.getElementById('transferNote').value='';
   updateTransferBalances();
 };
+
+document.getElementById('loanForm').onsubmit = e => { e.preventDefault(); recordLoan(); };
 
 document.getElementById('capitalForm').onsubmit = e => { e.preventDefault();
   const dateVal = document.getElementById('capitalDate').value;
   const acc = document.getElementById('capitalAccount').value;
   const amount = parseFloat(document.getElementById('capitalAmount').value);
   const note = document.getElementById('capitalNote').value;
-
   if (!dateVal || !acc || !amount || amount <= 0) { showToast('CHECK INPUTS'); return; }
-  
   const t = new Date();
   const dateObj = new Date(dateVal);
   dateObj.setHours(t.getHours(), t.getMinutes(), t.getSeconds(), t.getMilliseconds());
-
   state.balances[acc] = (state.balances[acc] || 0) + amount;
-  state.capital.push({
-    id: 'cap_' + Date.now(),
-    ts: dateObj.getTime(),
-    date: dateVal,
-    account: acc,
-    amount: amount,
-    note: note
-  });
-
+  state.capital.push({ id: 'cap_' + Date.now(), ts: dateObj.getTime(), date: dateVal, account: acc, amount: amount, note: note });
   addLog('ADD_CAPITAL', `Injected ${fmt(amount)} to ${acc}`);
-  renderAll();
+  saveState(); renderAll();
   showToast('CAPITAL RECORDED');
-  document.getElementById('capitalAmount').value = '';
-  document.getElementById('capitalNote').value = '';
+  document.getElementById('capitalAmount').value = ''; document.getElementById('capitalNote').value = '';
 };
 
 document.getElementById('pnlForm').onsubmit = e => { e.preventDefault();
@@ -1852,22 +2075,27 @@ document.getElementById('pnlForm').onsubmit = e => { e.preventDefault();
   if(state.currentPnlType==='expense' && (state.balances[src]||0)<a) { showToast('INSUFFICIENT BALANCE'); return; }
   if(state.currentPnlType==='income') state.balances[src] += a; else state.balances[src] -= a;
   state.pnl.push({id:'pnl_'+Date.now(),ts:Date.now(),type:state.currentPnlType,category:cat,source:src,amount:a,note});
-  addLog('ADD_PNL', `${state.currentPnlType} ${fmt(a)} in ${cat} via ${src}`); renderAll(); showToast('RECORDED');
+  addLog('ADD_PNL', `${state.currentPnlType} ${fmt(a)} in ${cat} via ${src}`); saveState(); renderAll(); showToast('RECORDED');
   document.getElementById('pnlAmount').value=''; document.getElementById('pnlNote').value='';
 };
 
+// Toggle buttons
 document.querySelectorAll('#typeToggle button').forEach(b => b.onclick = () => {
   document.querySelectorAll('#typeToggle button').forEach(x=>x.classList.remove('active'));
   b.classList.add('active'); state.currentType=b.dataset.type;
 });
 document.querySelectorAll('#pnlTypeToggle button').forEach(b => b.onclick = () => {
   document.querySelectorAll('#pnlTypeToggle button').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active'); state.currentPnlType=b.dataset.type;
-  renderCategories();
+  b.classList.add('active'); state.currentPnlType=b.dataset.type; renderCategories();
 });
 document.querySelectorAll('#loanTypeToggle button').forEach(b => b.onclick = () => {
   document.querySelectorAll('#loanTypeToggle button').forEach(x=>x.classList.remove('active'));
   b.classList.add('active'); state.currentLoanType=b.dataset.type;
+});
+document.querySelectorAll('#loanModeToggle button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#loanModeToggle button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); state.currentLoanMode=b.dataset.mode;
+  renderLoans();
 });
 document.querySelectorAll('#reportTypeToggle button').forEach(b => b.onclick = () => {
   document.querySelectorAll('#reportTypeToggle button').forEach(x=>x.classList.remove('active'));
@@ -1877,41 +2105,55 @@ document.querySelectorAll('#filterBar .chip').forEach(c => c.onclick = () => {
   document.querySelectorAll('#filterBar .chip').forEach(x=>x.classList.remove('active'));
   c.classList.add('active'); state.filter=c.dataset.filter; renderTx();
 });
+
+// Loan search & filter
+document.getElementById('loanSearch').addEventListener('input', (e) => {
+  state.loanSearchQuery = e.target.value; renderLoanList();
+});
+document.querySelectorAll('#loanFilterBar .chip').forEach(c => c.onclick = () => {
+  document.querySelectorAll('#loanFilterBar .chip').forEach(x=>x.classList.remove('active'));
+  c.classList.add('active'); state.loanFilter=c.dataset.lfilter; renderLoanList();
+});
+
+// Loan history search & filter
+document.getElementById('loanHistorySearch').addEventListener('input', (e) => {
+  state.loanHistorySearch = e.target.value; renderLoanHistory();
+});
+document.querySelectorAll('#loanHistoryFilterBar .chip').forEach(c => c.onclick = () => {
+  document.querySelectorAll('#loanHistoryFilterBar .chip').forEach(x=>x.classList.remove('active'));
+  c.classList.add('active'); state.loanHistoryFilter=c.dataset.hlfilter; renderLoanHistory();
+});
+
 document.getElementById('ledgerStart').onchange = renderTx;
 document.getElementById('ledgerEnd').onchange = renderTx;
 document.getElementById('reportMonth').onchange = renderReports;
 document.getElementById('reportYear').onchange = renderReports;
-
-if (document.getElementById('pnlStart')) document.getElementById('pnlStart').onchange = renderPnl;
-if (document.getElementById('pnlEnd')) document.getElementById('pnlEnd').onchange = renderPnl;
+document.getElementById('adjustTarget').onchange = updateAdjustCurrent;
 
 if (document.getElementById('transferFrom')) document.getElementById('transferFrom').onchange = updateTransferBalances;
 if (document.getElementById('transferTo')) document.getElementById('transferTo').onchange = updateTransferBalances;
 
+// ============ INIT ============
 function renderAll() {
   renderSources('txAccount'); renderSources('incomeSource'); renderSources('pnlSource'); renderSources('exportAccount', true, true);
   renderSources('capitalAccount'); renderSources('adjustTarget'); renderSources('loanSource');
   renderTransferSources();
   renderBalances(); renderSummary(); renderTx(); renderReports(); renderPnl(); renderCategories(); renderAccountList(); renderAdjust(); renderLoans(); renderLogs(); renderTransfers(); renderCapital(); checkAlerts();
   updateMenuVisibility(); loadPermissionsUI();
-  
   const cDate = document.getElementById('capitalDate');
   if (cDate && !cDate.value) cDate.value = new Date().toISOString().split('T')[0];
 }
 function tickClock() { const d=new Date(); document.getElementById('clock').textContent = d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'}) + ' · ' + d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}); }
 tickClock(); setInterval(tickClock, 1000); setInterval(checkAlerts, 3600000);
-
 setupAutoHideSidebar();
 
 const cvs=document.querySelector('canvas.rain'), ctx=cvs.getContext('2d'); let cols,drops;
 function resize(){cvs.width=innerWidth;cvs.height=innerHeight;cols=Math.floor(cvs.width/22);drops=Array.from({length:cols},()=>Math.random()*-cvs.height);} resize(); addEventListener('resize',resize);
 const CH='0123456789KPGWAVEBANKMMK$+-=.◆'; let rr=true;
-function rf(){ if(!rr)return; ctx.fillStyle='rgba(10,10,10,0.09)'; ctx.fillRect(0,0,cvs.width,cvs.height); ctx.font='14.3px "JetBrains Mono",monospace'; drops.forEach((y,i)=>{const x=i*22;ctx.fillStyle=Math.random()<0.02?'rgba(255,230,180,0.95)':'rgba(200,170,130,0.55)';ctx.fillText(CH[Math.floor(Math.random()*CH.length)],x,y);drops[i]=y>cvs.height&&Math.random()>0.975?0:y+11;}); requestAnimationFrame(rf);}
+function rf(){ if(!rr)return; ctx.fillStyle='rgba(10,10,10,0.09)'; ctx.fillRect(0,0,cvs.width,cvs.height); ctx.font='13px "JetBrains Mono",monospace'; drops.forEach((y,i)=>{const x=i*22;ctx.fillStyle=Math.random()<0.02?'rgba(255,230,180,0.95)':'rgba(200,170,130,0.55)';ctx.fillText(CH[Math.floor(Math.random()*CH.length)],x,y);drops[i]=y>cvs.height&&Math.random()>0.975?0:y+11;}); requestAnimationFrame(rf);}
 if(!matchMedia('(prefers-reduced-motion: reduce)').matches) rf();
 
-loadState().then(() => {
-  renderPinDisplay();
-});
+loadState(); renderPinDisplay();
 </script>
 </body>
 </html>
