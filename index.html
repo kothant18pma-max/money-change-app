@@ -773,6 +773,10 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
               <div class="hint" id="repayError" style="color: var(--danger); display:none; margin-top: 0.5rem; font-size: 0.8rem;"></div>
             </div>
             <div class="form-row">
+              <label>Source <span class="mm">ငွေထွက်/ဝင် နေရာ</span></label>
+              <select id="repaySource"></select>
+            </div>
+            <div class="form-row">
               <label>Note <span class="mm">မှတ်ချက်</span></label>
               <input type="text" id="repayNote" placeholder="Payment note (optional)">
             </div>
@@ -1622,6 +1626,7 @@ function applyAdjustment() {
 // ============ ENHANCED LOANS ============
 function renderLoans() {
   renderSources('loanSource');
+  renderSources('repaySource');
   populateRepaySelect();
   
   const map = {};
@@ -1726,6 +1731,7 @@ function onRepayLoanSelect() {
   const repayBtn = document.getElementById('repayBtn');
   const amountInput = document.getElementById('repayAmount');
   const errorDiv = document.getElementById('repayError');
+  const repaySourceSel = document.getElementById('repaySource');
   
   if (!id) {
     detailsDiv.style.display = 'none';
@@ -1749,6 +1755,11 @@ function onRepayLoanSelect() {
   document.getElementById('rRemBal').textContent = fmt(remBal) + ' MMK';
   
   amountInput.value = remBal > 0 ? remBal : ''; 
+  
+  if (repaySourceSel) {
+    renderSources('repaySource');
+    repaySourceSel.value = loan.source; // Default to original source
+  }
   
   detailsDiv.style.display = 'block';
   validateRepayAmount();
@@ -1840,6 +1851,7 @@ function showPayHistory(id) {
           <tr style="background: rgba(255,255,255,0.02);">
             <th style="padding: 0.5rem; text-align: left;">Date</th>
             <th style="padding: 0.5rem; text-align: right;">Amount</th>
+            <th style="padding: 0.5rem; text-align: center;">Source</th>
             <th style="padding: 0.5rem; text-align: right;">Balance</th>
           </tr>
         </thead>
@@ -1854,11 +1866,12 @@ function showPayHistory(id) {
       html += `<tr style="border-bottom: 1px solid var(--line-soft);">
         <td style="padding: 0.5rem; color: var(--text-soft);">${pDate.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'2-digit'})}</td>
         <td style="padding: 0.5rem; text-align: right; color: var(--success);">-${fmt(p.amount)}</td>
+        <td style="padding: 0.5rem; text-align: center; color: var(--accent);">${escapeHtml(p.source || loan.source)}</td>
         <td style="padding: 0.5rem; text-align: right; color: ${runningBalance > 0 ? 'var(--danger)' : 'var(--text-soft)'};">${fmt(runningBalance)}</td>
       </tr>`;
     });
   } else {
-    html += `<tr><td colspan="3" style="padding: 1rem; text-align: center; color: var(--text-soft);">No payments recorded yet.</td></tr>`;
+    html += `<tr><td colspan="4" style="padding: 1rem; text-align: center; color: var(--text-soft);">No payments recorded yet.</td></tr>`;
   }
   
   html += `</tbody></table></div>`;
@@ -2181,6 +2194,7 @@ document.getElementById('repayForm').onsubmit = e => { e.preventDefault();
   const id = document.getElementById('repayLoanSelect').value;
   const amount = parseFloat(document.getElementById('repayAmount').value);
   const note = document.getElementById('repayNote').value;
+  const source = document.getElementById('repaySource').value;
   
   const loan = state.loans.find(l => l.id === id);
   if(!loan) return;
@@ -2192,10 +2206,10 @@ document.getElementById('repayForm').onsubmit = e => { e.preventDefault();
   }
   
   if(loan.direction === 'lend') {
-    state.balances[loan.source] += amount;
+    state.balances[source] = (state.balances[source] || 0) + amount;
   } else {
-    if ((state.balances[loan.source] || 0) < amount) { showToast('INSUFFICIENT BALANCE IN SOURCE'); return; }
-    state.balances[loan.source] -= amount;
+    if ((state.balances[source] || 0) < amount) { showToast('INSUFFICIENT BALANCE IN SOURCE'); return; }
+    state.balances[source] -= amount;
   }
   
   if (!loan.payments) loan.payments = [];
@@ -2203,10 +2217,11 @@ document.getElementById('repayForm').onsubmit = e => { e.preventDefault();
     payId: 'pay_' + Date.now(),
     ts: Date.now(),
     amount: amount,
+    source: source,
     note: note
   });
   
-  addLog('REPAY_LOAN', `Paid ${fmt(amount)} for loan ${loan.txnId}`);
+  addLog('REPAY_LOAN', `Paid ${fmt(amount)} for loan ${loan.txnId} via ${source}`);
   renderAll(); checkAlerts(); showToast('PAYMENT RECORDED');
   
   document.getElementById('repayLoanSelect').value = '';
@@ -2264,7 +2279,7 @@ if (document.getElementById('loanSearch')) {
 
 function renderAll() {
   renderSources('txAccount'); renderSources('incomeSource'); renderSources('pnlSource'); renderSources('exportAccount', true, true);
-  renderSources('capitalAccount'); renderSources('adjustTarget'); renderSources('loanSource');
+  renderSources('capitalAccount'); renderSources('adjustTarget'); renderSources('loanSource'); renderSources('repaySource');
   renderTransferSources();
   renderBalances(); renderSummary(); renderTx(); renderReports(); renderPnl(); renderCategories(); renderAccountList(); renderAdjust(); renderLoans(); renderLogs(); renderTransfers(); renderCapital(); checkAlerts();
   updateMenuVisibility(); loadPermissionsUI();
