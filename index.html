@@ -338,7 +338,7 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
             <div class="form-row-2">
               <div class="form-row">
                 <label>Amount <span class="mm">ပမာဏ</span></label>
-                <input type="number" id="amount" placeholder="100000" required>
+                <input type="text" inputmode="numeric" id="amount" placeholder="100,000" required>
               </div>
               <div class="form-row">
                 <label>Account <span class="mm">ငွေသွင်း/ထုတ်အကောင့်ရွေးရန်</span></label>
@@ -348,7 +348,7 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
             <div class="form-row-2">
               <div class="form-row">
                 <label>Income <span class="mm">Charges ဝန်ဆောင်ခ</span></label>
-                <input type="number" id="income" placeholder="0" value="0">
+                <input type="text" inputmode="numeric" id="income" placeholder="0">
               </div>
               <div class="form-row">
                 <label>Received Method <span class="mm">ရရှိမည့်နည်းလမ်း</span></label>
@@ -384,7 +384,7 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
           </div>
           <div class="form-row">
             <label>Amount <span class="mm">ပမာဏ</span></label>
-            <input type="number" id="transferAmount" placeholder="10000" required>
+            <input type="text" inputmode="numeric" id="transferAmount" placeholder="10,000" required>
           </div>
           <div class="form-row">
             <label>Note <span class="mm">မှတ်ချက်</span></label>
@@ -527,7 +527,7 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
             </div>
             <div class="form-row">
               <label>Amount <span class="mm">ပမာဏ</span></label>
-              <input type="number" id="pnlAmount" placeholder="10000" required>
+              <input type="text" inputmode="numeric" id="pnlAmount" placeholder="10,000" required>
             </div>
           </div>
           <div class="form-row">
@@ -646,9 +646,12 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
         <div class="card-header">Manage Accounts · အကောင့်များ</div>
         <div class="form-row-2" style="margin-bottom:1.5rem">
           <input type="text" id="newAccountName" placeholder="New Account Name (e.g. Kpay(MDY))">
-          <input type="number" id="newAccountBalance" placeholder="Initial Balance" value="0">
+          <input type="text" inputmode="numeric" id="newAccountBalance" placeholder="Initial Balance" value="0">
         </div>
-        <button class="btn-primary" style="width:auto; padding:0.8rem 2rem" onclick="addAccount()">+ ADD ACCOUNT</button>
+        <div style="display: flex; gap: 1rem;">
+          <button class="btn-primary" style="width:auto; padding:0.8rem 2rem" id="accountSubmitBtn" onclick="submitAccount()">+ ADD ACCOUNT</button>
+          <button class="btn-secondary" style="display:none; padding:0.8rem 2rem" id="accountCancelBtn" onclick="resetAccountForm()">CANCEL</button>
+        </div>
         <div class="chips" id="accountList" style="margin-top:1.5rem"></div>
       </div>
       <div class="card">
@@ -688,7 +691,7 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
         <div class="form-row-2">
           <div class="form-row">
             <label>New Balance</label>
-            <input type="number" id="adjustNew" placeholder="0">
+            <input type="text" inputmode="numeric" id="adjustNew" placeholder="0">
           </div>
           <div class="form-row">
             <label>Reason</label>
@@ -724,7 +727,7 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
             </div>
             <div class="form-row">
               <label>Amount <span class="mm">ပမာဏ</span></label>
-              <input type="number" id="loanAmount" placeholder="50000">
+              <input type="text" inputmode="numeric" id="loanAmount" placeholder="50,000">
             </div>
           </div>
           <div class="form-row-2">
@@ -769,7 +772,7 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
 
             <div class="form-row">
               <label>Payment Amount <span class="mm">ပြန်ဆပ်မည့် ပမာဏ</span></label>
-              <input type="number" id="repayAmount" placeholder="0">
+              <input type="text" inputmode="numeric" id="repayAmount" placeholder="0">
               <div class="hint" id="repayError" style="color: var(--danger); display:none; margin-top: 0.5rem; font-size: 0.8rem;"></div>
             </div>
             <div class="form-row">
@@ -839,7 +842,7 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
             </div>
             <div class="form-row">
               <label>Capital Amount <span class="mm">ပမာဏ</span></label>
-              <input type="number" id="capitalAmount" placeholder="500000" required>
+              <input type="text" inputmode="numeric" id="capitalAmount" placeholder="500,000" required>
             </div>
             <div class="form-row">
               <label>Note <span class="mm">မှတ်ချက်</span></label>
@@ -909,6 +912,7 @@ let state = {
   loanSearch: ''
 };
 let currentRole = null;
+let editingAccountName = null;
 
 async function loadState() {
   try {
@@ -961,6 +965,15 @@ function isToday(ts) { const d = new Date(ts), n = new Date(); return d.toDateSt
 function isAdmin() { return currentRole === 'admin'; }
 function escapeHtml(s) { if(!s) return ''; return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(window._tt); window._tt = setTimeout(() => t.classList.remove('show'), 2200); }
+
+function formatAmountInput(e) {
+  let val = e.target.value.replace(/[^0-9]/g, '');
+  if (val.length > 0) {
+    e.target.value = parseInt(val, 10).toLocaleString('en-US');
+  } else {
+    e.target.value = '';
+  }
+}
 
 function addLog(action, details) {
   if (!currentRole) return;
@@ -1088,7 +1101,7 @@ function savePermissions() {
   showToast('PERMISSIONS SAVED');
 }
 
-function showModal(title, text, details = null, isWarning = false, confirmCallback = null, confirmText = 'DELETE', inputPlaceholder = null) {
+function showModal(title, text, details = null, isWarning = false, confirmCallback = null, confirmText = 'DELETE', inputPlaceholder = null, inputDefaultValue = null) {
   const box = document.getElementById('modalBox');
   const icon = document.getElementById('modalIcon');
   const titleEl = document.getElementById('modalTitle');
@@ -1112,8 +1125,9 @@ function showModal(title, text, details = null, isWarning = false, confirmCallba
       const inputWrap = document.createElement('div');
       inputWrap.id = 'modalInputWrap';
       inputWrap.style.cssText = 'margin-bottom:1.5rem;';
-      inputWrap.innerHTML = `<label style="display:block;font:400 12.1px/1 'JetBrains Mono',monospace;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-soft);margin-bottom:0.6rem;">Note <span class="mm" style="font-family:'Noto Sans Myanmar',sans-serif;text-transform:none;color:rgba(218,218,218,0.6);margin-left:0.5rem;">မှတ်ချက်</span></label><input type="text" id="modalInput" placeholder="${inputPlaceholder}" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);border-radius:4px;padding:0.75rem;font:400 0.9rem 'JetBrains Mono',monospace;color:var(--text);outline:none;">`;
+      inputWrap.innerHTML = `<label style="display:block;font:400 12.1px/1 'JetBrains Mono',monospace;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-soft);margin-bottom:0.6rem;">Note <span class="mm" style="font-family:'Noto Sans Myanmar',sans-serif;text-transform:none;color:rgba(218,218,218,0.6);margin-left:0.5rem;">မှတ်ချက်</span></label><input type="text" id="modalInput" value="${escapeHtml(inputDefaultValue || '')}" placeholder="${inputPlaceholder}" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);border-radius:4px;padding:0.75rem;font:400 0.9rem 'JetBrains Mono',monospace;color:var(--text);outline:none;">`;
       actionsEl.parentNode.insertBefore(inputWrap, actionsEl);
+      setTimeout(() => { const inp = document.getElementById('modalInput'); if(inp){ inp.focus(); inp.select(); } }, 100);
     }
     actionsEl.innerHTML = `<button onclick="closeModal()">CANCEL</button><button class="btn-delete" id="modalConfirmBtn">${confirmText}</button>`;
     document.getElementById('modalConfirmBtn').onclick = () => {
@@ -1550,11 +1564,14 @@ function renderCategories() {
   }
   const incList = document.getElementById('incomeCatList');
   const expList = document.getElementById('expenseCatList');
+  
+  const editHtml = isAdmin() ? `<span style="margin-left:0.5rem;cursor:pointer;color:var(--accent)" onclick="editCategory('TYPE', 'NAME')">✎</span>` : '';
+  
   if (incList) {
-    incList.innerHTML = state.categories.income.map(c => `<div class="chip" style="cursor:default">${escapeHtml(c)} <span style="margin-left:0.5rem;cursor:pointer;color:var(--danger)" onclick="removeCategory('income', '${escapeHtml(c)}')">✕</span></div>`).join('');
+    incList.innerHTML = state.categories.income.map(c => `<div class="chip" style="cursor:default">${escapeHtml(c)} ${isAdmin() ? `<span style="margin-left:0.5rem;cursor:pointer;color:var(--accent)" onclick="editCategory('income', '${escapeHtml(c)}')">✎</span>` : ''} <span style="margin-left:0.5rem;cursor:pointer;color:var(--danger)" onclick="removeCategory('income', '${escapeHtml(c)}')">✕</span></div>`).join('');
   }
   if (expList) {
-    expList.innerHTML = state.categories.expense.map(c => `<div class="chip" style="cursor:default">${escapeHtml(c)} <span style="margin-left:0.5rem;cursor:pointer;color:var(--danger)" onclick="removeCategory('expense', '${escapeHtml(c)}')">✕</span></div>`).join('');
+    expList.innerHTML = state.categories.expense.map(c => `<div class="chip" style="cursor:default">${escapeHtml(c)} ${isAdmin() ? `<span style="margin-left:0.5rem;cursor:pointer;color:var(--accent)" onclick="editCategory('expense', '${escapeHtml(c)}')">✎</span>` : ''} <span style="margin-left:0.5rem;cursor:pointer;color:var(--danger)" onclick="removeCategory('expense', '${escapeHtml(c)}')">✕</span></div>`).join('');
   }
 }
 function addCategory(type) {
@@ -1565,6 +1582,22 @@ function addCategory(type) {
   addLog('ADD_CATEGORY', `Added ${type} category: ${n}`);
   renderCategories();
   document.getElementById(inputId).value = '';
+}
+function editCategory(type, oldName) {
+  if (!isAdmin()) { showToast('ADMIN ONLY'); return; }
+  showModal('EDIT CATEGORY', 'ခေါင်းစဉ်အသစ်ကို ထည့်ပါ', null, false, (newName) => {
+    newName = newName.trim();
+    if (!newName || newName === oldName) return;
+    if (state.categories[type].includes(newName)) { showToast('NAME ALREADY EXISTS'); return; }
+    
+    state.categories[type] = state.categories[type].map(c => c === oldName ? newName : c);
+    state.pnl.forEach(p => {
+      if (p.type === type && p.category === oldName) p.category = newName;
+    });
+    addLog('EDIT_CATEGORY', `Renamed ${type} category: ${oldName} -> ${newName}`);
+    renderCategories();
+    showToast('CATEGORY UPDATED');
+  }, 'SAVE', 'New category name', oldName);
 }
 function removeCategory(type, c) {
   showModal('DELETE CATEGORY · ခေါင်းစဉ်ဖျက်ရန်', `'${c}' ကို ဖျက်လိုက်ပါမည်။`, null, true, () => {
@@ -1578,14 +1611,78 @@ function removeCategory(type, c) {
 function renderAccountList() {
   const w = document.getElementById('accountList'); w.innerHTML = '';
   state.accounts.forEach(a => {
-    w.innerHTML += `<div class="chip" style="cursor:default">${escapeHtml(a)} <span style="color:var(--accent);margin-left:0.5rem">${fmt(state.balances[a]||0)}</span> <span style="margin-left:0.5rem;cursor:pointer;color:var(--danger)" onclick="removeAccount('${escapeHtml(a)}')">✕</span></div>`;
+    w.innerHTML += `<div class="chip" style="cursor:default">${escapeHtml(a)} <span style="color:var(--accent);margin-left:0.5rem">${fmt(state.balances[a]||0)}</span> ${isAdmin() ? `<span style="margin-left:0.5rem;cursor:pointer;color:var(--accent)" onclick="editAccount('${escapeHtml(a)}')">✎</span>` : ''} <span style="margin-left:0.5rem;cursor:pointer;color:var(--danger)" onclick="removeAccount('${escapeHtml(a)}')">✕</span></div>`;
   });
 }
+function submitAccount() {
+  if (editingAccountName) {
+    updateAccount();
+  } else {
+    addAccount();
+  }
+}
+function editAccount(oldName) {
+  if (!isAdmin()) { showToast('ADMIN ONLY'); return; }
+  editingAccountName = oldName;
+  document.getElementById('newAccountName').value = oldName;
+  document.getElementById('newAccountBalance').value = fmt(state.balances[oldName] || 0);
+  document.getElementById('accountSubmitBtn').textContent = 'UPDATE ACCOUNT';
+  document.getElementById('accountCancelBtn').style.display = 'inline-flex';
+}
+function resetAccountForm() {
+  document.getElementById('newAccountName').value='';
+  document.getElementById('newAccountBalance').value='0';
+  document.getElementById('accountSubmitBtn').textContent = '+ ADD ACCOUNT';
+  document.getElementById('accountCancelBtn').style.display = 'none';
+  editingAccountName = null;
+}
 function addAccount() {
-  const n = document.getElementById('newAccountName').value.trim(), b = parseFloat(document.getElementById('newAccountBalance').value)||0;
+  const n = document.getElementById('newAccountName').value.trim(); 
+  const b = parseFloat(document.getElementById('newAccountBalance').value.replace(/,/g, '')||0);
   if(!n || state.accounts.includes(n)) { showToast('INVALID NAME'); return; }
   state.accounts.push(n); state.balances[n] = b; addLog('ADD_ACCOUNT', `Added account ${n} with balance ${b}`); renderAll();
-  document.getElementById('newAccountName').value=''; document.getElementById('newAccountBalance').value='0';
+  resetAccountForm();
+}
+function updateAccount() {
+  const newName = document.getElementById('newAccountName').value.trim();
+  const newBal = parseFloat(document.getElementById('newAccountBalance').value.replace(/,/g, '')||0);
+  const oldName = editingAccountName;
+  if(!newName) { showToast('INVALID NAME'); return; }
+  if(newName !== oldName && state.accounts.includes(newName)) { showToast('NAME EXISTS'); return; }
+  
+  if (newName !== oldName) {
+    state.accounts = state.accounts.map(a => a === oldName ? newName : a);
+    state.balances[newName] = state.balances[oldName];
+    delete state.balances[oldName];
+    
+    // Update references
+    state.transactions.forEach(t => {
+      if (t.account === oldName) t.account = newName;
+      if (t.incomeSource === oldName) t.incomeSource = newName;
+    });
+    state.pnl.forEach(p => {
+      if (p.source === oldName) p.source = newName;
+    });
+    state.loans.forEach(l => {
+      if (l.source === oldName) l.source = newName;
+      if (l.payments) l.payments.forEach(p => { if (p.source === oldName) p.source = newName; });
+    });
+    state.adjustments.forEach(a => {
+      if (a.target === oldName) a.target = newName;
+    });
+    state.transfers.forEach(t => {
+      if (t.from === oldName) t.from = newName;
+      if (t.to === oldName) t.to = newName;
+    });
+    state.capital.forEach(c => {
+      if (c.account === oldName) c.account = newName;
+    });
+  }
+  state.balances[newName] = newBal;
+  addLog('EDIT_ACCOUNT', `Updated account ${oldName} to ${newName} with balance ${newBal}`);
+  resetAccountForm();
+  renderAll();
+  showToast('ACCOUNT UPDATED');
 }
 function removeAccount(a) {
   if(state.accounts.length<=1) return; 
@@ -1594,6 +1691,7 @@ function removeAccount(a) {
     state.accounts = state.accounts.filter(x=>x!==a); 
     delete state.balances[a]; 
     addLog('DEL_ACCOUNT', `Removed account ${a}`); 
+    resetAccountForm();
     renderAll();
     showToast('ACCOUNT DELETED');
   }, 'DELETE');
@@ -1615,7 +1713,7 @@ function renderAdjust() {
 }
 function updateAdjustCurrent() { const t = document.getElementById('adjustTarget').value; document.getElementById('adjustCurrent').textContent = fmt(state.balances[t]||0) + ' MMK'; }
 function applyAdjustment() {
-  const t = document.getElementById('adjustTarget').value, n = parseFloat(document.getElementById('adjustNew').value), note = document.getElementById('adjustNote').value;
+  const t = document.getElementById('adjustTarget').value, n = parseFloat(document.getElementById('adjustNew').value.replace(/,/g, '')), note = document.getElementById('adjustNote').value;
   if(isNaN(n)||n<0) { showToast('INVALID VALUE'); return; }
   const o = state.balances[t]||0; const d = n-o;
   state.balances[t] = n; state.adjustments.push({id:'adj_'+Date.now(),target:t,oldBalance:o,newBalance:n,diff:d,note,ts:Date.now()});
@@ -1754,7 +1852,7 @@ function onRepayLoanSelect() {
   document.getElementById('rTotalPaid').textContent = fmt(totalPaid) + ' MMK';
   document.getElementById('rRemBal').textContent = fmt(remBal) + ' MMK';
   
-  amountInput.value = remBal > 0 ? remBal : ''; 
+  amountInput.value = remBal > 0 ? fmt(remBal) : ''; 
   
   if (repaySourceSel) {
     renderSources('repaySource');
@@ -1781,7 +1879,7 @@ function validateRepayAmount() {
   if (!loan) return;
   
   const remBal = getLoanRemaining(loan);
-  const entered = parseFloat(amountInput.value);
+  const entered = parseFloat(amountInput.value.replace(/,/g, ''));
   
   if (isNaN(entered) || entered <= 0) {
     errorDiv.style.display = 'block';
@@ -1881,7 +1979,7 @@ function showPayHistory(id) {
 
 function recordLoan() {
   const n = document.getElementById('loanName').value.trim();
-  const a = parseFloat(document.getElementById('loanAmount').value);
+  const a = parseFloat(document.getElementById('loanAmount').value.replace(/,/g, ''));
   const s = document.getElementById('loanSource').value;
   const d = state.currentLoanType;
   const note = document.getElementById('loanNote').value;
@@ -2103,7 +2201,7 @@ function restoreBackup(e) {
 
 document.getElementById('txForm').onsubmit = e => { e.preventDefault();
   if (!state.currentType) { showToast('SELECT TYPE FIRST · အမျိုးအစား ရွေးပါ'); return; }
-  const c = document.getElementById('customerName').value.trim(), p = document.getElementById('phone').value.trim(), a = parseFloat(document.getElementById('amount').value), i = parseFloat(document.getElementById('income').value)||0;
+  const c = document.getElementById('customerName').value.trim(), p = document.getElementById('phone').value.trim(), a = parseFloat(document.getElementById('amount').value.replace(/,/g, '')), i = parseFloat(document.getElementById('income').value.replace(/,/g, '')||0);
   const ac = document.getElementById('txAccount').value, incSrc = document.getElementById('incomeSource').value;
   if(!c||!a||a<=0) { showToast('CHECK INPUTS'); return; }
   if(state.currentType==='in') { if((state.balances[ac]||0)<a){ showToast('INSUFFICIENT BAL'); return; } state.balances.cash+=a; state.balances[ac]-=a; }
@@ -2139,7 +2237,7 @@ document.getElementById('txForm').onsubmit = e => { e.preventDefault();
 };
 
 document.getElementById('transferForm').onsubmit = e => { e.preventDefault();
-  const from = document.getElementById('transferFrom').value, to = document.getElementById('transferTo').value, amount = parseFloat(document.getElementById('transferAmount').value), note = document.getElementById('transferNote').value;
+  const from = document.getElementById('transferFrom').value, to = document.getElementById('transferTo').value, amount = parseFloat(document.getElementById('transferAmount').value.replace(/,/g, '')), note = document.getElementById('transferNote').value;
   if (!from || !to || from === to || !amount || amount <= 0) { showToast('CHECK INPUTS'); return; }
   if ((state.balances[from] || 0) < amount) { showToast('INSUFFICIENT BALANCE'); return; }
   state.balances[from] -= amount; state.balances[to] += amount;
@@ -2154,7 +2252,7 @@ document.getElementById('transferForm').onsubmit = e => { e.preventDefault();
 document.getElementById('capitalForm').onsubmit = e => { e.preventDefault();
   const dateVal = document.getElementById('capitalDate').value;
   const acc = document.getElementById('capitalAccount').value;
-  const amount = parseFloat(document.getElementById('capitalAmount').value);
+  const amount = parseFloat(document.getElementById('capitalAmount').value.replace(/,/g, ''));
   const note = document.getElementById('capitalNote').value;
 
   if (!dateVal || !acc || !amount || amount <= 0) { showToast('CHECK INPUTS'); return; }
@@ -2181,7 +2279,7 @@ document.getElementById('capitalForm').onsubmit = e => { e.preventDefault();
 };
 
 document.getElementById('pnlForm').onsubmit = e => { e.preventDefault();
-  const cat = document.getElementById('pnlCategory').value, src = document.getElementById('pnlSource').value, a = parseFloat(document.getElementById('pnlAmount').value), note = document.getElementById('pnlNote').value;
+  const cat = document.getElementById('pnlCategory').value, src = document.getElementById('pnlSource').value, a = parseFloat(document.getElementById('pnlAmount').value.replace(/,/g, '')), note = document.getElementById('pnlNote').value;
   if(!a||a<=0) { showToast('INVALID AMOUNT'); return; }
   if(state.currentPnlType==='expense' && (state.balances[src]||0)<a) { showToast('INSUFFICIENT BALANCE'); return; }
   if(state.currentPnlType==='income') state.balances[src] += a; else state.balances[src] -= a;
@@ -2192,7 +2290,7 @@ document.getElementById('pnlForm').onsubmit = e => { e.preventDefault();
 
 document.getElementById('repayForm').onsubmit = e => { e.preventDefault();
   const id = document.getElementById('repayLoanSelect').value;
-  const amount = parseFloat(document.getElementById('repayAmount').value);
+  const amount = parseFloat(document.getElementById('repayAmount').value.replace(/,/g, ''));
   const note = document.getElementById('repayNote').value;
   const source = document.getElementById('repaySource').value;
   
@@ -2276,6 +2374,17 @@ if (document.getElementById('loanSearch')) {
     renderLoans();
   };
 }
+
+// Format Amount Inputs
+const formatInputs = ['#amount', '#income', '#transferAmount', '#pnlAmount', '#loanAmount', '#repayAmount', '#capitalAmount', '#newAccountBalance', '#adjustNew'];
+formatInputs.forEach(id => {
+  const el = document.querySelector(id);
+  if (el) {
+    el.type = 'text';
+    el.setAttribute('inputmode', 'numeric');
+    el.addEventListener('input', formatAmountInput);
+  }
+});
 
 function renderAll() {
   renderSources('txAccount'); renderSources('incomeSource'); renderSources('pnlSource'); renderSources('exportAccount', true, true);
