@@ -1716,7 +1716,7 @@ function populateRepaySelect() {
   if (cur && state.loans.find(l => l.id === cur)) {
     sel.value = cur;
   } else {
-    onRepayLoanSelect(); // Reset details if current selection is no longer valid
+    onRepayLoanSelect(); 
   }
 }
 
