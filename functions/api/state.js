@@ -1,24 +1,34 @@
+// functions/api/state.js
+
 export async function onRequestGet(context) {
-  const { env } = context;
+  const { request, env } = context;
   try {
-    const stmt = env.DB.prepare("SELECT data FROM app_state WHERE id = 1");
-    const result = await stmt.first();
-    if (result && result.data) {
-      return new Response(result.data, { headers: { 'Content-Type': 'application/json' } });
+    // D1 ထဲကနေ data ကို ဖတ်ပါမယ် (ဥပမာ - AppState ဆိုတဲ့ table မှာ 'state' ဆိုတဲ့ key နဲ့ သိမ်းထားတယ်ဆိုပါစို့)
+    const result = await env.DB.prepare("SELECT value FROM AppState WHERE key = ?1").bind('state').first();
+    
+    if (result && result.value) {
+      return new Response(result.value, {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
     }
-    return new Response('{}', { headers: { 'Content-Type': 'application/json' } });
+    return new Response('', { status: 200 });
   } catch (e) {
     return new Response(JSON.stringify({ error: e.message }), { status: 500 });
   }
 }
 
 export async function onRequestPost(context) {
-  const { env, request } = context;
+  const { request, env } = context;
   try {
-    const data = await request.text();
-    const stmt = env.DB.prepare("INSERT OR REPLACE INTO app_state (id, data) VALUES (1, ?)");
-    await stmt.bind(data).run();
-    return new Response(JSON.stringify({ success: true }), { headers: { 'Content-Type': 'application/json' } });
+    const bodyText = await request.text(); // HTML ကနေ ပို့လိုက်တဲ့ JSON data အပြည့်အစုံ
+    
+    // D1 ထဲမှာ သိမ်းပါမယ်
+    await env.DB.prepare(
+      "INSERT OR REPLACE INTO AppState (key, value) VALUES (?1, ?2)"
+    ).bind('state', bodyText).run();
+    
+    return new Response('OK', { status: 200 });
   } catch (e) {
     return new Response(JSON.stringify({ error: e.message }), { status: 500 });
   }
