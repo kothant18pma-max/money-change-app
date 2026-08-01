@@ -10,3 +10,11 @@ binding = "ASSETS"
 binding = "DB"
 database_name = "money_change_db"
 database_id = "750ae4d5-684e-4f39-a777-a7875d743c4a"  # ဒီနေရာမှာ သင့်ရဲ့ UUID အပြည့်အစုံကို ထည့်ပါ
+
+# ==========================================
+# Cloudflare D1 Database Binding
+# ==========================================
+[[d1_databases]]
+binding = "DB"                             # Worker code ထဲမှာ env.DB လို့ သုံးထားတဲ့ နာမည်
+database_name = "money_change_db"          # သင့် D1 Database နာမည် အစားထိုးပါ
+database_id = "750ae4d5-684e-4f39-a777-a7875d743c4a" # သင့် D1 Database ID အစားထိုးပါ
