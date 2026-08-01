@@ -211,3 +211,27 @@ export default {
     return env.ASSETS.fetch(request);
   }
 };
+,
+ // =========================================================
+  // Cron Job: တစ်လပြည့်ရင် Logs တွေကို အလိုလို ဖျက်ပစ်မယ်
+  // =========================================================
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(
+      (async () => {
+        try {
+          // လက်ရှိ အချိန် (Milliseconds အားဖြင့်) ကို ရယူပါတယ်
+          const now = Date.now();
+          // ၁ လ = ၃၀ ရက် (30 * 24 * 60 * 60 * 1000 = 2,592,000,000 ms)
+          const oneMonthAgo = now - 2592000000;
+
+          // တစ်လထက်ကျော်လွန်ပြီးသော Logs များကို ဖျက်ပစ်ပါတယ်
+          const result = await env.DB.prepare("DELETE FROM AppLogs WHERE ts < ?1").bind(oneMonthAgo).run();
+          
+          console.log(`Cleanup successful. Deleted ${result.meta.changes} old logs.`);
+        } catch (error) {
+          console.error("Error deleting old logs:", error.message);
+        }
+      })()
+    );
+  }
+};
