@@ -16,11 +16,11 @@ export default {
     }
 
     // -------------------------------------------------------------
-    // 2. Users Data Endpoint (/api/users) - Google Sheet ချိတ်ရန်
+    // 2. Users Data Endpoint (/api/users)
     // -------------------------------------------------------------
     if (url.pathname === "/api/users") {
       const authHeader = request.headers.get("Authorization");
-      const SECRET_TOKEN = "MY_SECRET_API_TOKEN_003009";
+      const SECRET_TOKEN = "TEST_TOKEN_003009"; // Token အသစ်ကို နှစ်ဖက်စလုံး တူညီစေရန် ပြင်ထားပါသည်
 
       if (!authHeader || authHeader !== `Bearer ${SECRET_TOKEN}`) {
         return new Response(
@@ -30,23 +30,47 @@ export default {
       }
 
       try {
-        // D1 Database မှ users table ထဲမှ Data ဆွဲထုတ်ခြင်း
         const { results } = await env.DB.prepare("SELECT id, name, email, created_at FROM users").all();
-
-        return new Response(JSON.stringify(results), {
-          status: 200,
-          headers: corsHeaders
-        });
+        return new Response(JSON.stringify(results), { status: 200, headers: corsHeaders });
       } catch (error) {
-        return new Response(
-          JSON.stringify({ error: error.message }), 
-          { status: 500, headers: corsHeaders }
-        );
+        return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: corsHeaders });
       }
     }
 
     // -------------------------------------------------------------
-    // 3. App State Endpoint (/api/state)
+    // 3. All Data Endpoint (/api/all-data) - Google Sheet အတွက်
+    // -------------------------------------------------------------
+    if (url.pathname === "/api/all-data") {
+      const authHeader = request.headers.get("Authorization");
+      const SECRET_TOKEN = "TEST_TOKEN_003009";
+
+      if (!authHeader || authHeader !== `Bearer ${SECRET_TOKEN}`) {
+        return new Response(
+          JSON.stringify({ error: "Unauthorized" }), 
+          { status: 401, headers: corsHeaders }
+        );
+      }
+
+      try {
+        const allData = {};
+        allData.AppAccounts = (await env.DB.prepare("SELECT * FROM AppAccounts").all()).results;
+        allData.AppAdjustments = (await env.DB.prepare("SELECT * FROM AppAdjustments").all()).results;
+        allData.AppCapital = (await env.DB.prepare("SELECT * FROM AppCapital").all()).results;
+        allData.AppLoans = (await env.DB.prepare("SELECT * FROM AppLoans").all()).results;
+        allData.AppLogs = (await env.DB.prepare("SELECT * FROM AppLogs").all()).results;
+        allData.AppPnl = (await env.DB.prepare("SELECT * FROM AppPnl").all()).results;
+        allData.AppSettings = (await env.DB.prepare("SELECT * FROM AppSettings").all()).results;
+        allData.AppTransactions = (await env.DB.prepare("SELECT * FROM AppTransactions").all()).results;
+        allData.AppTransfers = (await env.DB.prepare("SELECT * FROM AppTransfers").all()).results;
+
+        return new Response(JSON.stringify(allData), { status: 200, headers: corsHeaders });
+      } catch (error) {
+        return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: corsHeaders });
+      }
+    }
+
+    // -------------------------------------------------------------
+    // 4. App State Endpoint (/api/state) - သင့် Web App အတွက်
     // -------------------------------------------------------------
     if (url.pathname === "/api/state") {
       try {
@@ -180,56 +204,9 @@ export default {
         return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: corsHeaders });
       }
     }
-    // -------------------------------------------------------------
-    // 3.5 All Data Endpoint (/api/all-data) - Google Sheet အတွက် ဒေတာအားလုံး
-    // -------------------------------------------------------------
-    if (url.pathname === "/api/all-data") {
-      const authHeader = request.headers.get("Authorization");
-      const SECRET_TOKEN = "MY_SECRET_API_TOKEN_214749";
-
-      if (!authHeader || authHeader !== `Bearer ${SECRET_TOKEN}`) {
-        return new Response(
-          JSON.stringify({ error: "Unauthorized" }), 
-          { status: 401, headers: corsHeaders }
-        );
-      }
-
-      try {
-        const allData = {};
-        
-        // 1. AppAccounts
-        allData.AppAccounts = (await env.DB.prepare("SELECT * FROM AppAccounts").all()).results;
-        // 2. AppAdjustments
-        allData.AppAdjustments = (await env.DB.prepare("SELECT * FROM AppAdjustments").all()).results;
-        // 3. AppCapital
-        allData.AppCapital = (await env.DB.prepare("SELECT * FROM AppCapital").all()).results;
-        // 4. AppLoans
-        allData.AppLoans = (await env.DB.prepare("SELECT * FROM AppLoans").all()).results;
-        // 5. AppLogs
-        allData.AppLogs = (await env.DB.prepare("SELECT * FROM AppLogs").all()).results;
-        // 6. AppPnl
-        allData.AppPnl = (await env.DB.prepare("SELECT * FROM AppPnl").all()).results;
-        // 7. AppSettings
-        allData.AppSettings = (await env.DB.prepare("SELECT * FROM AppSettings").all()).results;
-        // 8. AppTransactions
-        allData.AppTransactions = (await env.DB.prepare("SELECT * FROM AppTransactions").all()).results;
-        // 9. AppTransfers
-        allData.AppTransfers = (await env.DB.prepare("SELECT * FROM AppTransfers").all()).results;
-
-        return new Response(JSON.stringify(allData), {
-          status: 200,
-          headers: corsHeaders
-        });
-      } catch (error) {
-        return new Response(
-          JSON.stringify({ error: error.message }), 
-          { status: 500, headers: corsHeaders }
-        );
-      }
-    }
 
     // -------------------------------------------------------------
-    // 4. Static Files Handling (Frontend HTML)
+    // 5. Static Files Handling (Frontend HTML)
     // -------------------------------------------------------------
     return env.ASSETS.fetch(request);
   }
