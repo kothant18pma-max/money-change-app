@@ -20,7 +20,7 @@ export default {
     // -------------------------------------------------------------
     if (url.pathname === "/api/users") {
       const authHeader = request.headers.get("Authorization");
-      const SECRET_TOKEN = "MY_SECRET_API_TOKEN_214749";
+      const SECRET_TOKEN = "MY_SECRET_API_TOKEN_003009";
 
       if (!authHeader || authHeader !== `Bearer ${SECRET_TOKEN}`) {
         return new Response(
