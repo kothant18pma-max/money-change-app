@@ -180,6 +180,53 @@ export default {
         return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: corsHeaders });
       }
     }
+    // -------------------------------------------------------------
+    // 3.5 All Data Endpoint (/api/all-data) - Google Sheet အတွက် ဒေတာအားလုံး
+    // -------------------------------------------------------------
+    if (url.pathname === "/api/all-data") {
+      const authHeader = request.headers.get("Authorization");
+      const SECRET_TOKEN = "MY_SECRET_API_TOKEN_214749";
+
+      if (!authHeader || authHeader !== `Bearer ${SECRET_TOKEN}`) {
+        return new Response(
+          JSON.stringify({ error: "Unauthorized" }), 
+          { status: 401, headers: corsHeaders }
+        );
+      }
+
+      try {
+        const allData = {};
+        
+        // 1. AppAccounts
+        allData.AppAccounts = (await env.DB.prepare("SELECT * FROM AppAccounts").all()).results;
+        // 2. AppAdjustments
+        allData.AppAdjustments = (await env.DB.prepare("SELECT * FROM AppAdjustments").all()).results;
+        // 3. AppCapital
+        allData.AppCapital = (await env.DB.prepare("SELECT * FROM AppCapital").all()).results;
+        // 4. AppLoans
+        allData.AppLoans = (await env.DB.prepare("SELECT * FROM AppLoans").all()).results;
+        // 5. AppLogs
+        allData.AppLogs = (await env.DB.prepare("SELECT * FROM AppLogs").all()).results;
+        // 6. AppPnl
+        allData.AppPnl = (await env.DB.prepare("SELECT * FROM AppPnl").all()).results;
+        // 7. AppSettings
+        allData.AppSettings = (await env.DB.prepare("SELECT * FROM AppSettings").all()).results;
+        // 8. AppTransactions
+        allData.AppTransactions = (await env.DB.prepare("SELECT * FROM AppTransactions").all()).results;
+        // 9. AppTransfers
+        allData.AppTransfers = (await env.DB.prepare("SELECT * FROM AppTransfers").all()).results;
+
+        return new Response(JSON.stringify(allData), {
+          status: 200,
+          headers: corsHeaders
+        });
+      } catch (error) {
+        return new Response(
+          JSON.stringify({ error: error.message }), 
+          { status: 500, headers: corsHeaders }
+        );
+      }
+    }
 
     // -------------------------------------------------------------
     // 4. Static Files Handling (Frontend HTML)
