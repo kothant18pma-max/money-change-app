@@ -281,7 +281,7 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
   .main-content { margin-left: 0; }
   body.sidebar-hidden .main-content { margin-left: 240px; }
   .topbar-title { font-size: 1.2rem; }
-  .loan-list-item { grid-template-columns: 1fr auto; gap: 0.4rem; }
+  .loan-list-item { grid-template-columns: 1fr auto, gap: 0.4rem; }
   .loan-list-transid { grid-column: 1; }
   .loan-list-name { grid-column: 1; }
   .loan-list-remaining { grid-column: 2; grid-row: 1 / 3; }
@@ -982,7 +982,7 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
 <div class="toast" id="toast">RECORDED</div>
 
 <script>
-const STORAGE_KEY = 'moneychange_v17';
+const STORAGE_KEY = 'moneychange_v18';
 let state = {
   accounts: ['Kpay(TZ)', 'Wave(TZ)', 'Bank(TZ)'],
   balances: { 'Kpay(TZ)': 0, 'Wave(TZ)': 0, 'Bank(TZ)': 0, 'cash': 0 },
@@ -1775,6 +1775,7 @@ function exportData(format) {
   let end = e ? new Date(e) : new Date(8640000000000000);
   start.setHours(0,0,0,0); end.setHours(23,59,59,999);
   let data = [], fileName = 'Export', sheetName = 'Data';
+  
   if (expType === 'flow') {
     fileName = 'Account_Flow'; sheetName = 'Account Flow';
     const map = {};
@@ -1811,11 +1812,24 @@ function exportData(format) {
     }));
   } else if (expType === 'bills') {
     fileName = 'Bill_Details'; sheetName = 'Bills';
-    data = state.transactions.filter(t => t.type === 'bill' && { const d = new Date(t.ts); return d>=start && d<=end; }).map(t => ({
-      Date: new Date(t.ts).toLocaleDateString('en-GB'), Type: t.billType, Name: t.customerName || '-', Phone: t.phone || '-', BillID: t.billId || '-',
-      Amount: t.amount, Fee: t.income || 0, FromAccount: t.account, FeeAccount: t.incomeSource
+    // FIX: Removed the syntax error here
+    data = state.transactions.filter(t => {
+      if (t.type !== 'bill') return false;
+      const d = new Date(t.ts);
+      return d >= start && d <= end;
+    }).map(t => ({
+      Date: new Date(t.ts).toLocaleDateString('en-GB'),
+      Type: t.billType,
+      Name: t.customerName || '-',
+      Phone: t.phone || '-',
+      BillID: t.billId || '-',
+      Amount: t.amount,
+      Fee: t.income || 0,
+      FromAccount: t.account,
+      FeeAccount: t.incomeSource
     }));
   }
+  
   if (data.length === 0) { showToast('NO DATA TO EXPORT'); return; }
   if (format === 'excel') {
     const ws = XLSX.utils.json_to_sheet(data);
