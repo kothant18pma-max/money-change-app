@@ -84,8 +84,13 @@ body.sidebar-hidden .main-content { margin-left: 0; }
 
 .topbar-right { display: flex; align-items: center; gap: 1rem; }
 .clock { font: 400 13.2px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; color: var(--text-soft); }
+.lang-toggle { background: transparent; border: 1px solid var(--line); color: var(--accent); padding: 0.4rem 0.8rem; font: 700 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; cursor: pointer; transition: all 300ms; border-radius: 4px; }
+.lang-toggle:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
 .logout-btn { background: transparent; border: 1px solid var(--line); padding: 0.5rem 1rem; font: 700 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; color: var(--text-soft); cursor: pointer; transition: all 300ms; border-radius: 4px; }
 .logout-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+/* Language visibility */
+body.lang-en .mm { display: none !important; }
 
 /* ============ ALERTS ============ */
 .alert-banner { background: rgba(217, 154, 154, 0.1); border: 1px solid var(--danger); padding: 1rem 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; border-radius: 4px; }
@@ -168,6 +173,7 @@ tbody td { padding: 0.9rem 1.2rem; color: var(--text); white-space: nowrap; }
 td.idx { color: var(--text-soft); opacity: 0.6; }
 td.type-in { color: var(--success); font-weight: 700; }
 td.type-out { color: var(--danger); font-weight: 700; }
+td.type-bill { color: var(--info); font-weight: 700; }
 td.amount { color: var(--accent); font-weight: 700; }
 .empty-state { padding: 3rem 2rem; text-align: center; font: 400 0.935rem/1.6 'JetBrains Mono', monospace; color: var(--text-soft); opacity: 0.5; }
 
@@ -278,21 +284,23 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
       <div class="title">MONEY<span>::</span>CHANGE</div>
       <div class="role" id="sidebarRole">—</div>
     </div>
-    <a class="nav-item active" data-section="dashboard"><span class="ico">[1]</span><span>Dashboard</span></a>
-    <a class="nav-item" data-section="transfer"><span class="ico">[2]</span><span>Transfers</span></a>
-    <a class="nav-item" data-section="summary"><span class="ico">[3]</span><span>Daily Summary</span></a>
-    <a class="nav-item" data-section="ledger"><span class="ico">[4]</span><span>Ledger</span></a>
-    <a class="nav-item" data-section="reports"><span class="ico">[5]</span><span>Monthly / Yearly</span></a>
-    <a class="nav-item" data-section="pnl"><span class="ico">[6]</span><span>Income / Expense</span></a>
-    <a class="nav-item" data-section="categories"><span class="ico">[7]</span><span>Categories</span></a>
-    <a class="nav-item" data-section="export"><span class="ico">[8]</span><span>Export Data</span></a>
-    <a class="nav-item" data-section="backup"><span class="ico">[9]</span><span>Backup</span></a>
+    <a class="nav-item active" data-section="dashboard"><span class="ico">[1]</span><span data-i18n="dashboard">Dashboard</span></a>
+    <a class="nav-item" data-section="transfer"><span class="ico">[2]</span><span data-i18n="transfer">Transfers</span></a>
+    <a class="nav-item" data-section="bills"><span class="ico">[3]</span><span data-i18n="bills">Bill Payment</span></a>
+    <a class="nav-item" data-section="summary"><span class="ico">[4]</span><span data-i18n="summary">Daily Summary</span></a>
+    <a class="nav-item" data-section="ledger"><span class="ico">[5]</span><span data-i18n="ledger">Ledger</span></a>
+    <a class="nav-item" data-section="reports"><span class="ico">[6]</span><span data-i18n="reports">Monthly / Yearly</span></a>
+    <a class="nav-item" data-section="pnl"><span class="ico">[7]</span><span data-i18n="pnl">Income / Expense</span></a>
+    <a class="nav-item" data-section="categories"><span class="ico">[8]</span><span data-i18n="categories">Categories</span></a>
+    <a class="nav-item" data-section="export"><span class="ico">[9]</span><span data-i18n="export">Export Data</span></a>
+    <a class="nav-item" data-section="backup"><span class="ico">[A]</span><span data-i18n="backup">Backup</span></a>
+    <a class="nav-item" data-section="language"><span class="ico">[B]</span><span data-i18n="language">Language</span></a>
     <div class="nav-section-label admin-only">ADMIN ONLY</div>
-    <a class="nav-item admin-only" data-section="accounts"><span class="ico">[A]</span><span>Accounts</span></a>
-    <a class="nav-item admin-only" data-section="adjust"><span class="ico">[B]</span><span>Adjustment</span></a>
-    <a class="nav-item admin-only" data-section="loans"><span class="ico">[C]</span><span>Loans</span></a>
-    <a class="nav-item admin-only" data-section="logs"><span class="ico">[D]</span><span>System Logs</span></a>
-    <a class="nav-item admin-only" data-section="capital"><span class="ico">[E]</span><span>Capital</span></a>
+    <a class="nav-item admin-only" data-section="accounts"><span class="ico">[C]</span><span data-i18n="accounts">Accounts</span></a>
+    <a class="nav-item admin-only" data-section="adjust"><span class="ico">[D]</span><span data-i18n="adjust">Adjustment</span></a>
+    <a class="nav-item admin-only" data-section="loans"><span class="ico">[E]</span><span data-i18n="loans">Loans</span></a>
+    <a class="nav-item admin-only" data-section="logs"><span class="ico">[F]</span><span data-i18n="logs">System Logs</span></a>
+    <a class="nav-item admin-only" data-section="capital"><span class="ico">[G]</span><span data-i18n="capital">Capital</span></a>
   </aside>
 
   <main class="main-content">
@@ -306,6 +314,7 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
       </div>
       <div class="topbar-right">
         <div class="clock" id="clock">--:--:--</div>
+        <button class="lang-toggle" id="langToggle" onclick="toggleLanguage()">EN</button>
         <button class="logout-btn" id="logoutBtn">LOGOUT</button>
       </div>
     </div>
@@ -405,6 +414,76 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
       </div>
     </div>
 
+    <!-- BILL PAYMENT -->
+    <div class="app-section" id="section-bills">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">Bill Payment · ဘီလ် ပေးဆောင်ခြင်း</div>
+          <form id="billForm">
+            <div class="form-row">
+              <label>Bill Type <span class="mm">ဘီလ် အမျိုးအစား</span></label>
+              <select id="billType">
+                <option value="Electric Bill">Electric Bill · လျှပ်စစ်</option>
+                <option value="Phone Bill">Phone Bill · ဖုန်း</option>
+                <option value="Water Bill">Water Bill · ရေ</option>
+                <option value="Internet Bill">Internet Bill · အင်တာနက်</option>
+                <option value="Other Bill">Other Bill · အခြား</option>
+              </select>
+            </div>
+            <div class="form-row-2">
+              <div class="form-row">
+                <label>Name (Optional) <span class="mm">အမည်</span></label>
+                <input type="text" id="billCustomerName" placeholder="U Mya">
+              </div>
+              <div class="form-row">
+                <label>Bill ID (Optional) <span class="mm">ဘီလ် အိုင်ဒီ</span></label>
+                <input type="text" id="billId" placeholder="BILL-001">
+              </div>
+            </div>
+            <div class="form-row-2">
+              <div class="form-row">
+                <label>Phone (Optional) <span class="mm">ဖုန်းနံပါတ်</span></label>
+                <input type="tel" id="billPhone" placeholder="09-xxx">
+              </div>
+              <div class="form-row">
+                <label>Bill Amount <span class="mm">ဘီလ် ပမာဏ</span></label>
+                <input type="number" id="billAmount" placeholder="50000" required>
+              </div>
+            </div>
+            <div class="form-row-2">
+              <div class="form-row">
+                <label>Service Fee <span class="mm">ဝန်ဆောင်ခ</span></label>
+                <input type="number" id="billFee" placeholder="0" value="0">
+              </div>
+              <div class="form-row">
+                <label>Deduct From <span class="mm">ကနုတ်ယူမည့် အကောင့်</span></label>
+                <select id="billDeductAccount"></select>
+              </div>
+            </div>
+            <div class="form-row">
+              <label>Fee Income To <span class="mm">ဝန်ဆောင်ခ သွင်းမည့် အကောင့်</span></label>
+              <select id="billIncomeAccount"></select>
+            </div>
+            <div class="form-row">
+              <label>Note (Optional) <span class="mm">မှတ်ချက်</span></label>
+              <input type="text" id="billNote" placeholder="မှတ်ချက်">
+            </div>
+            <button type="submit" class="btn-primary">RECORD BILL PAYMENT</button>
+          </form>
+          <div class="hint">ဘီလ် ပမာဏနှင့် ဝန်ဆောင်ခကို "Deduct From" အကောင့်မှ ကနုတ်ယူမည်။ ဝန်ဆောင်ခကို "Fee Income To" အကောင့်သို့ သွင်းပါမည်။ Ledger, Summary, P&L တို့တွင် အလိုလို ပြောင်းလဲမှု ဖြစ်ပါမည်။</div>
+        </div>
+        <div class="card">
+          <div class="card-header">Bill History · ဘီလ် မှတ်တမ်း</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Date</th><th>Type</th><th>Name</th><th>Bill ID</th><th>Amount</th><th>Fee</th><th>Account</th><th>Action</th></tr></thead>
+              <tbody id="billBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- SUMMARY -->
     <div class="app-section" id="section-summary">
       <div class="card">
@@ -436,7 +515,7 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Date</th><th>Account</th><th>Cash In Tx (Out)</th><th>Cash Out Tx (In)</th><th>Income</th><th>Expense</th><th>Net Flow</th></tr></thead>
+            <thead><tr><th>Date</th><th>Account</th><th>Cash In Tx (Out)</th><th>Cash Out Tx (In)</th><th>Bill Paid</th><th>Income</th><th>Expense</th><th>Net Flow</th></tr></thead>
             <tbody id="dailyBody"></tbody>
           </table>
         </div>
@@ -461,6 +540,7 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
           <button class="chip active" data-filter="all">ALL</button>
           <button class="chip" data-filter="in">CASH IN</button>
           <button class="chip" data-filter="out">CASH OUT</button>
+          <button class="chip" data-filter="bill">BILLS</button>
         </div>
         <div class="table-wrap">
           <table id="txTable">
@@ -602,6 +682,7 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
             <select id="exportType">
               <option value="flow">Account Flow (Cash In/Out)</option>
               <option value="pnl">Income / Expense Details</option>
+              <option value="bills">Bill Payment Details</option>
               <option value="loans">Loan Details</option>
               <option value="capital">Capital Details</option>
             </select>
@@ -637,6 +718,25 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
           <button class="btn-secondary" onclick="document.getElementById('restoreFile').click()">⬆ RESTORE BACKUP</button>
           <input type="file" id="restoreFile" accept=".json" style="display:none" onchange="restoreBackup(event)">
         </div>
+      </div>
+    </div>
+
+    <!-- LANGUAGE -->
+    <div class="app-section" id="section-language">
+      <div class="card">
+        <div class="card-header">Language Settings · ဘာသာစကား ရွေးချယ်ရန်</div>
+        <div class="toggle-group" id="langToggleGroup">
+          <button type="button" data-lang="en" class="toggle-btn active">ENGLISH</button>
+          <button type="button" data-lang="my" class="toggle-btn">မြန်မာ</button>
+        </div>
+        <div class="hint" style="margin-top: 1rem;">Select your preferred language. · နှစ်သက်ရာ ဘာသာစကားကို ရွေးချယ်ပါ။</div>
+      </div>
+      <div class="card">
+        <div class="card-header">Current Setting · လက်ရှိ ချိတ်ဆက်မှု</div>
+        <div style="font: 700 1.2rem/1.6 'JetBrains Mono', monospace; color: var(--accent);">
+          <span id="langCurrentLabel">English</span>
+        </div>
+        <div class="hint" style="margin-top:0.5rem">Topbar တွင်လည်း အမြန်ပြောင်းလဲနိုင်ရန် ခလုတ်တပ်ထားပါသည်။</div>
       </div>
     </div>
 
@@ -705,7 +805,7 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
       </div>
     </div>
 
-    <!-- LOANS (ADMIN) - REPAYMENT TRACKING ENHANCED -->
+    <!-- LOANS (ADMIN) -->
     <div class="app-section admin-only" id="section-loans">
       <div class="grid-2">
         <div class="card">
@@ -886,8 +986,11 @@ let state = {
   logs: [],
   transfers: [],
   capital: [],
+  bills: [],
+  billTypes: ['Electric Bill', 'Phone Bill', 'Water Bill', 'Internet Bill', 'Other Bill'],
+  language: 'en',
   categories: {
-    income: ['Commission', 'Salary', 'Other Income'],
+    income: ['Commission', 'Salary', 'Bill Commission', 'Other Income'],
     expense: ['Rent', 'Food', 'Transport', 'Utility', 'Other Expense']
   },
   userPermissions: {
@@ -905,6 +1008,24 @@ let state = {
   loanSearch: ''
 };
 let currentRole = null;
+let currentSection = 'dashboard';
+
+const i18n = {
+  en: {
+    'dashboard': 'Dashboard', 'transfer': 'Transfers', 'bills': 'Bill Payment',
+    'summary': 'Daily Summary', 'ledger': 'Ledger', 'reports': 'Monthly / Yearly',
+    'pnl': 'Income / Expense', 'categories': 'Categories', 'export': 'Export Data',
+    'backup': 'Backup', 'language': 'Language', 'accounts': 'Accounts',
+    'adjust': 'Adjustment', 'loans': 'Loans', 'logs': 'System Logs', 'capital': 'Capital'
+  },
+  my: {
+    'dashboard': 'ဒတ်ရှ်ဘုတ်', 'transfer': 'ငွေလွှဲပြောင်းခြင်း', 'bills': 'ဘီလ် ပေးဆောင်ခြင်း',
+    'summary': 'နေ့စဉ် အဝင်အထွက်', 'ledger': 'မှတ်တမ်းများ', 'reports': 'လစဉ်/နှစ်စဉ် အစီရင်ခံစာ',
+    'pnl': 'အမြတ်/ကုန်ကျစရိတ်', 'categories': 'ခေါင်းစဉ်များ', 'export': 'စာရင်းထုတ်ရန်',
+    'backup': 'ဒေတာ သိမ်းဆည်းရန်', 'language': 'ဘာသာစကား', 'accounts': 'အကောင့်များ',
+    'adjust': 'ပြင်ဆင်ရန်', 'loans': 'ချေးငွေ', 'logs': 'စနစ် မှတ်တမ်း', 'capital': 'ငွေအရင်းအနှီး'
+  }
+};
 
 async function loadState() {
   try {
@@ -918,7 +1039,10 @@ async function loadState() {
         state.accounts.forEach(a => { if (typeof state.balances[a] !== 'number') state.balances[a] = 0; });
         if (!state.accounts.includes(state.currentAccount)) state.currentAccount = state.accounts[0];
         if (!state.categories || Array.isArray(state.categories)) {
-          state.categories = { income: ['Commission', 'Salary', 'Other Income'], expense: ['Rent', 'Food', 'Transport', 'Utility', 'Other Expense'] };
+          state.categories = { income: ['Commission', 'Salary', 'Bill Commission', 'Other Income'], expense: ['Rent', 'Food', 'Transport', 'Utility', 'Other Expense'] };
+        }
+        if (!state.categories.income.includes('Bill Commission')) {
+          state.categories.income.push('Bill Commission');
         }
         if (!state.userPermissions) {
           state.userPermissions = { canDelete: false, canAdjust: false, canLoans: false, canCapital: false, canCategories: false, canReports: true, canExport: true, canBackup: false };
@@ -926,8 +1050,10 @@ async function loadState() {
         if (!state.logs) state.logs = [];
         if (!state.transfers) state.transfers = [];
         if (!state.capital) state.capital = [];
+        if (!state.bills) state.bills = [];
+        if (!state.billTypes) state.billTypes = ['Electric Bill', 'Phone Bill', 'Water Bill', 'Internet Bill', 'Other Bill'];
+        if (!state.language) state.language = 'en';
         state.currentType = null;
-        // Migrate old loans
         if (state.loans) {
           state.loans.forEach(l => {
             if (!l.txnId) l.txnId = `LN-OLD-${l.id.slice(-6)}`;
@@ -987,6 +1113,42 @@ function getLoanStatus(loan) {
   return 'pending';
 }
 
+function applyLanguage() {
+  document.body.className = (document.body.className.replace(/\blang-\w+\b/g, '').trim()) + ' lang-' + state.language;
+  document.documentElement.lang = state.language;
+  
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (i18n[state.language] && i18n[state.language][key]) {
+      el.textContent = i18n[state.language][key];
+    }
+  });
+  
+  const nav = document.querySelector(`.nav-item[data-section="${currentSection}"]`);
+  if (nav) {
+    const textSpan = nav.querySelector('span:last-child');
+    if (textSpan) document.getElementById('topbarTitleText').textContent = textSpan.textContent;
+  }
+  
+  const toggle = document.getElementById('langToggle');
+  if (toggle) toggle.textContent = state.language === 'en' ? 'MY' : 'EN';
+  
+  const langLabel = document.getElementById('langCurrentLabel');
+  if (langLabel) langLabel.textContent = state.language === 'en' ? 'English' : 'မြန်မာ';
+  
+  document.querySelectorAll('#langToggleGroup button').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === state.language);
+  });
+  
+  saveState();
+}
+
+function toggleLanguage() {
+  state.language = state.language === 'en' ? 'my' : 'en';
+  applyLanguage();
+  showToast('LANGUAGE: ' + state.language.toUpperCase());
+}
+
 function renderSources(selectId, includeCash = true, includeAll = false) {
   const sel = document.getElementById(selectId);
   if(!sel) return;
@@ -1040,7 +1202,7 @@ function updateMenuVisibility() {
     const sec = item.dataset.section;
     if (sec === 'logs' || sec === 'accounts') {
       item.style.display = isAdmin() ? 'flex' : 'none';
-    } else if (sec === 'dashboard' || sec === 'transfer' || sec === 'summary' || sec === 'ledger' || sec === 'pnl') {
+    } else if (sec === 'dashboard' || sec === 'transfer' || sec === 'bills' || sec === 'summary' || sec === 'ledger' || sec === 'pnl' || sec === 'language') {
       item.style.display = 'flex';
     } else {
       let perm = false;
@@ -1131,8 +1293,9 @@ function tryLogin() {
     currentRole = loginRole;
     addLog('LOGIN', `User logged in`);
     document.getElementById('loginOverlay').classList.add('is-hidden');
-    document.body.className = 'role-' + currentRole;
+    document.body.className = 'role-' + currentRole + ' lang-' + state.language;
     document.getElementById('sidebarRole').textContent = currentRole.toUpperCase();
+    applyLanguage();
     renderAll(); showSection('dashboard');
     showToast('LOGGED IN AS ' + currentRole.toUpperCase());
   } else {
@@ -1154,7 +1317,7 @@ document.querySelectorAll('.pin-key').forEach(k => k.onclick = () => {
 });
 document.getElementById('logoutBtn').onclick = () => {
   addLog('LOGOUT', `User logged out`);
-  currentRole = null; pinEntry=''; document.body.className='';
+  currentRole = null; pinEntry=''; document.body.className = 'lang-' + state.language;
   document.getElementById('loginOverlay').classList.remove('is-hidden'); renderPinDisplay();
 };
 
@@ -1191,13 +1354,15 @@ function showSection(id) {
   const nav = document.querySelector(`.nav-item[data-section="${id}"]`);
   if (!nav || nav.style.display === 'none') return;
   
+  currentSection = id;
   document.querySelectorAll('.app-section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   
   const sec = document.getElementById('section-' + id);
   if (sec) sec.classList.add('active');
   nav.classList.add('active');
-  document.getElementById('topbarTitleText').textContent = nav.querySelector('span:last-child').textContent;
+  const textSpan = nav.querySelector('span:last-child');
+  if (textSpan) document.getElementById('topbarTitleText').textContent = textSpan.textContent;
   checkAlerts();
 }
 
@@ -1248,6 +1413,66 @@ function renderTransfers() {
   }).join('');
 }
 
+// ============ BILL PAYMENT ============
+function renderBills() {
+  const b = document.getElementById('billBody');
+  if (!b) return;
+  if (!state.bills || state.bills.length === 0) {
+    b.innerHTML = '<tr><td colspan="8" class="empty-state">No bill payments yet</td></tr>';
+    return;
+  }
+  const showDel = can('canDelete');
+  b.innerHTML = state.bills.slice().reverse().map(bill => {
+    const dt = new Date(bill.ts);
+    const ds = dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}) + ' ' + dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+    return `<tr>
+      <td style="color:var(--text-soft)">${ds}</td>
+      <td>${escapeHtml(bill.billType)}</td>
+      <td>${escapeHtml(bill.customerName || '-')}</td>
+      <td style="color:var(--text-soft)">${escapeHtml(bill.billId || '-')}</td>
+      <td class="amount">${fmt(bill.billAmount)}</td>
+      <td style="color:var(--accent)">+${fmt(bill.serviceFee || 0)}</td>
+      <td style="color:var(--text-soft)">${escapeHtml(bill.deductAccount)}</td>
+      <td>${showDel ? `<button class="btn-danger" onclick="deleteBill('${bill.id}')">DEL</button>` : ''}</td>
+    </tr>`;
+  }).join('');
+}
+
+function deleteBill(id) {
+  if (!can('canDelete')) return;
+  const bill = state.bills.find(x => x.id === id);
+  if (!bill) return;
+  
+  showModal('WARNING: DELETE BILL · ဘီလ်ဖျက်ရန်', 'ဤ ဘီလ် မှတ်တမ်းကို ဖျက်လိုက်ပါက ငွေပမာဏများ အလိုလို ပြန်လည် ပြောင်းလဲသွားပါမည်။',
+    [
+      {k: 'Bill Type', v: bill.billType},
+      {k: 'Bill Amount', v: fmt(bill.billAmount) + ' MMK'},
+      {k: 'Service Fee', v: fmt(bill.serviceFee || 0) + ' MMK'},
+      {k: 'Deducted From', v: bill.deductAccount}
+    ], true, (note) => {
+      const totalDeduction = bill.billAmount + (bill.serviceFee || 0);
+      
+      if (bill.serviceFee > 0) {
+        if ((state.balances[bill.incomeAccount] || 0) - bill.serviceFee < 0) {
+          showToast('CANNOT DELETE: Income account balance would go negative.');
+          return;
+        }
+      }
+      
+      state.balances[bill.deductAccount] += totalDeduction;
+      if (bill.serviceFee > 0) {
+        state.balances[bill.incomeAccount] -= bill.serviceFee;
+      }
+      
+      state.bills = state.bills.filter(x => x.id !== id);
+      state.pnl = state.pnl.filter(p => p.id !== 'pnl_bill_' + id);
+      
+      addLog('DEL_BILL', `Deleted ${bill.billType} bill ${fmt(bill.billAmount)}. Note: ${note || 'N/A'}`);
+      renderAll();
+      showToast('BILL DELETED');
+    }, 'DELETE', 'ဖျက်သည့် အကြောင်းပြချက် (optional)');
+}
+
 function renderSummary() {
   const w = document.getElementById('summaryGrid'); w.innerHTML = '';
   const ds = document.getElementById('sumDateStart')?.value, de = document.getElementById('sumDateEnd')?.value;
@@ -1264,6 +1489,7 @@ function renderSummary() {
   };
   let cIn=0, cOut=0;
   state.transactions.filter(t => filterFn(t.ts)).forEach(t => { if(t.type==='in') cIn+=t.amount; else cOut+=t.amount; });
+  let cBillOut = state.bills.filter(b => filterFn(b.ts) && b.deductAccount==='cash').reduce((s,b)=>s+(b.billAmount+(b.serviceFee||0)),0);
   let pInc = state.pnl.filter(p => filterFn(p.ts) && p.type==='income').reduce((s,p)=>s+p.amount,0);
   let pExp = state.pnl.filter(p => filterFn(p.ts) && p.type==='expense').reduce((s,p)=>s+p.amount,0);
   const dateLabel = useToday ? 'TODAY' : `${ds} → ${de}`;
@@ -1271,23 +1497,26 @@ function renderSummary() {
     <div class="name">CASH · ငွေသား (${dateLabel})</div>
     <div class="stat in"><span class="k">CASH IN</span><span class="v">+${fmt(cIn)}</span></div>
     <div class="stat out"><span class="k">CASH OUT</span><span class="v">-${fmt(cOut)}</span></div>
+    <div class="stat out"><span class="k">BILL PAID</span><span class="v">-${fmt(cBillOut)}</span></div>
     <div class="stat in"><span class="k">P&L INCOME</span><span class="v">+${fmt(pInc)}</span></div>
     <div class="stat out"><span class="k">P&L EXPENSE</span><span class="v">-${fmt(pExp)}</span></div>
-    <div class="stat net"><span class="k">NET FLOW</span><span class="v">${fmt(cIn - cOut + pInc - pExp)}</span></div>
+    <div class="stat net"><span class="k">NET FLOW</span><span class="v">${fmt(cIn - cOut - cBillOut + pInc - pExp)}</span></div>
     <div class="foot"><span class="k">Balance</span><span class="v">${fmt(state.balances.cash)}</span></div>
   </div>`;
   state.accounts.forEach(a => {
     let dIn=0, dOut=0;
     state.transactions.filter(t => filterFn(t.ts) && t.account===a).forEach(t => { if(t.type==='in') dOut+=t.amount; else dIn+=t.amount; });
+    let billOut = state.bills.filter(b => filterFn(b.ts) && b.deductAccount===a).reduce((s,b)=>s+(b.billAmount+(b.serviceFee||0)),0);
     let aPInc = state.pnl.filter(p => filterFn(p.ts) && p.type==='income' && p.source===a).reduce((s,p)=>s+p.amount,0);
     let aPExp = state.pnl.filter(p => filterFn(p.ts) && p.type==='expense' && p.source===a).reduce((s,p)=>s+p.amount,0);
     w.innerHTML += `<div class="summary-cell">
       <div class="name">${escapeHtml(a)}</div>
       <div class="stat in"><span class="k">DIGITAL IN</span><span class="v">+${fmt(dIn)}</span></div>
       <div class="stat out"><span class="k">DIGITAL OUT</span><span class="v">-${fmt(dOut)}</span></div>
+      <div class="stat out"><span class="k">BILL PAID</span><span class="v">-${fmt(billOut)}</span></div>
       <div class="stat in"><span class="k">P&L INCOME</span><span class="v">+${fmt(aPInc)}</span></div>
       <div class="stat out"><span class="k">P&L EXPENSE</span><span class="v">-${fmt(aPExp)}</span></div>
-      <div class="stat net"><span class="k">NET FLOW</span><span class="v">${fmt(dIn - dOut + aPInc - aPExp)}</span></div>
+      <div class="stat net"><span class="k">NET FLOW</span><span class="v">${fmt(dIn - dOut - billOut + aPInc - aPExp)}</span></div>
       <div class="foot"><span class="k">Balance</span><span class="v">${fmt(state.balances[a]||0)}</span></div>
     </div>`;
   });
@@ -1301,33 +1530,58 @@ function renderSummary() {
     const d = new Date(t.ts);
     const dateStr = d.toLocaleDateString('en-GB');
     const acc = t.account;
-    if(!map[dateStr+'|'+acc]) map[dateStr+'|'+acc] = {dateStr, account: acc, txOut: 0, txIn: 0, pnlInc: 0, pnlExp: 0};
+    if(!map[dateStr+'|'+acc]) map[dateStr+'|'+acc] = {dateStr, account: acc, txOut: 0, txIn: 0, billOut: 0, pnlInc: 0, pnlExp: 0};
     if(t.type === 'in') map[dateStr+'|'+acc].txOut += t.amount; else map[dateStr+'|'+acc].txIn += t.amount;
     if(t.income > 0 && t.incomeSource === acc) map[dateStr+'|'+acc].pnlInc += t.income;
+  });
+  state.bills.filter(b => { const d=new Date(b.ts); return d>=start && d<=end; }).forEach(b => {
+    const d = new Date(b.ts);
+    const dateStr = d.toLocaleDateString('en-GB');
+    const acc = b.deductAccount;
+    if(!map[dateStr+'|'+acc]) map[dateStr+'|'+acc] = {dateStr, account: acc, txOut: 0, txIn: 0, billOut: 0, pnlInc: 0, pnlExp: 0};
+    map[dateStr+'|'+acc].billOut += b.billAmount + (b.serviceFee || 0);
   });
   state.pnl.filter(p => { const d=new Date(p.ts); return d>=start && d<=end; }).forEach(p => {
     const d = new Date(p.ts);
     const dateStr = d.toLocaleDateString('en-GB');
     const acc = p.source;
-    if(!map[dateStr+'|'+acc]) map[dateStr+'|'+acc] = {dateStr, account: acc, txOut: 0, txIn: 0, pnlInc: 0, pnlExp: 0};
+    if(!map[dateStr+'|'+acc]) map[dateStr+'|'+acc] = {dateStr, account: acc, txOut: 0, txIn: 0, billOut: 0, pnlInc: 0, pnlExp: 0};
     if(p.type === 'income') map[dateStr+'|'+acc].pnlInc += p.amount; else map[dateStr+'|'+acc].pnlExp += p.amount;
   });
   const b = document.getElementById('dailyBody');
-  if(Object.keys(map).length === 0) { b.innerHTML = '<tr><td colspan="7" class="empty-state">No records in this range</td></tr>'; return; }
+  if(Object.keys(map).length === 0) { b.innerHTML = '<tr><td colspan="8" class="empty-state">No records in this range</td></tr>'; return; }
   b.innerHTML = Object.values(map).sort((a,b) => a.dateStr.localeCompare(b.dateStr) || a.account.localeCompare(b.account)).map(m => `
     <tr>
       <td style="color:var(--text-soft)">${m.dateStr}</td><td>${escapeHtml(m.account)}</td>
       <td class="type-out">${fmt(m.txOut)}</td><td class="type-in">${fmt(m.txIn)}</td>
+      <td class="type-out">${fmt(m.billOut || 0)}</td>
       <td class="type-in">${fmt(m.pnlInc)}</td><td class="type-out">${fmt(m.pnlExp)}</td>
-      <td class="amount" style="color:${(m.txIn + m.pnlInc - m.txOut - m.pnlExp)>=0?'var(--success)':'var(--danger)'}">${fmt(m.txIn + m.pnlInc - m.txOut - m.pnlExp)}</td>
+      <td class="amount" style="color:${(m.txIn + m.pnlInc - m.txOut - (m.billOut||0) - m.pnlExp)>=0?'var(--success)':'var(--danger)'}">${fmt(m.txIn + m.pnlInc - m.txOut - (m.billOut||0) - m.pnlExp)}</td>
     </tr>`).join('');
 }
 
 function renderTx() {
   const b = document.getElementById('txBody'), e = document.getElementById('emptyState'), t = document.getElementById('txTable');
-  b.innerHTML = ''; let txs = state.transactions.slice().reverse();
+  b.innerHTML = '';
+  
+  let allEntries = [];
+  state.transactions.forEach(tx => { allEntries.push({...tx}); });
+  state.bills.forEach(bill => {
+    allEntries.push({
+      id: bill.id, ts: bill.ts,
+      customerName: bill.customerName || '-', phone: bill.phone || '-',
+      type: 'bill', account: bill.deductAccount,
+      amount: bill.billAmount, income: bill.serviceFee || 0,
+      incomeSource: bill.incomeAccount, billType: bill.billType, billId: bill.billId
+    });
+  });
+  
+  let txs = allEntries.sort((a, b) => b.ts - a.ts);
+  
   if (state.filter === 'in') txs = txs.filter(t => t.type==='in');
   else if (state.filter === 'out') txs = txs.filter(t => t.type==='out');
+  else if (state.filter === 'bill') txs = txs.filter(t => t.type==='bill');
+  
   const ds = document.getElementById('ledgerStart').value, de = document.getElementById('ledgerEnd').value;
   if (ds && de) {
     const start = new Date(ds); start.setHours(0,0,0,0);
@@ -1340,15 +1594,26 @@ function renderTx() {
   if (delTh) delTh.style.display = showDel ? 'table-cell' : 'none';
   
   if (txs.length === 0) { e.style.display='block'; t.style.display='none'; return; } else { e.style.display='none'; t.style.display=''; }
+  
   txs.forEach((t, i) => {
     const dt = new Date(t.ts);
     const ds2 = dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}) + ' ' + dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+    const typeLabel = t.type==='in' ? 'CASH IN' : t.type==='out' ? 'CASH OUT' : 'BILL';
+    const deleteFn = t.type === 'bill' ? `deleteBill('${t.id}')` : `confirmDeleteTx('${t.id}')`;
+    const customerDisplay = t.billType 
+      ? `${escapeHtml(t.customerName)}<br><small style="color:var(--info);font-size:0.75rem">${escapeHtml(t.billType)}</small>`
+      : escapeHtml(t.customerName);
+    
     b.innerHTML += `<tr>
       <td class="idx">${String(txs.length-i).padStart(3,'0')}</td>
-      <td style="color:var(--text-soft)">${ds2}</td><td>${escapeHtml(t.customerName)}</td><td style="color:var(--text-soft)">${escapeHtml(t.phone)}</td>
-      <td class="type-${t.type}">${t.type==='in'?'CASH IN':'CASH OUT'}</td><td style="color:var(--text-soft)">${escapeHtml(t.account)}</td>
-      <td class="amount">${fmt(t.amount)}</td><td style="color:var(--accent)">+${fmt(t.income||0)} (${escapeHtml(t.incomeSource||'cash')})</td>
-      <td style="display:${showDel ? 'table-cell' : 'none'}"><button class="btn-danger" onclick="confirmDeleteTx('${t.id}')">DEL</button></td>
+      <td style="color:var(--text-soft)">${ds2}</td>
+      <td>${customerDisplay}</td>
+      <td style="color:var(--text-soft)">${escapeHtml(t.phone)}</td>
+      <td class="type-${t.type}">${typeLabel}</td>
+      <td style="color:var(--text-soft)">${escapeHtml(t.account)}</td>
+      <td class="amount">${fmt(t.amount)}</td>
+      <td style="color:var(--accent)">+${fmt(t.income||0)} (${escapeHtml(t.incomeSource||'cash')})</td>
+      <td style="display:${showDel ? 'table-cell' : 'none'}"><button class="btn-danger" onclick="${deleteFn}">DEL</button></td>
     </tr>`;
   });
 }
@@ -1361,23 +1626,13 @@ function confirmDeleteTx(id) {
 function deleteTx(id, note) {
   const t = state.transactions.find(x => x.id === id); if(!t) return;
   
-  // Balance အနုတ်ကျမယ်ဆိုရင် ဖျက်ခွင့်မပြုပါ
   if (t.type === 'in') {
-    if ((state.balances.cash || 0) - t.amount < 0) {
-      showToast('CANNOT DELETE: Cash balance would go negative.');
-      return;
-    }
+    if ((state.balances.cash || 0) - t.amount < 0) { showToast('CANNOT DELETE: Cash balance would go negative.'); return; }
   } else { 
-    if ((state.balances[t.account] || 0) - t.amount < 0) {
-      showToast('CANNOT DELETE: Account balance would go negative.');
-      return;
-    }
+    if ((state.balances[t.account] || 0) - t.amount < 0) { showToast('CANNOT DELETE: Account balance would go negative.'); return; }
   }
   if (t.income > 0) {
-    if ((state.balances[t.incomeSource || 'cash'] || 0) - t.income < 0) {
-      showToast('CANNOT DELETE: Income source balance would go negative.');
-      return;
-    }
+    if ((state.balances[t.incomeSource || 'cash'] || 0) - t.income < 0) { showToast('CANNOT DELETE: Income source balance would go negative.'); return; }
   }
 
   if (t.type==='in') { state.balances.cash -= t.amount; state.balances[t.account] += t.amount; } 
@@ -1440,38 +1695,30 @@ function renderPnl() {
   if (ds && de) {
     const start = new Date(ds); start.setHours(0,0,0,0);
     const end = new Date(de); end.setHours(23,59,59,999);
-    filteredPnl = filteredPnl.filter(p => {
-      const d = new Date(p.ts);
-      return d >= start && d <= end;
-    });
+    filteredPnl = filteredPnl.filter(p => { const d = new Date(p.ts); return d >= start && d <= end; });
   }
 
   const showAction = isAdmin();
   const actionTh = document.querySelector('#pnlTable th.pnl-action-col');
   if (actionTh) actionTh.style.display = showAction ? 'table-cell' : 'none';
 
-  if (filteredPnl.length === 0) {
-    e.style.display = 'block';
-    t.style.display = 'none';
-  } else {
-    e.style.display = 'none';
-    t.style.display = '';
+  if (filteredPnl.length === 0) { e.style.display = 'block'; t.style.display = 'none'; }
+  else {
+    e.style.display = 'none'; t.style.display = '';
     filteredPnl.forEach(p => {
       const dt = new Date(p.ts);
-      const isLinked = p.id && p.id.startsWith('pnl_tx_');
+      const isLinked = p.id && (p.id.startsWith('pnl_tx_') || p.id.startsWith('pnl_bill_'));
       let actionHtml = '';
       if (showAction) {
         if (isLinked) {
-          actionHtml = `<td style="display:table-cell"><span style="font:400 10px/1 'JetBrains Mono',monospace;color:var(--text-soft);opacity:0.5;">TX-LINKED</span></td>`;
+          actionHtml = `<td style="display:table-cell"><span style="font:400 10px/1 'JetBrains Mono',monospace;color:var(--text-soft);opacity:0.5;">${p.id.startsWith('pnl_bill_') ? 'BILL-LINKED' : 'TX-LINKED'}</span></td>`;
         } else {
           actionHtml = `<td style="display:table-cell">
             <button class="btn-danger" style="margin-right:0.3rem" onclick="reversePnl('${p.id}')">REV</button>
             <button class="btn-danger" onclick="deletePnl('${p.id}')">DEL</button>
           </td>`;
         }
-      } else {
-        actionHtml = '<td style="display:none"></td>';
-      }
+      } else { actionHtml = '<td style="display:none"></td>'; }
       b.innerHTML += `<tr>
         <td style="color:var(--text-soft)">${dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}</td>
         <td class="type-${p.type==='income'?'in':'out'}">${p.type.toUpperCase()}</td>
@@ -1484,90 +1731,51 @@ function renderPnl() {
       if (p.type === 'income') sumInc += p.amount; else sumExp += p.amount;
     });
   }
-
   if (sumText) sumText.innerHTML = `Total Income: <span style="color: var(--success)">${fmt(sumInc)} MMK</span> | Total Expense: <span style="color: var(--danger)">${fmt(sumExp)} MMK</span>`;
 }
 
 function reversePnl(id) {
   if (!isAdmin()) { showToast('ADMIN ONLY'); return; }
-  const p = state.pnl.find(x => x.id === id);
-  if(!p) return;
-
-  if (p.id && p.id.startsWith('pnl_tx_')) {
-    showToast('CANNOT REVERSE TX-LINKED ENTRY');
-    return;
+  const p = state.pnl.find(x => x.id === id); if(!p) return;
+  if (p.id && (p.id.startsWith('pnl_tx_') || p.id.startsWith('pnl_bill_'))) {
+    showToast('CANNOT REVERSE LINKED ENTRY'); return;
   }
-
   const newType = p.type === 'income' ? 'expense' : 'income';
-
   showModal('REVERSE P&L ENTRY · စာရင်းပြောင်းပြန်တင်ရန်',
     'ဤ စာရင်းကို ပြောင်းပြန် မှတ်တမ်းတင်မည်။ မူရင်းစာရင်း၏ <strong style="color:var(--accent)">ဆန့်ကျင်ဘက် စာရင်း</strong> တစ်ခု အလိုလို ဖန်တီးပြီး ငွေလက်ကျန်ကိုလည်း ပြောင်းလဲပါမည်။',
     [
-      {k: 'Original Type', v: p.type.toUpperCase()},
-      {k: 'Reversed Type', v: newType.toUpperCase()},
-      {k: 'Category', v: p.category},
-      {k: 'Source', v: p.source},
-      {k: 'Amount', v: fmt(p.amount) + ' MMK'}
+      {k: 'Original Type', v: p.type.toUpperCase()}, {k: 'Reversed Type', v: newType.toUpperCase()},
+      {k: 'Category', v: p.category}, {k: 'Source', v: p.source}, {k: 'Amount', v: fmt(p.amount) + ' MMK'}
     ], true, (note) => {
-      // Balance အနုတ်ကျမယ်ဆိုရင် ပြောင်းပြန်တင်ခွင့်မပြုပါ
       if (p.type === 'income') {
-        if ((state.balances[p.source] || 0) - p.amount < 0) {
-          showToast('CANNOT REVERSE: Source balance would go negative.');
-          return;
-        }
+        if ((state.balances[p.source] || 0) - p.amount < 0) { showToast('CANNOT REVERSE: Source balance would go negative.'); return; }
         state.balances[p.source] -= p.amount;
-      } else {
-        state.balances[p.source] += p.amount;
-      }
-      
-      state.pnl.push({
-        id: 'pnl_' + Date.now(),
-        ts: Date.now(),
-        type: newType,
-        category: p.category,
-        source: p.source,
-        amount: p.amount,
-        note: 'REVERSE: ' + (note || p.note || '')
-      });
+      } else { state.balances[p.source] += p.amount; }
+      state.pnl.push({ id: 'pnl_' + Date.now(), ts: Date.now(), type: newType, category: p.category, source: p.source, amount: p.amount, note: 'REVERSE: ' + (note || p.note || '') });
       addLog('REV_PNL', `Reversed ${p.type} ${fmt(p.amount)} in ${p.category}. Reason: ${note || 'N/A'}`);
-      renderAll();
-      showToast('P&L REVERSED');
+      renderAll(); showToast('P&L REVERSED');
     }, 'REVERSE', 'ပြောင်းပြန်တင်သည့် အကြောင်းပြချက် (optional)');
 }
 
 function deletePnl(id) {
   if (!isAdmin()) { showToast('ADMIN ONLY'); return; }
-  const p = state.pnl.find(x => x.id === id);
-  if(!p) return;
-
-  if (p.id && p.id.startsWith('pnl_tx_')) {
-    showToast('DELETE VIA LEDGER (TX-LINKED)');
-    return;
+  const p = state.pnl.find(x => x.id === id); if(!p) return;
+  if (p.id && (p.id.startsWith('pnl_tx_') || p.id.startsWith('pnl_bill_'))) {
+    showToast('DELETE VIA LEDGER (LINKED)'); return;
   }
-
   showModal('WARNING: DELETE P&L ENTRY · စာရင်းဖျက်ရန်',
     'ဤ စာရင်းကို ဖျက်လိုက်ပါက <strong style="color:var(--danger)">ငွေလက်ကျန် ပမာဏများ အလိုလို ပြန်လည် ပြောင်းလဲသွားပါမည်</strong>။ ဖျက်ရန် သေချာပါသလား?',
     [
-      {k: 'Type', v: p.type.toUpperCase()},
-      {k: 'Category', v: p.category},
-      {k: 'Source', v: p.source},
-      {k: 'Amount', v: fmt(p.amount) + ' MMK'},
-      {k: 'Note', v: p.note || '-'}
+      {k: 'Type', v: p.type.toUpperCase()}, {k: 'Category', v: p.category}, {k: 'Source', v: p.source},
+      {k: 'Amount', v: fmt(p.amount) + ' MMK'}, {k: 'Note', v: p.note || '-'}
     ], true, (note) => {
-      // Balance အနုတ်ကျမယ်ဆိုရင် ဖျက်ခွင့်မပြုပါ
       if (p.type === 'income') {
-        if ((state.balances[p.source] || 0) - p.amount < 0) {
-          showToast('CANNOT DELETE: Source balance would go negative.');
-          return;
-        }
+        if ((state.balances[p.source] || 0) - p.amount < 0) { showToast('CANNOT DELETE: Source balance would go negative.'); return; }
         state.balances[p.source] -= p.amount;
-      } else {
-        state.balances[p.source] += p.amount;
-      }
+      } else { state.balances[p.source] += p.amount; }
       state.pnl = state.pnl.filter(x => x.id !== id);
       addLog('DEL_PNL', `Deleted ${p.type} ${fmt(p.amount)} in ${p.category}. Reason: ${note || 'N/A'}`);
-      renderAll();
-      showToast('P&L DELETED');
+      renderAll(); showToast('P&L DELETED');
     }, 'DELETE', 'ဖျက်သည့် အကြောင်းပြချက် (optional)');
 }
 function renderCategories() {
@@ -1598,8 +1806,7 @@ function removeCategory(type, c) {
   showModal('DELETE CATEGORY · ခေါင်းစဉ်ဖျက်ရန်', `'${c}' ကို ဖျက်လိုက်ပါမည်။`, null, true, () => {
     state.categories[type] = state.categories[type].filter(x => x !== c);
     addLog('DEL_CATEGORY', `Removed ${type} category: ${c}`);
-    renderCategories();
-    showToast('CATEGORY DELETED');
+    renderCategories(); showToast('CATEGORY DELETED');
   }, 'DELETE');
 }
 
@@ -1622,8 +1829,7 @@ function removeAccount(a) {
     state.accounts = state.accounts.filter(x=>x!==a); 
     delete state.balances[a]; 
     addLog('DEL_ACCOUNT', `Removed account ${a}`); 
-    renderAll();
-    showToast('ACCOUNT DELETED');
+    renderAll(); showToast('ACCOUNT DELETED');
   }, 'DELETE');
 }
 function changePIN() {
@@ -1651,7 +1857,6 @@ function applyAdjustment() {
   document.getElementById('adjustNew').value=''; document.getElementById('adjustNote').value='';
 }
 
-// ============ ENHANCED LOANS ============
 function renderLoans() {
   renderSources('loanSource');
   populateRepaySelect();
@@ -1661,13 +1866,8 @@ function renderLoans() {
     if (getLoanStatus(l) === 'settled' || getLoanStatus(l) === 'overpaid') return;
     if(!map[l.borrowerName]) map[l.borrowerName] = {lent:0, borrowed:0, remLent:0, remBorrowed:0, lastTs:0, repayDate:''};
     const rem = getLoanRemaining(l);
-    if(l.direction==='lend') {
-      map[l.borrowerName].lent += l.amount;
-      map[l.borrowerName].remLent += rem;
-    } else {
-      map[l.borrowerName].borrowed += l.amount;
-      map[l.borrowerName].remBorrowed += rem;
-    }
+    if(l.direction==='lend') { map[l.borrowerName].lent += l.amount; map[l.borrowerName].remLent += rem; }
+    else { map[l.borrowerName].borrowed += l.amount; map[l.borrowerName].remBorrowed += rem; }
     if(l.ts > map[l.borrowerName].lastTs) { map[l.borrowerName].lastTs = l.ts; map[l.borrowerName].repayDate = l.repaymentDate; }
   });
   
@@ -1695,7 +1895,6 @@ function renderLoans() {
       (l.txnId && l.txnId.toLowerCase().includes(state.loanSearch))
     );
   }
-  
   if (state.loanFilter !== 'all') {
     filteredLoans = filteredLoans.filter(l => getLoanStatus(l) === state.loanFilter);
   }
@@ -1708,9 +1907,7 @@ function renderLoans() {
     const remBal = getLoanRemaining(l);
     const status = getLoanStatus(l);
     const payCount = (l.payments || []).length;
-    
     let statusBadge = `<span class="status-badge status-${status}">${status.toUpperCase()}</span>`;
-    
     let actions = `<div style="display:flex; flex-direction:column; gap:0.3rem; align-items:flex-start;">`;
     if (status !== 'settled' && status !== 'overpaid') {
       actions += `<button class="btn-primary" style="width:auto; padding:0.3rem 0.5rem; font-size: 10px; margin: 0;" onclick="selectLoanForRepay('${l.id}')">PAY</button>`;
@@ -1718,7 +1915,6 @@ function renderLoans() {
     actions += `<button class="btn-secondary" style="padding:0.3rem 0.5rem; font-size: 10px; margin: 0;" onclick="showPayHistory('${l.id}')">HISTORY (${payCount})</button>`;
     actions += `<button class="btn-danger" style="padding:0.3rem 0.5rem; font-size: 10px; margin: 0;" onclick="deleteLoan('${l.id}')">DEL</button>`;
     actions += `</div>`;
-    
     return `<tr>
       <td style="color:var(--text-soft)">${dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'2-digit'})}</td>
       <td style="font-size: 11px; color: var(--accent);">${l.txnId || 'N/A'}</td>
@@ -1745,11 +1941,7 @@ function populateRepaySelect() {
     }
   });
   sel.innerHTML = opts;
-  if (cur && state.loans.find(l => l.id === cur)) {
-    sel.value = cur;
-  } else {
-    onRepayLoanSelect(); // Reset details if current selection is no longer valid
-  }
+  if (cur && state.loans.find(l => l.id === cur)) { sel.value = cur; } else { onRepayLoanSelect(); }
 }
 
 function onRepayLoanSelect() {
@@ -1758,30 +1950,17 @@ function onRepayLoanSelect() {
   const repayBtn = document.getElementById('repayBtn');
   const amountInput = document.getElementById('repayAmount');
   const errorDiv = document.getElementById('repayError');
-  
-  if (!id) {
-    detailsDiv.style.display = 'none';
-    repayBtn.disabled = true;
-    amountInput.value = '';
-    errorDiv.style.display = 'none';
-    return;
-  }
-  
+  if (!id) { detailsDiv.style.display = 'none'; repayBtn.disabled = true; amountInput.value = ''; errorDiv.style.display = 'none'; return; }
   const loan = state.loans.find(l => l.id === id);
   if (!loan) return;
-  
   document.getElementById('rTxId').textContent = loan.txnId;
   document.getElementById('rName').textContent = loan.borrowerName;
   document.getElementById('rOrigAmt').textContent = fmt(loan.amount) + ' MMK';
-  
   const totalPaid = getLoanTotalPaid(loan);
   const remBal = getLoanRemaining(loan);
-  
   document.getElementById('rTotalPaid').textContent = fmt(totalPaid) + ' MMK';
   document.getElementById('rRemBal').textContent = fmt(remBal) + ' MMK';
-  
   amountInput.value = remBal > 0 ? remBal : ''; 
-  
   detailsDiv.style.display = 'block';
   validateRepayAmount();
 }
@@ -1791,31 +1970,14 @@ function validateRepayAmount() {
   const errorDiv = document.getElementById('repayError');
   const repayBtn = document.getElementById('repayBtn');
   const id = document.getElementById('repayLoanSelect').value;
-  
-  if (!id) {
-    repayBtn.disabled = true;
-    errorDiv.style.display = 'none';
-    return;
-  }
-  
+  if (!id) { repayBtn.disabled = true; errorDiv.style.display = 'none'; return; }
   const loan = state.loans.find(l => l.id === id);
   if (!loan) return;
-  
   const remBal = getLoanRemaining(loan);
   const entered = parseFloat(amountInput.value);
-  
-  if (isNaN(entered) || entered <= 0) {
-    errorDiv.style.display = 'block';
-    errorDiv.textContent = 'Payment amount must be greater than 0.';
-    repayBtn.disabled = true;
-  } else if (entered > remBal) {
-    errorDiv.style.display = 'block';
-    errorDiv.textContent = 'Payment amount cannot be greater than the remaining balance.';
-    repayBtn.disabled = true;
-  } else {
-    errorDiv.style.display = 'none';
-    repayBtn.disabled = false;
-  }
+  if (isNaN(entered) || entered <= 0) { errorDiv.style.display = 'block'; errorDiv.textContent = 'Payment amount must be greater than 0.'; repayBtn.disabled = true; }
+  else if (entered > remBal) { errorDiv.style.display = 'block'; errorDiv.textContent = 'Payment amount cannot be greater than the remaining balance.'; repayBtn.disabled = true; }
+  else { errorDiv.style.display = 'none'; repayBtn.disabled = false; }
 }
 
 function selectLoanForRepay(id) {
@@ -1828,73 +1990,38 @@ function selectLoanForRepay(id) {
 function showPayHistory(id) {
   const loan = state.loans.find(l => l.id === id);
   if(!loan) return;
-  
   const totalPaid = getLoanTotalPaid(loan);
   const remBal = getLoanRemaining(loan);
   const status = getLoanStatus(loan);
-  
   let statusColor = 'var(--text-soft)';
   if (status === 'pending') statusColor = 'var(--danger)';
   else if (status === 'partial') statusColor = 'var(--warning)';
   else if (status === 'settled') statusColor = 'var(--success)';
   else if (status === 'overpaid') statusColor = 'var(--info)';
-  
   let html = `
     <div style="text-align: left; margin-bottom: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;">
-      <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-        <span style="color: var(--text-soft);">Transaction ID:</span>
-        <span style="color: var(--accent);">${loan.txnId}</span>
-      </div>
-      <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-        <span style="color: var(--text-soft);">Person:</span>
-        <span>${escapeHtml(loan.borrowerName)}</span>
-      </div>
-      <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-        <span style="color: var(--text-soft);">Original Amount:</span>
-        <span>${fmt(loan.amount)} MMK</span>
-      </div>
-      <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-        <span style="color: var(--text-soft);">Total Paid:</span>
-        <span style="color: var(--success);">${fmt(totalPaid)} MMK</span>
-      </div>
-      <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-        <span style="color: var(--text-soft);">Remaining:</span>
-        <span style="color: var(--danger);">${fmt(remBal)} MMK</span>
-      </div>
-      <div style="display: flex; justify-content: space-between;">
-        <span style="color: var(--text-soft);">Status:</span>
-        <span style="color: ${statusColor}; font-weight: bold;">${status.toUpperCase()}</span>
-      </div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;"><span style="color: var(--text-soft);">Transaction ID:</span><span style="color: var(--accent);">${loan.txnId}</span></div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;"><span style="color: var(--text-soft);">Person:</span><span>${escapeHtml(loan.borrowerName)}</span></div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;"><span style="color: var(--text-soft);">Original Amount:</span><span>${fmt(loan.amount)} MMK</span></div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;"><span style="color: var(--text-soft);">Total Paid:</span><span style="color: var(--success);">${fmt(totalPaid)} MMK</span></div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;"><span style="color: var(--text-soft);">Remaining:</span><span style="color: var(--danger);">${fmt(remBal)} MMK</span></div>
+      <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-soft);">Status:</span><span style="color: ${statusColor}; font-weight: bold;">${status.toUpperCase()}</span></div>
     </div>
     <div style="max-height: 300px; overflow-y: auto; border: 1px solid var(--line); border-radius: 4px; margin-top: 1rem;">
       <table style="min-width: 100%; font-size: 0.8rem;">
-        <thead>
-          <tr style="background: rgba(255,255,255,0.02);">
-            <th style="padding: 0.5rem; text-align: left;">Date</th>
-            <th style="padding: 0.5rem; text-align: right;">Amount</th>
-            <th style="padding: 0.5rem; text-align: right;">Balance</th>
-          </tr>
-        </thead>
-        <tbody>
-  `;
-  
+        <thead><tr style="background: rgba(255,255,255,0.02);"><th style="padding: 0.5rem; text-align: left;">Date</th><th style="padding: 0.5rem; text-align: right;">Amount</th><th style="padding: 0.5rem; text-align: right;">Balance</th></tr></thead>
+        <tbody>`;
   let runningBalance = loan.amount;
   if (loan.payments && loan.payments.length > 0) {
     loan.payments.forEach(p => {
       runningBalance -= p.amount;
       const pDate = new Date(p.ts);
-      html += `<tr style="border-bottom: 1px solid var(--line-soft);">
-        <td style="padding: 0.5rem; color: var(--text-soft);">${pDate.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'2-digit'})}</td>
-        <td style="padding: 0.5rem; text-align: right; color: var(--success);">-${fmt(p.amount)}</td>
-        <td style="padding: 0.5rem; text-align: right; color: ${runningBalance > 0 ? 'var(--danger)' : 'var(--text-soft)'};">${fmt(runningBalance)}</td>
-      </tr>`;
+      html += `<tr style="border-bottom: 1px solid var(--line-soft);"><td style="padding: 0.5rem; color: var(--text-soft);">${pDate.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'2-digit'})}</td><td style="padding: 0.5rem; text-align: right; color: var(--success);">-${fmt(p.amount)}</td><td style="padding: 0.5rem; text-align: right; color: ${runningBalance > 0 ? 'var(--danger)' : 'var(--text-soft)'};">${fmt(runningBalance)}</td></tr>`;
     });
   } else {
     html += `<tr><td colspan="3" style="padding: 1rem; text-align: center; color: var(--text-soft);">No payments recorded yet.</td></tr>`;
   }
-  
   html += `</tbody></table></div>`;
-  
   showModal(`PAYMENT HISTORY · ${loan.borrowerName}`, html, null, false, null);
 }
 
@@ -1905,26 +2032,11 @@ function recordLoan() {
   const d = state.currentLoanType;
   const note = document.getElementById('loanNote').value;
   const rd = document.getElementById('loanRepayDate').value;
-  
   if(!n||!a||a<=0) { showToast('CHECK INPUTS'); return; }
   if(d==='lend' && (state.balances[s]||0) < a) { showToast('INSUFFICIENT BALANCE'); return; }
-  
   if(d==='lend') state.balances[s] -= a; else state.balances[s] += a;
-  
   const txnId = generateTxnId();
-  state.loans.push({
-    id: 'loan_'+Date.now(),
-    txnId: txnId,
-    borrowerName: n,
-    amount: a,
-    source: s,
-    direction: d,
-    note: note,
-    repaymentDate: rd,
-    ts: Date.now(),
-    payments: []
-  });
-  
+  state.loans.push({ id: 'loan_'+Date.now(), txnId: txnId, borrowerName: n, amount: a, source: s, direction: d, note: note, repaymentDate: rd, ts: Date.now(), payments: [] });
   addLog('ADD_LOAN', `${d} ${a} to/from ${n} via ${s}`);
   renderAll(); checkAlerts(); showToast('LOAN RECORDED');
   document.getElementById('loanName').value=''; document.getElementById('loanAmount').value=''; document.getElementById('loanNote').value=''; document.getElementById('loanRepayDate').value='';
@@ -1935,24 +2047,13 @@ function deleteLoan(id) {
   const l = state.loans.find(x => x.id === id); if(!l) return;
   const totalPaid = getLoanTotalPaid(l);
   const remBal = getLoanRemaining(l);
-  
   showModal('WARNING: DELETE LOAN · ချေးငွေဖျက်ရန်', 'ဤ ချေးငွေ မှတ်တမ်းကို ဖျက်လိုက်ပါက ကျန်ငွေပမာဏသာ ပြန်လည် ညှိပေးပါမည်။', [
-    {k:'Name', v:l.borrowerName}, 
-    {k:'Original Amount', v:fmt(l.amount)}, 
-    {k:'Total Paid', v:fmt(totalPaid)},
-    {k:'Remaining', v:fmt(remBal)}
+    {k:'Name', v:l.borrowerName}, {k:'Original Amount', v:fmt(l.amount)}, {k:'Total Paid', v:fmt(totalPaid)}, {k:'Remaining', v:fmt(remBal)}
   ], true, (note) => {
-    // Balance အနုတ်ကျမယ်ဆိုရင် ဖျက်ခွင့်မပြုပါ
     if(l.direction === 'borrow') {
-      if ((state.balances[l.source] || 0) - remBal < 0) {
-        showToast('CANNOT DELETE: Source balance would go negative.');
-        return;
-      }
+      if ((state.balances[l.source] || 0) - remBal < 0) { showToast('CANNOT DELETE: Source balance would go negative.'); return; }
       state.balances[l.source] -= remBal;
-    } else {
-      state.balances[l.source] += remBal; 
-    }
-    
+    } else { state.balances[l.source] += remBal; }
     state.loans = state.loans.filter(x => x.id !== id);
     addLog('DEL_LOAN', `Deleted loan ${l.txnId}. Note: ${note||''}`);
     renderAll(); showToast('LOAN DELETED');
@@ -1961,18 +2062,13 @@ function deleteLoan(id) {
 function renderCapital() {
   const b = document.getElementById('capitalBody');
   if (!b) return;
-  if (!state.capital || state.capital.length === 0) {
-    b.innerHTML = '<tr><td colspan="5" class="empty-state">No capital records</td></tr>';
-    return;
-  }
+  if (!state.capital || state.capital.length === 0) { b.innerHTML = '<tr><td colspan="5" class="empty-state">No capital records</td></tr>'; return; }
   b.innerHTML = state.capital.slice().reverse().map(c => {
     const dt = new Date(c.ts);
     const ds = dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' });
     return `<tr>
-      <td style="color:var(--text-soft)">${ds}</td>
-      <td>${escapeHtml(c.account)}</td>
-      <td class="amount">+${fmt(c.amount)}</td>
-      <td style="color:var(--text-soft)">${escapeHtml(c.note || '')}</td>
+      <td style="color:var(--text-soft)">${ds}</td><td>${escapeHtml(c.account)}</td>
+      <td class="amount">+${fmt(c.amount)}</td><td style="color:var(--text-soft)">${escapeHtml(c.note || '')}</td>
       <td><button class="btn-danger" onclick="deleteCapital('${c.id}')">DEL</button></td>
     </tr>`;
   }).join('');
@@ -1981,11 +2077,7 @@ function deleteCapital(id) {
   if (!isAdmin()) return;
   const c = state.capital.find(x => x.id === id); if(!c) return;
   showModal('WARNING: DELETE CAPITAL · ငွေအရင်းအနှီးဖျက်ရန်', 'ဤ မှတ်တမ်းကို ဖျက်လိုက်ပါက လက်ကျန်ငွေ လျော့သွားပါမည်။', [{k:'Account', v:c.account}, {k:'Amount', v:fmt(c.amount)}], true, (note) => {
-    // Balance အနုတ်ကျမယ်ဆိုရင် ဖျက်ခွင့်မပြုပါ
-    if ((state.balances[c.account] || 0) - c.amount < 0) {
-      showToast('CANNOT DELETE: Account balance would go negative.');
-      return;
-    }
+    if ((state.balances[c.account] || 0) - c.amount < 0) { showToast('CANNOT DELETE: Account balance would go negative.'); return; }
     state.balances[c.account] -= c.amount;
     state.capital = state.capital.filter(x => x.id !== id);
     addLog('DEL_CAPITAL', `Deleted capital ${fmt(c.amount)} from ${c.account}. Note: ${note||''}`);
@@ -2015,8 +2107,7 @@ function exportData(format) {
   let sheetName = 'Data';
 
   if (expType === 'flow') {
-    fileName = 'Account_Flow';
-    sheetName = 'Account Flow';
+    fileName = 'Account_Flow'; sheetName = 'Account Flow';
     const map = {};
     state.transactions.filter(t => { const d=new Date(t.ts); return d>=start && d<=end; }).forEach(t => {
       const d = new Date(t.ts), dateStr = d.toLocaleDateString('en-GB'), accKey = t.account;
@@ -2024,6 +2115,12 @@ function exportData(format) {
       if(!map[dateStr+'|'+accKey]) map[dateStr+'|'+accKey] = {Date: dateStr, Account: accKey, 'Cash In Amount': 0, 'Cash Out Amount': 0, Income: 0, Expense: 0};
       if(t.type === 'in') map[dateStr+'|'+accKey]['Cash In Amount'] += t.amount; else map[dateStr+'|'+accKey]['Cash Out Amount'] += t.amount;
       if(t.income > 0 && t.incomeSource === accKey) map[dateStr+'|'+accKey].Income += t.income;
+    });
+    state.bills.filter(b => { const d=new Date(b.ts); return d>=start && d<=end; }).forEach(b => {
+      const d = new Date(b.ts), dateStr = d.toLocaleDateString('en-GB'), accKey = b.deductAccount;
+      if (acc !== 'all' && acc !== accKey) return;
+      if(!map[dateStr+'|'+accKey]) map[dateStr+'|'+accKey] = {Date: dateStr, Account: accKey, 'Cash In Amount': 0, 'Cash Out Amount': 0, Income: 0, Expense: 0};
+      map[dateStr+'|'+accKey]['Cash Out Amount'] += b.billAmount + (b.serviceFee || 0);
     });
     state.pnl.filter(p => { const d=new Date(p.ts); return d>=start && d<=end; }).forEach(p => {
       const d = new Date(p.ts), dateStr = d.toLocaleDateString('en-GB'), accKey = p.source;
@@ -2033,40 +2130,30 @@ function exportData(format) {
     });
     data = Object.values(map).sort((a,b) => a.Date.localeCompare(b.Date) || a.Account.localeCompare(b.Account));
   } else if (expType === 'pnl') {
-    fileName = 'PnL_Details';
-    sheetName = 'Income/Expense';
+    fileName = 'PnL_Details'; sheetName = 'Income/Expense';
     data = state.pnl.filter(p => { const d = new Date(p.ts); return d>=start && d<=end; }).map(p => ({
-      Date: new Date(p.ts).toLocaleDateString('en-GB'),
-      Type: p.type.toUpperCase(),
-      Category: p.category,
-      Source: p.source,
-      Amount: p.amount,
-      Note: p.note || ''
+      Date: new Date(p.ts).toLocaleDateString('en-GB'), Type: p.type.toUpperCase(),
+      Category: p.category, Source: p.source, Amount: p.amount, Note: p.note || ''
+    }));
+  } else if (expType === 'bills') {
+    fileName = 'Bill_Details'; sheetName = 'Bills';
+    data = state.bills.filter(b => { const d = new Date(b.ts); return d>=start && d<=end; }).map(b => ({
+      Date: new Date(b.ts).toLocaleDateString('en-GB'), Type: b.billType,
+      Name: b.customerName || '-', BillID: b.billId || '-', Phone: b.phone || '-',
+      BillAmount: b.billAmount, ServiceFee: b.serviceFee || 0,
+      DeductAccount: b.deductAccount, IncomeAccount: b.incomeAccount, Note: b.note || ''
     }));
   } else if (expType === 'loans') {
-    fileName = 'Loan_Details';
-    sheetName = 'Loans';
+    fileName = 'Loan_Details'; sheetName = 'Loans';
     data = state.loans.filter(l => { const d = new Date(l.ts); return d>=start && d<=end; }).map(l => ({
-      Date: new Date(l.ts).toLocaleDateString('en-GB'),
-      TxnID: l.txnId,
-      Type: l.direction.toUpperCase(),
-      Name: l.borrowerName,
-      Amount: l.amount,
-      Paid: getLoanTotalPaid(l),
-      Balance: getLoanRemaining(l),
-      Status: getLoanStatus(l).toUpperCase(),
-      Source: l.source,
-      RepayDate: l.repaymentDate || '-',
-      Note: l.note || ''
+      Date: new Date(l.ts).toLocaleDateString('en-GB'), TxnID: l.txnId, Type: l.direction.toUpperCase(),
+      Name: l.borrowerName, Amount: l.amount, Paid: getLoanTotalPaid(l), Balance: getLoanRemaining(l),
+      Status: getLoanStatus(l).toUpperCase(), Source: l.source, RepayDate: l.repaymentDate || '-', Note: l.note || ''
     }));
   } else if (expType === 'capital') {
-    fileName = 'Capital_Details';
-    sheetName = 'Capital';
+    fileName = 'Capital_Details'; sheetName = 'Capital';
     data = state.capital.filter(c => { const d = new Date(c.ts); return d>=start && d<=end; }).map(c => ({
-      Date: new Date(c.ts).toLocaleDateString('en-GB'),
-      Account: c.account,
-      Amount: c.amount,
-      Note: c.note || ''
+      Date: new Date(c.ts).toLocaleDateString('en-GB'), Account: c.account, Amount: c.amount, Note: c.note || ''
     }));
   }
 
@@ -2075,14 +2162,8 @@ function exportData(format) {
   const keys = Object.keys(data[0]);
   const totalRow = {};
   keys.forEach(k => {
-    let sum = 0;
-    let isNumeric = false;
-    data.forEach(row => {
-      if (typeof row[k] === 'number') {
-        isNumeric = true;
-        sum += row[k];
-      }
-    });
+    let sum = 0; let isNumeric = false;
+    data.forEach(row => { if (typeof row[k] === 'number') { isNumeric = true; sum += row[k]; } });
     totalRow[k] = isNumeric ? sum : '';
   });
   if (keys.length > 0) totalRow[keys[0]] = 'TOTAL';
@@ -2099,21 +2180,12 @@ function exportData(format) {
     doc.text(`${fileName} Export`, 14, 15);
     const head = [keys];
     const body = data.map(d => Object.values(d));
-    const foot = [keys.map((k, i) => {
-      if (i === 0) return 'TOTAL';
-      if (typeof totalRow[k] === 'number') return fmt(totalRow[k]);
-      return '';
-    })];
-    
+    const foot = [keys.map((k, i) => { if (i === 0) return 'TOTAL'; if (typeof totalRow[k] === 'number') return fmt(totalRow[k]); return ''; })];
     doc.autoTable({
-      startY: 20,
-      head: head,
-      body: body,
-      foot: foot,
+      startY: 20, head: head, body: body, foot: foot,
       headStyles: { fillColor: [18, 18, 18], textColor: [200, 170, 130], fontStyle: 'bold' },
       footStyles: { fillColor: [200, 170, 130], textColor: [10, 10, 10], fontStyle: 'bold' },
-      bodyStyles: { textColor: 50 },
-      alternateRowStyles: { fillColor: [245, 245, 245] }
+      bodyStyles: { textColor: 50 }, alternateRowStyles: { fillColor: [245, 245, 245] }
     });
     doc.save(`${fileName}_${Date.now()}.pdf`);
   }
@@ -2127,7 +2199,7 @@ function downloadBackup() {
 }
 function restoreBackup(e) {
   const f = e.target.files[0]; if(!f) return; const r = new FileReader();
-  r.onload = ev => { try { state = JSON.parse(ev.target.result); saveState(); renderAll(); showToast('RESTORED'); } catch(e){ showToast('INVALID FILE'); } };
+  r.onload = ev => { try { state = JSON.parse(ev.target.result); saveState(); renderAll(); applyLanguage(); showToast('RESTORED'); } catch(e){ showToast('INVALID FILE'); } };
   r.readAsText(f);
 }
 
@@ -2144,15 +2216,7 @@ document.getElementById('txForm').onsubmit = e => { e.preventDefault();
   
   if (i > 0) {
     state.balances[incSrc] += i;
-    state.pnl.push({
-      id: 'pnl_tx_' + tx.id,
-      ts: tx.ts,
-      type: 'income',
-      category: 'Commission',
-      source: incSrc,
-      amount: i,
-      note: `Income from ${c}`
-    });
+    state.pnl.push({ id: 'pnl_tx_' + tx.id, ts: tx.ts, type: 'income', category: 'Commission', source: incSrc, amount: i, note: `Income from ${c}` });
   }
   
   addLog('ADD_TX', `${state.currentType === 'in' ? 'Cash In' : 'Cash Out'} ${fmt(a)} for ${c}. Income: ${fmt(i)}`);
@@ -2181,154 +2245,54 @@ document.getElementById('transferForm').onsubmit = e => { e.preventDefault();
   updateTransferBalances();
 };
 
+document.getElementById('billForm').onsubmit = e => { e.preventDefault();
+  const billType = document.getElementById('billType').value;
+  const customerName = document.getElementById('billCustomerName').value.trim();
+  const billId = document.getElementById('billId').value.trim();
+  const phone = document.getElementById('billPhone').value.trim();
+  const billAmount = parseFloat(document.getElementById('billAmount').value);
+  const serviceFee = parseFloat(document.getElementById('billFee').value) || 0;
+  const deductAccount = document.getElementById('billDeductAccount').value;
+  const incomeAccount = document.getElementById('billIncomeAccount').value;
+  const note = document.getElementById('billNote').value.trim();
+  
+  if (!billAmount || billAmount <= 0) { showToast('CHECK BILL AMOUNT'); return; }
+  
+  const totalDeduction = billAmount + serviceFee;
+  if ((state.balances[deductAccount] || 0) < totalDeduction) { showToast('INSUFFICIENT BALANCE IN DEDUCT ACCOUNT'); return; }
+  
+  state.balances[deductAccount] -= totalDeduction;
+  if (serviceFee > 0) { state.balances[incomeAccount] += serviceFee; }
+  
+  const bill = { id: 'bill_' + Date.now(), ts: Date.now(), billType, customerName, billId, phone, billAmount, serviceFee, deductAccount, incomeAccount, note };
+  state.bills.push(bill);
+  
+  if (serviceFee > 0) {
+    state.pnl.push({ id: 'pnl_bill_' + bill.id, ts: bill.ts, type: 'income', category: 'Bill Commission', source: incomeAccount, amount: serviceFee, note: `Bill fee - ${billType}${customerName ? ' (' + customerName + ')' : ''}` });
+  }
+  
+  addLog('BILL_PAY', `Paid ${billType} ${fmt(billAmount)} + fee ${fmt(serviceFee)} via ${deductAccount}`);
+  renderAll();
+  
+  const details = [
+    {k: 'Bill Type', v: billType},
+    {k: 'Bill Amount', v: fmt(billAmount) + ' MMK'},
+    {k: 'Service Fee', v: fmt(serviceFee) + ' MMK'},
+    {k: 'Deducted From', v: deductAccount},
+    {k: 'Fee To', v: incomeAccount},
+    {k: 'Total Deduction', v: fmt(totalDeduction) + ' MMK'}
+  ];
+  showModal('BILL PAYMENT COMPLETE', 'ဘီလ် ပေးဆောင်မှု အောင်မြင်ပါသည်။', details);
+  
+  document.getElementById('billAmount').value = '';
+  document.getElementById('billFee').value = '0';
+  document.getElementById('billCustomerName').value = '';
+  document.getElementById('billId').value = '';
+  document.getElementById('billPhone').value = '';
+  document.getElementById('billNote').value = '';
+};
+
 document.getElementById('capitalForm').onsubmit = e => { e.preventDefault();
   const dateVal = document.getElementById('capitalDate').value;
   const acc = document.getElementById('capitalAccount').value;
-  const amount = parseFloat(document.getElementById('capitalAmount').value);
-  const note = document.getElementById('capitalNote').value;
-
-  if (!dateVal || !acc || !amount || amount <= 0) { showToast('CHECK INPUTS'); return; }
-  
-  const t = new Date();
-  const dateObj = new Date(dateVal);
-  dateObj.setHours(t.getHours(), t.getMinutes(), t.getSeconds(), t.getMilliseconds());
-
-  state.balances[acc] = (state.balances[acc] || 0) + amount;
-  state.capital.push({
-    id: 'cap_' + Date.now(),
-    ts: dateObj.getTime(),
-    date: dateVal,
-    account: acc,
-    amount: amount,
-    note: note
-  });
-
-  addLog('ADD_CAPITAL', `Injected ${fmt(amount)} to ${acc}`);
-  renderAll();
-  showToast('CAPITAL RECORDED');
-  document.getElementById('capitalAmount').value = '';
-  document.getElementById('capitalNote').value = '';
-};
-
-document.getElementById('pnlForm').onsubmit = e => { e.preventDefault();
-  const cat = document.getElementById('pnlCategory').value, src = document.getElementById('pnlSource').value, a = parseFloat(document.getElementById('pnlAmount').value), note = document.getElementById('pnlNote').value;
-  if(!a||a<=0) { showToast('INVALID AMOUNT'); return; }
-  if(state.currentPnlType==='expense' && (state.balances[src]||0)<a) { showToast('INSUFFICIENT BALANCE'); return; }
-  if(state.currentPnlType==='income') state.balances[src] += a; else state.balances[src] -= a;
-  state.pnl.push({id:'pnl_'+Date.now(),ts:Date.now(),type:state.currentPnlType,category:cat,source:src,amount:a,note});
-  addLog('ADD_PNL', `${state.currentPnlType} ${fmt(a)} in ${cat} via ${src}`); renderAll(); showToast('RECORDED');
-  document.getElementById('pnlAmount').value=''; document.getElementById('pnlNote').value='';
-};
-
-document.getElementById('repayForm').onsubmit = e => { e.preventDefault();
-  const id = document.getElementById('repayLoanSelect').value;
-  const amount = parseFloat(document.getElementById('repayAmount').value);
-  const note = document.getElementById('repayNote').value;
-  
-  const loan = state.loans.find(l => l.id === id);
-  if(!loan) return;
-  
-  const remBal = getLoanRemaining(loan);
-  if (isNaN(amount) || amount <= 0 || amount > remBal) {
-    showToast('INVALID AMOUNT');
-    return;
-  }
-  
-  if(loan.direction === 'lend') {
-    state.balances[loan.source] += amount;
-  } else {
-    if ((state.balances[loan.source] || 0) < amount) { showToast('INSUFFICIENT BALANCE IN SOURCE'); return; }
-    state.balances[loan.source] -= amount;
-  }
-  
-  if (!loan.payments) loan.payments = [];
-  loan.payments.push({
-    payId: 'pay_' + Date.now(),
-    ts: Date.now(),
-    amount: amount,
-    note: note
-  });
-  
-  addLog('REPAY_LOAN', `Paid ${fmt(amount)} for loan ${loan.txnId}`);
-  renderAll(); checkAlerts(); showToast('PAYMENT RECORDED');
-  
-  document.getElementById('repayLoanSelect').value = '';
-  document.getElementById('repayAmount').value = '';
-  document.getElementById('repayNote').value = '';
-  document.getElementById('repayDetails').style.display = 'none';
-  document.getElementById('repayBtn').disabled = true;
-};
-
-document.querySelectorAll('#typeToggle button').forEach(b => b.onclick = () => {
-  document.querySelectorAll('#typeToggle button').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active'); state.currentType=b.dataset.type;
-});
-document.querySelectorAll('#pnlTypeToggle button').forEach(b => b.onclick = () => {
-  document.querySelectorAll('#pnlTypeToggle button').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active'); state.currentPnlType=b.dataset.type;
-  renderCategories();
-});
-document.querySelectorAll('#loanTypeToggle button').forEach(b => b.onclick = () => {
-  document.querySelectorAll('#loanTypeToggle button').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active'); state.currentLoanType=b.dataset.type;
-});
-document.querySelectorAll('#reportTypeToggle button').forEach(b => b.onclick = () => {
-  document.querySelectorAll('#reportTypeToggle button').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active'); state.currentReportType=b.dataset.type; renderReports();
-});
-document.querySelectorAll('#filterBar .chip').forEach(c => c.onclick = () => {
-  document.querySelectorAll('#filterBar .chip').forEach(x=>x.classList.remove('active'));
-  c.classList.add('active'); state.filter=c.dataset.filter; renderTx();
-});
-document.querySelectorAll('#loanFilterBar .chip').forEach(c => c.onclick = () => {
-  document.querySelectorAll('#loanFilterBar .chip').forEach(x=>x.classList.remove('active'));
-  c.classList.add('active'); state.loanFilter=c.dataset.filter; renderLoans();
-});
-
-document.getElementById('ledgerStart').onchange = renderTx;
-document.getElementById('ledgerEnd').onchange = renderTx;
-document.getElementById('reportMonth').onchange = renderReports;
-document.getElementById('reportYear').onchange = renderReports;
-
-if (document.getElementById('pnlStart')) document.getElementById('pnlStart').onchange = renderPnl;
-if (document.getElementById('pnlEnd')) document.getElementById('pnlEnd').onchange = renderPnl;
-
-if (document.getElementById('transferFrom')) document.getElementById('transferFrom').onchange = updateTransferBalances;
-if (document.getElementById('transferTo')) document.getElementById('transferTo').onchange = updateTransferBalances;
-
-if (document.getElementById('repayLoanSelect')) document.getElementById('repayLoanSelect').onchange = onRepayLoanSelect;
-if (document.getElementById('repayAmount')) document.getElementById('repayAmount').oninput = validateRepayAmount;
-if (document.getElementById('loanSearch')) {
-  document.getElementById('loanSearch').oninput = (e) => {
-    state.loanSearch = e.target.value.toLowerCase();
-    renderLoans();
-  };
-}
-
-function renderAll() {
-  renderSources('txAccount'); renderSources('incomeSource'); renderSources('pnlSource'); renderSources('exportAccount', true, true);
-  renderSources('capitalAccount'); renderSources('adjustTarget'); renderSources('loanSource');
-  renderTransferSources();
-  renderBalances(); renderSummary(); renderTx(); renderReports(); renderPnl(); renderCategories(); renderAccountList(); renderAdjust(); renderLoans(); renderLogs(); renderTransfers(); renderCapital(); checkAlerts();
-  updateMenuVisibility(); loadPermissionsUI();
-  
-  const cDate = document.getElementById('capitalDate');
-  if (cDate && !cDate.value) cDate.value = new Date().toISOString().split('T')[0];
-}
-function tickClock() { const d=new Date(); document.getElementById('clock').textContent = d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'}) + ' · ' + d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}); }
-tickClock(); setInterval(tickClock, 1000); setInterval(checkAlerts, 3600000);
-
-setupAutoHideSidebar();
-
-const cvs=document.querySelector('canvas.rain'), ctx=cvs.getContext('2d'); let cols,drops;
-function resize(){cvs.width=innerWidth;cvs.height=innerHeight;cols=Math.floor(cvs.width/22);drops=Array.from({length:cols},()=>Math.random()*-cvs.height);} resize(); addEventListener('resize',resize);
-const CH='0123456789KPGWAVEBANKMMK$+-=.◆'; let rr=true;
-function rf(){ if(!rr)return; ctx.fillStyle='rgba(10,10,10,0.09)'; ctx.fillRect(0,0,cvs.width,cvs.height); ctx.font='14.3px "JetBrains Mono",monospace'; drops.forEach((y,i)=>{const x=i*22;ctx.fillStyle=Math.random()<0.02?'rgba(255,230,180,0.95)':'rgba(200,170,130,0.55)';ctx.fillText(CH[Math.floor(Math.random()*CH.length)],x,y);drops[i]=y>cvs.height&&Math.random()>0.975?0:y+11;}); requestAnimationFrame(rf);}
-if(!matchMedia('(prefers-reduced-motion: reduce)').matches) rf();
-
-loadState().then(() => {
-  renderPinDisplay();
-});
-</script>
-</body>
-</html>
+  const amount = parseFloat(document.getElementById('capitalAmount').value
