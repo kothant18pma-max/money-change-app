@@ -442,7 +442,7 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
             </div>
             <button type="submit" class="btn-primary" data-i18n="record_trans">RECORD TRANSFER</button>
           </form>
-          <div class="hint" data-i18n="hint_trans">ဘဏ်မှ Wallet သို့လည်းကောင်း၊ Wallet မှ ငွေသားအဖြစ် ထုတ်ယူလည်းကောင်း အလွယ်တကူ လွှဲပြောင်းနိုင်ပါသည်။</div>
+          <div class="hint" data-i18n="hint_trans">ဘဏ်မှ Wallet သို့လည်းကောင်း، Wallet မှ ငွေသားအဖြစ် ထုတ်ယူလည်းကောင်း အလွယ်တကူ လွှဲပြောင်းနိုင်ပါသည်။</div>
         </div>
         <div class="card">
           <div class="card-header" data-i18n="recent_trans">Recent Transfers · လွှဲပြောင်းမှု မှတ်တမ်း</div>
@@ -488,15 +488,9 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
                 <input type="tel" id="billPhone" placeholder="09-xxx">
               </div>
             </div>
-            <div class="form-row-2">
-              <div class="form-row">
-                <label data-i18n="from_acc">From Account</label>
-                <select id="billFromAcc" required></select>
-              </div>
-              <div class="form-row">
-                <label data-i18n="fee_acc">Service Fee To</label>
-                <select id="billIncomeAcc" required></select>
-              </div>
+            <div class="form-row">
+              <label data-i18n="from_acc">From Account (Debit)</label>
+              <select id="billFromAcc" required></select>
             </div>
             <div class="form-row-2">
               <div class="form-row">
@@ -504,12 +498,13 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
                 <input type="number" id="billAmount" placeholder="50000" required>
               </div>
               <div class="form-row">
-                <label data-i18n="serv_fee">Service Fee</label>
+                <label data-i18n="serv_fee">Service Fee (Cash Income)</label>
                 <input type="number" id="billFee" placeholder="1000" value="0" required>
               </div>
             </div>
             <button type="submit" class="btn-primary" data-i18n="record_bill">RECORD BILL PAYMENT</button>
           </form>
+          <div class="hint" data-i18n="hint_bill">ဖောက်သည်ဆီမှ ငွေသား (Cash) အဖြစ် ရယူပြီး၊ ဘီးလ်ပမာဏကို ရွေးချယ်ထားတဲ့ အကောင့်မှ နှုတ်ယူ (Debit) သွားပါမယ်။ ဝန်ဆောင်ခ (Service Fee) သည် Cash ငွေသားထဲသို့ ဝင်ရောက်ပါမယ်။</div>
         </div>
         <div class="card">
           <div class="card-header" data-i18n="recent_bills">Recent Bill Payments · ငွေပေးချေမှု မှတ်တမ်း</div>
@@ -997,7 +992,7 @@ const translations = {
     rec_tx: "Record Transaction · လဲလှယ်မှု သွင်းရန်", cust_name: "Customer Name", phone: "Phone", tx_type: "Type · အမျိုးအစား (ရွေးချယ်ပါ)", cash_in: "CASH IN", cash_out: "CASH OUT", amount: "Amount", account: "Account", income: "Income", income_to: "Income To", record_tx: "RECORD TRANSACTION",
     live_bal: "Live Balances · လက်ကျန်ငွေ", cash: "Cash", digital_total: "Digital Money Total", today_net: "Today's Net Income",
     int_trans: "Internal Transfer · ငွေလွှဲပြောင်းခြင်း", from_acc: "From Account", to_acc: "To Account", note: "Note", record_trans: "RECORD TRANSFER", recent_trans: "Recent Transfers · လွှဲပြောင်းမှု မှတ်တမ်း", date: "Date", from: "From", to: "To", hint_trans: "ဘဏ်မှ Wallet သို့လည်းကောင်း၊ Wallet မှ ငွေသားအဖြစ် ထုတ်ယူလည်းကောင်း အလွယ်တကူ လွှဲပြောင်းနိုင်ပါသည်။",
-    bill_pay: "Bill Payment · ငွေပေးချေမှု", bill_type: "Bill Type", bill_name: "Name", bill_id: "Bill ID", bill_phone: "Phone", fee_acc: "Service Fee To", bill_amt: "Bill Amount", serv_fee: "Service Fee", record_bill: "RECORD BILL PAYMENT", recent_bills: "Recent Bill Payments · ငွေပေးချေမှု မှတ်တမ်း", type: "Type", name_phone: "Name/Phone", fee: "Fee",
+    bill_pay: "Bill Payment · ငွေပေးချေမှု", bill_type: "Bill Type", bill_name: "Name", bill_id: "Bill ID", bill_phone: "Phone", fee_acc: "Service Fee To", bill_amt: "Bill Amount", serv_fee: "Service Fee (Cash Income)", record_bill: "RECORD BILL PAYMENT", recent_bills: "Recent Bill Payments · ငွေပေးချေမှု မှတ်တမ်း", type: "Type", name_phone: "Name/Phone", fee: "Fee", hint_bill: "ဖောက်သည်ဆီမှ ငွေသား (Cash) အဖြစ် ရယူပြီး၊ ဘီးလ်ပမာဏကို ရွေးချယ်ထားတဲ့ အကောင့်မှ နှုတ်ယူ (Debit) သွားပါမယ်။ ဝန်ဆောင်ခ (Service Fee) သည် Cash ငွေသားထဲသို့ ဝင်ရောက်ပါမယ်။",
     daily_sum: "Daily Summary · နေ့စဉ် အဝင်အထွက်", start_date: "Start Date", end_date: "End Date", apply: "APPLY", day_by_day: "Day-by-Day Account Flow · အကောင့်အလိုက် နေ့စဉ်မှတ်တမ်း", cash_in_out: "Cash In Tx (Out)", cash_out_in: "Cash Out Tx (In)", expense: "Expense", net_flow: "Net Flow",
     ledger_menu: "Ledger · မှတ်တမ်းများ", all: "ALL", time: "Time", action: "Action", no_tx: "No transactions yet.", bill_pay_chip: "BILL PAY",
     reports_menu: "Monthly / Yearly Reports · လစဉ်/နှစ်စဉ် အစီရင်ခံစာ", monthly: "MONTHLY", yearly: "YEARLY", month: "Month", year: "Year", sum_report: "SUMMARY REPORT", total_cash_in: "TOTAL CASH IN", total_cash_out: "TOTAL CASH OUT", tx_income: "TX INCOME", other_income: "OTHER INCOME", net_profit: "NET PROFIT",
@@ -1020,7 +1015,7 @@ const translations = {
     rec_tx: "Record Transaction", cust_name: "Customer Name", phone: "Phone", tx_type: "Type (Select)", cash_in: "CASH IN", cash_out: "CASH OUT", amount: "Amount", account: "Account", income: "Income", income_to: "Income To", record_tx: "RECORD TRANSACTION",
     live_bal: "Live Balances", cash: "Cash", digital_total: "Digital Money Total", today_net: "Today's Net Income",
     int_trans: "Internal Transfer", from_acc: "From Account", to_acc: "To Account", note: "Note", record_trans: "RECORD TRANSFER", recent_trans: "Recent Transfers", date: "Date", from: "From", to: "To", hint_trans: "Easily transfer from Bank to Wallet, or withdraw from Wallet to Cash.",
-    bill_pay: "Bill Payment", bill_type: "Bill Type", bill_name: "Name", bill_id: "Bill ID", bill_phone: "Phone", fee_acc: "Service Fee To", bill_amt: "Bill Amount", serv_fee: "Service Fee", record_bill: "RECORD BILL PAYMENT", recent_bills: "Recent Bill Payments", type: "Type", name_phone: "Name/Phone", fee: "Fee",
+    bill_pay: "Bill Payment", bill_type: "Bill Type", bill_name: "Name", bill_id: "Bill ID", bill_phone: "Phone", fee_acc: "Service Fee To", bill_amt: "Bill Amount", serv_fee: "Service Fee (Cash Income)", record_bill: "RECORD BILL PAYMENT", recent_bills: "Recent Bill Payments", type: "Type", name_phone: "Name/Phone", fee: "Fee", hint_bill: "Receive cash from customer, deduct bill amount from selected account (Debit). Service fee goes to Cash.",
     daily_sum: "Daily Summary", start_date: "Start Date", end_date: "End Date", apply: "APPLY", day_by_day: "Day-by-Day Account Flow", cash_in_out: "Cash In Tx (Out)", cash_out_in: "Cash Out Tx (In)", expense: "Expense", net_flow: "Net Flow",
     ledger_menu: "Ledger", all: "ALL", time: "Time", action: "Action", no_tx: "No transactions yet.", bill_pay_chip: "BILL PAY",
     reports_menu: "Monthly / Yearly Reports", monthly: "MONTHLY", yearly: "YEARLY", month: "Month", year: "Year", sum_report: "SUMMARY REPORT", total_cash_in: "TOTAL CASH IN", total_cash_out: "TOTAL CASH OUT", tx_income: "TX INCOME", other_income: "OTHER INCOME", net_profit: "NET PROFIT",
@@ -1043,7 +1038,7 @@ function t(key) {
   return translations[lang][key] || translations['my'][key] || key;
 }
 
-const STORAGE_KEY = 'moneychange_v20';
+const STORAGE_KEY = 'moneychange_v21';
 let state = {
   accounts: ['Kpay(TZ)', 'Wave(TZ)', 'Bank(TZ)'],
   balances: { 'Kpay(TZ)': 0, 'Wave(TZ)': 0, 'Bank(TZ)': 0, 'cash': 0 },
@@ -1080,35 +1075,66 @@ let state = {
 };
 let currentRole = null;
 
-function loadState() {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved) {
-    try {
-      const p = JSON.parse(saved);
-      state = {...state, ...p};
-      if (typeof state.balances.cash !== 'number') state.balances.cash = 0;
-      state.accounts.forEach(a => { if (typeof state.balances[a] !== 'number') state.balances[a] = 0; });
-      if (!state.accounts.includes(state.currentAccount)) state.currentAccount = state.accounts[0];
-      if (!state.categories || Array.isArray(state.categories)) {
-        state.categories = { income: ['Commission', 'Salary', 'Other Income'], expense: ['Rent', 'Food', 'Transport', 'Utility', 'Other Expense'] };
+// Database နဲ့ ချိတ်ဆက်ဖို့အတွက် API URL
+const API_URL = '/api/state'; 
+
+async function loadState() {
+  // 1. အရင်ဆုံး Cloudflare D1 Database (API) မှ ဒေတာတွေ ဆွဲယူကြည့်ပါမယ်
+  try {
+    const response = await fetch(API_URL);
+    if (response.ok) {
+      const p = await response.json();
+      if (p && Object.keys(p).length > 0) {
+        state = {...state, ...p};
+        // အကယ်၍ API ကနေ ဒေတာရခဲ့ရင် localStorage ထဲမှာ ထပ်သိမ်းထားပါမယ် (Offline သုံးဖို့)
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       }
-      if (!state.userPermissions) {
-        state.userPermissions = { canDelete: false, canAdjust: false, canLoans: false, canCapital: false, canCategories: false, canReports: true, canExport: true, canBackup: false };
-      }
-      if (!state.logs) state.logs = [];
-      if (!state.transfers) state.transfers = [];
-      if (!state.capital) state.capital = [];
-      if (!state.loanTxCounter) state.loanTxCounter = 1;
-      if (!state.loans) state.loans = [];
-      state.loans.forEach(l => {
-        if (!l.transactionId) { l.transactionId = `LN-${String(state.loanTxCounter).padStart(6, '0')}`; state.loanTxCounter++; }
-        if (!l.payments) l.payments = [];
-      });
-      state.currentType = null;
-    } catch (e) {}
+    }
+  } catch (e) {
+    console.error("API မှ ဒေတာဆွဲယူ၍မရပါ၊ localStorage ကို ပြန်သုံးပါမယ်။", e);
+    // 2. API ပျက်သွားရင် (သို့) ဒေတာမရှိသေးရင် localStorage ကနေ ဖတ်ပါမယ်
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const p = JSON.parse(saved);
+        state = {...state, ...p};
+      } catch (err) {}
+    }
   }
+
+  // 3. Data Validation (နှစ်ခုလုံးမှ ရလာသော data ကို စစ်ဆေးခြင်း)
+  if (typeof state.balances.cash !== 'number') state.balances.cash = 0;
+  state.accounts.forEach(a => { if (typeof state.balances[a] !== 'number') state.balances[a] = 0; });
+  if (!state.accounts.includes(state.currentAccount)) state.currentAccount = state.accounts[0];
+  if (!state.categories || Array.isArray(state.categories)) {
+    state.categories = { income: ['Commission', 'Salary', 'Other Income'], expense: ['Rent', 'Food', 'Transport', 'Utility', 'Other Expense'] };
+  }
+  if (!state.userPermissions) {
+    state.userPermissions = { canDelete: false, canAdjust: false, canLoans: false, canCapital: false, canCategories: false, canReports: true, canExport: true, canBackup: false };
+  }
+  if (!state.logs) state.logs = [];
+  if (!state.transfers) state.transfers = [];
+  if (!state.capital) state.capital = [];
+  if (!state.loanTxCounter) state.loanTxCounter = 1;
+  if (!state.loans) state.loans = [];
+  state.loans.forEach(l => {
+    if (!l.transactionId) { l.transactionId = `LN-${String(state.loanTxCounter).padStart(6, '0')}`; state.loanTxCounter++; }
+    if (!l.payments) l.payments = [];
+  });
+  state.currentType = null;
 }
-function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+function saveState() {
+  // 1. ပုံမှန်အတိုင်း localStorage ထဲမှာ အရင်သိမ်းပါ (Instant UI အတွက်)
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  
+  // 2. Cloudflare D1 Database ထဲကိုလည်း တစ်ပြိုင်နက်တည်း Update တင်ပါမယ်
+  fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(state)
+  }).catch(err => console.error("Database ထဲ သိမ်း၍မရပါ: ", err));
+}
 
 function fmt(n) { if (typeof n !== 'number' || isNaN(n)) n = 0; return Math.round(n).toLocaleString('en-US'); }
 function isToday(ts) { const d = new Date(ts), n = new Date(); return d.toDateString() === n.toDateString(); }
@@ -1456,10 +1482,8 @@ function confirmDeleteTx(id) {
 function deleteTx(id) {
   const tx = state.transactions.find(x => x.id === id); if(!tx) return;
   if (tx.type === 'bill') {
-    state.balances.cash = (state.balances.cash || 0) - (tx.amount + (tx.income || 0));
-    state.balances[tx.account] = (state.balances[tx.account] || 0) + tx.amount;
-    state.balances[tx.incomeSource] = (state.balances[tx.incomeSource] || 0) - (tx.income || 0);
-    if (tx.incomeSource !== 'cash') state.balances.cash += (tx.income || 0);
+    state.balances[tx.account] += tx.amount;
+    state.balances.cash -= (tx.amount + tx.income);
   } else if (tx.type==='in') { 
     state.balances.cash -= tx.amount; state.balances[tx.account] += tx.amount; 
     if(tx.income) state.balances[tx.incomeSource || 'cash'] -= tx.income;
@@ -1905,7 +1929,7 @@ function exportData(format) {
       Amount: t.amount,
       Fee: t.income || 0,
       FromAccount: t.account,
-      FeeAccount: t.incomeSource
+      FeeAccount: t.incomeSource || 'cash'
     }));
   }
   
@@ -1982,25 +2006,17 @@ document.getElementById('billForm').onsubmit = e => { e.preventDefault();
   const bId = document.getElementById('billId').value.trim();
   const bPhone = document.getElementById('billPhone').value.trim();
   const fromAcc = document.getElementById('billFromAcc').value;
-  const incAcc = document.getElementById('billIncomeAcc').value;
   const amount = parseFloat(document.getElementById('billAmount').value);
   const fee = parseFloat(document.getElementById('billFee').value) || 0;
 
   if(!amount || amount <= 0) { showToast(t('invalid_amt')); return; }
   if((state.balances[fromAcc] || 0) < amount) { showToast(t('insuff_bal_from')); return; }
 
-  // FIX: Correct balance logic for Credit (Income) Service Fee
-  // Customer pays in Cash (Amount + Fee)
-  state.balances.cash += (amount + fee);
-  
-  // We pay the bill from From Account
+  // Debit from selected Account (Kpay/Wave/Bank)
   state.balances[fromAcc] -= amount;
   
-  // We allocate the fee (our credit) to the Service Fee Account
-  if (incAcc !== 'cash') {
-    state.balances.cash -= fee;
-    state.balances[incAcc] += fee;
-  }
+  // Credit to Cash (Bill Amount + Service Fee)
+  state.balances.cash += (amount + fee);
 
   const tx = {
     id: 'bill_' + Date.now(),
@@ -2011,7 +2027,7 @@ document.getElementById('billForm').onsubmit = e => { e.preventDefault();
     phone: bPhone,
     billId: bId,
     account: fromAcc,
-    incomeSource: incAcc,
+    incomeSource: 'cash', // Income is always cash
     amount: amount,
     income: fee
   };
@@ -2023,22 +2039,21 @@ document.getElementById('billForm').onsubmit = e => { e.preventDefault();
       ts: tx.ts,
       type: 'income',
       category: 'Bill Service Fee',
-      source: incAcc,
+      source: 'cash', // Income is always cash
       amount: fee,
       note: `Fee for ${bType} - ${bName || bId || bPhone}`
     });
   }
 
-  addLog('BILL_PAY', `Paid ${fmt(amount)} for ${bType}. Fee: ${fmt(fee)}`);
+  addLog('BILL_PAY', `Paid ${fmt(amount)} for ${bType} via ${fromAcc}. Fee (Cash): ${fmt(fee)}`);
   saveState(); renderAll();
   
   const details = [
     {k: t('bill_type'), v: bType},
     {k: t('bill_name'), v: bName || '-'},
     {k: t('bill_amt'), v: fmt(amount) + ' MMK'},
-    {k: t('serv_fee'), v: fmt(fee) + ' MMK'},
-    {k: t('from_acc'), v: fromAcc},
-    {k: t('fee_acc'), v: incAcc}
+    {k: t('serv_fee'), v: fmt(fee) + ' MMK (Cash)'},
+    {k: t('from_acc'), v: fromAcc}
   ];
   showModal(t('bill_complete'), t('bill_complete_msg'), details);
   
@@ -2128,7 +2143,7 @@ if (document.getElementById('transferTo')) document.getElementById('transferTo')
 function renderAll() {
   renderSources('txAccount'); renderSources('incomeSource'); renderSources('pnlSource'); renderSources('exportAccount', true, true);
   renderSources('capitalAccount'); renderSources('adjustTarget'); renderSources('loanSource');
-  renderSources('billFromAcc'); renderSources('billIncomeAcc');
+  renderSources('billFromAcc'); // Only billFromAcc is needed now
   renderTransferSources();
   renderBalances(); renderSummary(); renderTx(); renderReports(); renderPnl(); renderCategories(); renderAccountList(); renderAdjust(); renderLoans(); renderLogs(); renderTransfers(); renderBills(); renderCapital(); checkAlerts();
   updateMenuVisibility(); loadPermissionsUI();
@@ -2145,7 +2160,12 @@ const CH='0123456789KPGWAVEBANKMMK$+-=.◆'; let rr=true;
 function rf(){ if(!rr)return; ctx.fillStyle='rgba(10,10,10,0.09)'; ctx.fillRect(0,0,cvs.width,cvs.height); ctx.font='13px "JetBrains Mono",monospace'; drops.forEach((y,i)=>{const x=i*22;ctx.fillStyle=Math.random()<0.02?'rgba(255,230,180,0.95)':'rgba(200,170,130,0.55)';ctx.fillText(CH[Math.floor(Math.random()*CH.length)],x,y);drops[i]=y>cvs.height&&Math.random()>0.975?0:y+11;}); requestAnimationFrame(rf);}
 if(!matchMedia('(prefers-reduced-motion: reduce)').matches) rf();
 
-loadState(); applyLanguage(); renderPinDisplay();
+// Database ကနေ ဒေတာတွေ အကုန် load ပြီးမှ အက်ပ်ကို စတင်ပါမယ်
+(async () => {
+  await loadState();
+  applyLanguage();
+  renderPinDisplay();
+})();
 </script>
 </body>
 </html>
