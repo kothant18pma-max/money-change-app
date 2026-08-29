@@ -2295,4 +2295,158 @@ document.getElementById('billForm').onsubmit = e => { e.preventDefault();
 document.getElementById('capitalForm').onsubmit = e => { e.preventDefault();
   const dateVal = document.getElementById('capitalDate').value;
   const acc = document.getElementById('capitalAccount').value;
-  const amount = parseFloat(document.getElementById('capitalAmount').value
+  const amount = parseFloat(document.getElementById('capitalAmount').value);
+  const note = document.getElementById('capitalNote').value;
+
+  if (!dateVal || !acc || !amount || amount <= 0) { showToast('CHECK INPUTS'); return; }
+  
+  const t = new Date();
+  const dateObj = new Date(dateVal);
+  dateObj.setHours(t.getHours(), t.getMinutes(), t.getSeconds(), t.getMilliseconds());
+
+  state.balances[acc] = (state.balances[acc] || 0) + amount;
+  state.capital.push({
+    id: 'cap_' + Date.now(),
+    ts: dateObj.getTime(),
+    date: dateVal,
+    account: acc,
+    amount: amount,
+    note: note
+  });
+
+  addLog('ADD_CAPITAL', `Injected ${fmt(amount)} to ${acc}`);
+  renderAll();
+  showToast('CAPITAL RECORDED');
+  document.getElementById('capitalAmount').value = '';
+  document.getElementById('capitalNote').value = '';
+};
+
+document.getElementById('pnlForm').onsubmit = e => { e.preventDefault();
+  const cat = document.getElementById('pnlCategory').value, src = document.getElementById('pnlSource').value, a = parseFloat(document.getElementById('pnlAmount').value), note = document.getElementById('pnlNote').value;
+  if(!a||a<=0) { showToast('INVALID AMOUNT'); return; }
+  if(state.currentPnlType==='expense' && (state.balances[src]||0)<a) { showToast('INSUFFICIENT BALANCE'); return; }
+  if(state.currentPnlType==='income') state.balances[src] += a; else state.balances[src] -= a;
+  state.pnl.push({id:'pnl_'+Date.now(),ts:Date.now(),type:state.currentPnlType,category:cat,source:src,amount:a,note});
+  addLog('ADD_PNL', `${state.currentPnlType} ${fmt(a)} in ${cat} via ${src}`); renderAll(); showToast('RECORDED');
+  document.getElementById('pnlAmount').value=''; document.getElementById('pnlNote').value='';
+};
+
+document.getElementById('repayForm').onsubmit = e => { e.preventDefault();
+  const id = document.getElementById('repayLoanSelect').value;
+  const amount = parseFloat(document.getElementById('repayAmount').value);
+  const note = document.getElementById('repayNote').value;
+  
+  const loan = state.loans.find(l => l.id === id);
+  if(!loan) return;
+  
+  const remBal = getLoanRemaining(loan);
+  if (isNaN(amount) || amount <= 0 || amount > remBal) {
+    showToast('INVALID AMOUNT');
+    return;
+  }
+  
+  if(loan.direction === 'lend') {
+    state.balances[loan.source] += amount;
+  } else {
+    if ((state.balances[loan.source] || 0) < amount) { showToast('INSUFFICIENT BALANCE IN SOURCE'); return; }
+    state.balances[loan.source] -= amount;
+  }
+  
+  if (!loan.payments) loan.payments = [];
+  loan.payments.push({
+    payId: 'pay_' + Date.now(),
+    ts: Date.now(),
+    amount: amount,
+    note: note
+  });
+  
+  addLog('REPAY_LOAN', `Paid ${fmt(amount)} for loan ${loan.txnId}`);
+  renderAll(); checkAlerts(); showToast('PAYMENT RECORDED');
+  
+  document.getElementById('repayLoanSelect').value = '';
+  document.getElementById('repayAmount').value = '';
+  document.getElementById('repayNote').value = '';
+  document.getElementById('repayDetails').style.display = 'none';
+  document.getElementById('repayBtn').disabled = true;
+};
+
+document.querySelectorAll('#typeToggle button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#typeToggle button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); state.currentType=b.dataset.type;
+});
+document.querySelectorAll('#pnlTypeToggle button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#pnlTypeToggle button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); state.currentPnlType=b.dataset.type;
+  renderCategories();
+});
+document.querySelectorAll('#loanTypeToggle button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#loanTypeToggle button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); state.currentLoanType=b.dataset.type;
+});
+document.querySelectorAll('#reportTypeToggle button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#reportTypeToggle button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); state.currentReportType=b.dataset.type; renderReports();
+});
+document.querySelectorAll('#filterBar .chip').forEach(c => c.onclick = () => {
+  document.querySelectorAll('#filterBar .chip').forEach(x=>x.classList.remove('active'));
+  c.classList.add('active'); state.filter=c.dataset.filter; renderTx();
+});
+document.querySelectorAll('#loanFilterBar .chip').forEach(c => c.onclick = () => {
+  document.querySelectorAll('#loanFilterBar .chip').forEach(x=>x.classList.remove('active'));
+  c.classList.add('active'); state.loanFilter=c.dataset.filter; renderLoans();
+});
+document.querySelectorAll('#langToggleGroup button').forEach(b => b.onclick = () => {
+  state.language = b.dataset.lang;
+  applyLanguage();
+  showToast('LANGUAGE: ' + state.language.toUpperCase());
+});
+
+document.getElementById('ledgerStart').onchange = renderTx;
+document.getElementById('ledgerEnd').onchange = renderTx;
+document.getElementById('reportMonth').onchange = renderReports;
+document.getElementById('reportYear').onchange = renderReports;
+
+if (document.getElementById('pnlStart')) document.getElementById('pnlStart').onchange = renderPnl;
+if (document.getElementById('pnlEnd')) document.getElementById('pnlEnd').onchange = renderPnl;
+
+if (document.getElementById('transferFrom')) document.getElementById('transferFrom').onchange = updateTransferBalances;
+if (document.getElementById('transferTo')) document.getElementById('transferTo').onchange = updateTransferBalances;
+
+if (document.getElementById('repayLoanSelect')) document.getElementById('repayLoanSelect').onchange = onRepayLoanSelect;
+if (document.getElementById('repayAmount')) document.getElementById('repayAmount').oninput = validateRepayAmount;
+if (document.getElementById('loanSearch')) {
+  document.getElementById('loanSearch').oninput = (e) => {
+    state.loanSearch = e.target.value.toLowerCase();
+    renderLoans();
+  };
+}
+
+function renderAll() {
+  renderSources('txAccount'); renderSources('incomeSource'); renderSources('pnlSource'); renderSources('exportAccount', true, true);
+  renderSources('capitalAccount'); renderSources('adjustTarget'); renderSources('loanSource');
+  renderSources('billDeductAccount'); renderSources('billIncomeAccount');
+  renderTransferSources();
+  renderBalances(); renderSummary(); renderTx(); renderReports(); renderPnl(); renderCategories(); renderAccountList(); renderAdjust(); renderLoans(); renderLogs(); renderTransfers(); renderCapital(); renderBills(); checkAlerts();
+  updateMenuVisibility(); loadPermissionsUI();
+  
+  const cDate = document.getElementById('capitalDate');
+  if (cDate && !cDate.value) cDate.value = new Date().toISOString().split('T')[0];
+}
+function tickClock() { const d=new Date(); document.getElementById('clock').textContent = d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'}) + ' · ' + d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}); }
+tickClock(); setInterval(tickClock, 1000); setInterval(checkAlerts, 3600000);
+
+setupAutoHideSidebar();
+
+const cvs=document.querySelector('canvas.rain'), ctx=cvs.getContext('2d'); let cols,drops;
+function resize(){cvs.width=innerWidth;cvs.height=innerHeight;cols=Math.floor(cvs.width/22);drops=Array.from({length:cols},()=>Math.random()*-cvs.height);} resize(); addEventListener('resize',resize);
+const CH='0123456789KPGWAVEBANKMMK$+-=.◆'; let rr=true;
+function rf(){ if(!rr)return; ctx.fillStyle='rgba(10,10,10,0.09)'; ctx.fillRect(0,0,cvs.width,cvs.height); ctx.font='14.3px "JetBrains Mono",monospace'; drops.forEach((y,i)=>{const x=i*22;ctx.fillStyle=Math.random()<0.02?'rgba(255,230,180,0.95)':'rgba(200,170,130,0.55)';ctx.fillText(CH[Math.floor(Math.random()*CH.length)],x,y);drops[i]=y>cvs.height&&Math.random()>0.975?0:y+11;}); requestAnimationFrame(rf);}
+if(!matchMedia('(prefers-reduced-motion: reduce)').matches) rf();
+
+loadState().then(() => {
+  renderPinDisplay();
+  applyLanguage();
+});
+</script>
+</body>
+</html>
