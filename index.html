@@ -982,7 +982,7 @@ let state = {
   logs: [],
   transfers: [],
   capital: [],
-  bills: [],
+  bill_payments: [],
   language: 'en',
   categories: {
     income: ['Commission', 'Salary', 'Bill Commission', 'Other Income'],
@@ -1022,6 +1022,41 @@ const i18n = {
   }
 };
 
+// ============ NOTIFICATION SOUND ============
+let audioCtx = null;
+function playNotificationSound() {
+  try {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    
+    // Success Chime (e.g., C5 -> E5)
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    
+    // First note
+    osc.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
+    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+    
+    // Second note
+    osc.frequency.setValueAtTime(1318.51, audioCtx.currentTime + 0.15); // E6
+    gain.gain.setValueAtTime(0.1, audioCtx.currentTime + 0.15);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+    
+    osc.start(audioCtx.currentTime);
+    osc.stop(audioCtx.currentTime + 0.3);
+  } catch(e) {
+    console.warn('Audio playback failed:', e);
+  }
+}
+
 async function loadState() {
   try {
     const response = await fetch('/api/state');
@@ -1045,11 +1080,30 @@ async function loadState() {
         if (!state.logs) state.logs = [];
         if (!state.transfers) state.transfers = [];
         if (!state.capital) state.capital = [];
-        if (!state.bills) state.bills = [];
         
-        // Database Table Structure Migration for Bills
-        if (state.bills && state.bills.length > 0) {
-          state.bills = state.bills.map(b => {
+        // Backward Compatibility for Bill Payments Table
+        if (!state.bill_payments) state.bill_payments = [];
+        if (state.bills && state.bills.length > 0 && state.bill_payments.length === 0) {
+          state.bill_payments = state.bills.map(b => {
+            return {
+              id: b.id || ('bill_' + Date.now()),
+              bill_type: b.billType || b.bill_type || '',
+              bill_name: b.customerName || b.bill_name || '',
+              bill_id: b.billId || b.bill_id || '',
+              bill_phone: b.phone || b.bill_phone || '',
+              from_account: b.deductAccount || b.from_account || 'cash',
+              service_fee_account: b.incomeAccount || b.service_fee_account || 'cash',
+              bill_amount: b.billAmount || b.bill_amount || 0,
+              service_fee: b.serviceFee || b.service_fee || 0,
+              created_at: b.ts || b.created_at || Date.now(),
+              note: b.note || ''
+            };
+          });
+          delete state.bills; // Remove old key
+        }
+        
+        if (state.bill_payments && state.bill_payments.length > 0) {
+          state.bill_payments = state.bill_payments.map(b => {
             if (b.from_account) return b; // Already migrated
             return {
               id: b.id || ('bill_' + Date.now()),
@@ -1314,6 +1368,7 @@ function tryLogin() {
     applyLanguage();
     renderAll(); showSection('dashboard');
     showToast('LOGGED IN AS ' + currentRole.toUpperCase());
+    playNotificationSound();
   } else {
     document.getElementById('loginError').textContent = 'WRONG PIN';
     pinEntry = ''; renderPinDisplay();
@@ -1429,16 +1484,16 @@ function renderTransfers() {
   }).join('');
 }
 
-// ============ BILL PAYMENT ============
+// ============ BILL PAYMENT (bill_payments) ============
 function renderBills() {
   const b = document.getElementById('billBody');
   if (!b) return;
-  if (!state.bills || state.bills.length === 0) {
+  if (!state.bill_payments || state.bill_payments.length === 0) {
     b.innerHTML = '<tr><td colspan="8" class="empty-state">No bill payments yet</td></tr>';
     return;
   }
   const showDel = can('canDelete');
-  b.innerHTML = state.bills.slice().reverse().map(bill => {
+  b.innerHTML = state.bill_payments.slice().reverse().map(bill => {
     const dt = new Date(bill.created_at);
     const ds = dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}) + ' ' + dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
     return `<tr>
@@ -1456,7 +1511,7 @@ function renderBills() {
 
 function deleteBill(id) {
   if (!can('canDelete')) return;
-  const bill = state.bills.find(x => x.id === id);
+  const bill = state.bill_payments.find(x => x.id === id);
   if (!bill) return;
   
   showModal('WARNING: DELETE BILL · ဘီလ်ဖျက်ရန်', 'ဤ ဘီလ် မှတ်တမ်းကို ဖျက်လိုက်ပါက ငွေပမာဏများ အလိုလို ပြန်လည် ပြောင်းလဲသွားပါမည်။',
@@ -1479,7 +1534,7 @@ function deleteBill(id) {
       state.balances.cash -= totalCashReceived;
       state.balances[bill.from_account] += bill.bill_amount;
       
-      state.bills = state.bills.filter(x => x.id !== id);
+      state.bill_payments = state.bill_payments.filter(x => x.id !== id);
       state.pnl = state.pnl.filter(p => p.id !== 'pnl_bill_' + id);
       
       addLog('DEL_BILL', `Deleted ${bill.bill_type} bill ${fmt(bill.bill_amount)}. Note: ${note || 'N/A'}`);
@@ -1506,7 +1561,7 @@ function renderSummary() {
   // Cash Summary
   let cIn=0, cOut=0;
   state.transactions.filter(t => filterFn(t.ts)).forEach(t => { if(t.type==='in') cIn+=t.amount; else cOut+=t.amount; });
-  let cBillIn = state.bills.filter(b => filterFn(b.created_at)).reduce((s,b)=>s+b.bill_amount,0);
+  let cBillIn = state.bill_payments.filter(b => filterFn(b.created_at)).reduce((s,b)=>s+b.bill_amount,0);
   let pInc = state.pnl.filter(p => filterFn(p.ts) && p.type==='income' && p.source==='cash').reduce((s,p)=>s+p.amount,0);
   let pExp = state.pnl.filter(p => filterFn(p.ts) && p.type==='expense' && p.source==='cash').reduce((s,p)=>s+p.amount,0);
   const dateLabel = useToday ? 'TODAY' : `${ds} → ${de}`;
@@ -1525,7 +1580,7 @@ function renderSummary() {
   state.accounts.forEach(a => {
     let dIn=0, dOut=0;
     state.transactions.filter(t => filterFn(t.ts) && t.account===a).forEach(t => { if(t.type==='in') dOut+=t.amount; else dIn+=t.amount; });
-    let billOut = state.bills.filter(b => filterFn(b.created_at) && b.from_account===a).reduce((s,b)=>s+b.bill_amount,0);
+    let billOut = state.bill_payments.filter(b => filterFn(b.created_at) && b.from_account===a).reduce((s,b)=>s+b.bill_amount,0);
     let aPInc = state.pnl.filter(p => filterFn(p.ts) && p.type==='income' && p.source===a).reduce((s,p)=>s+p.amount,0);
     let aPExp = state.pnl.filter(p => filterFn(p.ts) && p.type==='expense' && p.source===a).reduce((s,p)=>s+p.amount,0);
     w.innerHTML += `<div class="summary-cell">
@@ -1535,7 +1590,7 @@ function renderSummary() {
       <div class="stat out"><span class="k">BILL PAID</span><span class="v">-${fmt(billOut)}</span></div>
       <div class="stat in"><span class="k">P&L INCOME</span><span class="v">+${fmt(aPInc)}</span></div>
       <div class="stat out"><span class="k">P&L EXPENSE</span><span class="v">-${fmt(aPExp)}</span></div>
-      <div class="stat net"><span class="k">NET FLOW</span><span class="v">${fmt(dIn - dOut - billOut + aPInc - aPExp)}</span></div>
+    <div class="stat net"><span class="k">NET FLOW</span><span class="v">${fmt(dIn - dOut - billOut + aPInc - aPExp)}</span></div>
       <div class="foot"><span class="k">Balance</span><span class="v">${fmt(state.balances[a]||0)}</span></div>
     </div>`;
   });
@@ -1555,7 +1610,7 @@ function renderSummary() {
     if(t.type === 'in') map[dateStr+'|'+acc].txOut += t.amount; else map[dateStr+'|'+acc].txIn += t.amount;
     if(t.income > 0 && t.incomeSource === acc) map[dateStr+'|'+acc].pnlInc += t.income;
   });
-  state.bills.filter(b => { const d=new Date(b.created_at); return d>=start && d<=end; }).forEach(b => {
+  state.bill_payments.filter(b => { const d=new Date(b.created_at); return d>=start && d<=end; }).forEach(b => {
     const d = new Date(b.created_at);
     const dateStr = d.toLocaleDateString('en-GB');
     const acc = b.from_account;
@@ -1600,7 +1655,7 @@ function renderTx() {
   
   let allEntries = [];
   state.transactions.forEach(tx => { allEntries.push({...tx}); });
-  state.bills.forEach(bill => {
+  state.bill_payments.forEach(bill => {
     allEntries.push({
       id: bill.id, ts: bill.created_at,
       customerName: bill.bill_name || '-', phone: bill.bill_phone || '-',
@@ -1888,6 +1943,7 @@ function applyAdjustment() {
   const o = state.balances[t]||0; const d = n-o;
   state.balances[t] = n; state.adjustments.push({id:'adj_'+Date.now(),target:t,oldBalance:o,newBalance:n,diff:d,note,ts:Date.now()});
   addLog('ADJUST', `Adjusted ${t} from ${o} to ${n} (${d}) - ${note}`); renderAll(); showToast('ADJUSTED');
+  playNotificationSound();
   document.getElementById('adjustNew').value=''; document.getElementById('adjustNote').value='';
 }
 
@@ -2073,6 +2129,7 @@ function recordLoan() {
   state.loans.push({ id: 'loan_'+Date.now(), txnId: txnId, borrowerName: n, amount: a, source: s, direction: d, note: note, repaymentDate: rd, ts: Date.now(), payments: [] });
   addLog('ADD_LOAN', `${d} ${a} to/from ${n} via ${s}`);
   renderAll(); checkAlerts(); showToast('LOAN RECORDED');
+  playNotificationSound();
   document.getElementById('loanName').value=''; document.getElementById('loanAmount').value=''; document.getElementById('loanNote').value=''; document.getElementById('loanRepayDate').value='';
 }
 
@@ -2150,7 +2207,7 @@ function exportData(format) {
       if(t.type === 'in') map[dateStr+'|'+accKey]['Cash In Amount'] += t.amount; else map[dateStr+'|'+accKey]['Cash Out Amount'] += t.amount;
       if(t.income > 0 && t.incomeSource === accKey) map[dateStr+'|'+accKey].Income += t.income;
     });
-    state.bills.filter(b => { const d=new Date(b.created_at); return d>=start && d<=end; }).forEach(b => {
+    state.bill_payments.filter(b => { const d=new Date(b.created_at); return d>=start && d<=end; }).forEach(b => {
       const d = new Date(b.created_at), dateStr = d.toLocaleDateString('en-GB');
       
       // 1. Deduct from Digital Account
@@ -2182,7 +2239,7 @@ function exportData(format) {
     }));
   } else if (expType === 'bills') {
     fileName = 'Bill_Details'; sheetName = 'Bills';
-    data = state.bills.filter(b => { const d = new Date(b.created_at); return d>=start && d<=end; }).map(b => ({
+    data = state.bill_payments.filter(b => { const d = new Date(b.created_at); return d>=start && d<=end; }).map(b => ({
       id: b.id,
       bill_type: b.bill_type,
       bill_name: b.bill_name || '-',
@@ -2272,6 +2329,7 @@ document.getElementById('txForm').onsubmit = e => { e.preventDefault();
   
   addLog('ADD_TX', `${state.currentType === 'in' ? 'Cash In' : 'Cash Out'} ${fmt(a)} for ${c}. Income: ${fmt(i)}`);
   renderAll();
+  playNotificationSound();
   
   const details = [
     {k: 'Type', v: state.currentType === 'in' ? 'CASH IN' : 'CASH OUT'},
@@ -2291,6 +2349,7 @@ document.getElementById('transferForm').onsubmit = e => { e.preventDefault();
   if (!state.transfers) state.transfers = [];
   state.transfers.push({ id: 'tr_'+Date.now(), ts: Date.now(), from, to, amount, note });
   addLog('TRANSFER', `Transferred ${fmt(amount)} from ${from} to ${to}`); renderAll();
+  playNotificationSound();
   showModal('TRANSFER COMPLETE', 'ငွေလွှဲပြောင်းမှု အောင်မြင်ပါသည်။', [{k: 'From', v: from}, {k: 'To', v: to}, {k: 'Amount', v: fmt(amount) + ' MMK'}]);
   document.getElementById('transferAmount').value=''; document.getElementById('transferNote').value='';
   updateTransferBalances();
@@ -2330,7 +2389,7 @@ document.getElementById('billForm').onsubmit = e => { e.preventDefault();
     service_fee_account, 
     note 
   };
-  state.bills.push(bill);
+  state.bill_payments.push(bill);
   
   if (service_fee > 0) {
     state.pnl.push({ 
@@ -2346,6 +2405,7 @@ document.getElementById('billForm').onsubmit = e => { e.preventDefault();
   
   addLog('BILL_PAY', `Paid ${bill_type} ${fmt(bill_amount)} via ${from_account}. Cash received: ${fmt(bill_amount + service_fee)}`);
   renderAll();
+  playNotificationSound();
   
   const details = [
     {k: 'Bill Type', v: bill_type},
@@ -2354,7 +2414,7 @@ document.getElementById('billForm').onsubmit = e => { e.preventDefault();
     {k: 'Paid From', v: from_account},
     {k: 'Received in Cash', v: fmt(bill_amount + service_fee) + ' MMK'}
   ];
-  showModal('BILL PAYMENT COMPLETE', 'ဘီလ် ပေါင်ဆောင်မှု အောင်မြင်ပါသည်။', details);
+  showModal('BILL PAYMENT COMPLETE', 'ဘီလ် ပေးဆောင်မှု အောင်မြင်ပါသည်။', details);
   
   document.getElementById('billAmount').value = '';
   document.getElementById('billFee').value = '0';
@@ -2389,6 +2449,7 @@ document.getElementById('capitalForm').onsubmit = e => { e.preventDefault();
   addLog('ADD_CAPITAL', `Injected ${fmt(amount)} to ${acc}`);
   renderAll();
   showToast('CAPITAL RECORDED');
+  playNotificationSound();
   document.getElementById('capitalAmount').value = '';
   document.getElementById('capitalNote').value = '';
 };
@@ -2400,6 +2461,7 @@ document.getElementById('pnlForm').onsubmit = e => { e.preventDefault();
   if(state.currentPnlType==='income') state.balances[src] += a; else state.balances[src] -= a;
   state.pnl.push({id:'pnl_'+Date.now(),ts:Date.now(),type:state.currentPnlType,category:cat,source:src,amount:a,note});
   addLog('ADD_PNL', `${state.currentPnlType} ${fmt(a)} in ${cat} via ${src}`); renderAll(); showToast('RECORDED');
+  playNotificationSound();
   document.getElementById('pnlAmount').value=''; document.getElementById('pnlNote').value='';
 };
 
@@ -2434,6 +2496,7 @@ document.getElementById('repayForm').onsubmit = e => { e.preventDefault();
   
   addLog('REPAY_LOAN', `Paid ${fmt(amount)} for loan ${loan.txnId}`);
   renderAll(); checkAlerts(); showToast('PAYMENT RECORDED');
+  playNotificationSound();
   
   document.getElementById('repayLoanSelect').value = '';
   document.getElementById('repayAmount').value = '';
