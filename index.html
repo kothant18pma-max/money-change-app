@@ -442,7 +442,7 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
             </div>
             <button type="submit" class="btn-primary" data-i18n="record_trans">RECORD TRANSFER</button>
           </form>
-          <div class="hint" data-i18n="hint_trans">ဘဏ်မှ Wallet သို့လည်းကောင်း၊ Wallet မှ ငွေသားအဖြစ် ထုတ်ယူလည်းကောင်း အလွယ်တကူ လွှဲပြောင်းနိုင်ပါသည်။</div>
+          <div class="hint" data-i18n="hint_trans">ဘဏ်မှ Wallet သို့လည်းကောင်း، Wallet မှ ငွေသားအဖြစ် ထုတ်ယူလည်းကောင်း အလွယ်တကူ လွှဲပြောင်းနိုင်ပါသည်။</div>
         </div>
         <div class="card">
           <div class="card-header" data-i18n="recent_trans">Recent Transfers · လွှဲပြောင်းမှု မှတ်တမ်း</div>
@@ -488,15 +488,9 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
                 <input type="tel" id="billPhone" placeholder="09-xxx">
               </div>
             </div>
-            <div class="form-row-2">
-              <div class="form-row">
-                <label data-i18n="from_acc">From Account</label>
-                <select id="billFromAcc" required></select>
-              </div>
-              <div class="form-row">
-                <label data-i18n="fee_acc">Service Fee To</label>
-                <select id="billIncomeAcc" required></select>
-              </div>
+            <div class="form-row">
+              <label data-i18n="from_acc">From Account (Debit)</label>
+              <select id="billFromAcc" required></select>
             </div>
             <div class="form-row-2">
               <div class="form-row">
@@ -504,12 +498,13 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
                 <input type="number" id="billAmount" placeholder="50000" required>
               </div>
               <div class="form-row">
-                <label data-i18n="serv_fee">Service Fee</label>
+                <label data-i18n="serv_fee">Service Fee (Cash Income)</label>
                 <input type="number" id="billFee" placeholder="1000" value="0" required>
               </div>
             </div>
             <button type="submit" class="btn-primary" data-i18n="record_bill">RECORD BILL PAYMENT</button>
           </form>
+          <div class="hint" data-i18n="hint_bill">ဖောက်သည်ဆီမှ ငွေသား (Cash) အဖြစ် ရယူပြီး၊ ဘီးလ်ပမာဏကို ရွေးချယ်ထားတဲ့ အကောင့်မှ နှုတ်ယူ (Debit) သွားပါမယ်။ ဝန်ဆောင်ခ (Service Fee) သည် Cash ငွေသားထဲသို့ ဝင်ရောက်ပါမယ်။</div>
         </div>
         <div class="card">
           <div class="card-header" data-i18n="recent_bills">Recent Bill Payments · ငွေပေးချေမှု မှတ်တမ်း</div>
@@ -997,7 +992,7 @@ const translations = {
     rec_tx: "Record Transaction · လဲလှယ်မှု သွင်းရန်", cust_name: "Customer Name", phone: "Phone", tx_type: "Type · အမျိုးအစား (ရွေးချယ်ပါ)", cash_in: "CASH IN", cash_out: "CASH OUT", amount: "Amount", account: "Account", income: "Income", income_to: "Income To", record_tx: "RECORD TRANSACTION",
     live_bal: "Live Balances · လက်ကျန်ငွေ", cash: "Cash", digital_total: "Digital Money Total", today_net: "Today's Net Income",
     int_trans: "Internal Transfer · ငွေလွှဲပြောင်းခြင်း", from_acc: "From Account", to_acc: "To Account", note: "Note", record_trans: "RECORD TRANSFER", recent_trans: "Recent Transfers · လွှဲပြောင်းမှု မှတ်တမ်း", date: "Date", from: "From", to: "To", hint_trans: "ဘဏ်မှ Wallet သို့လည်းကောင်း၊ Wallet မှ ငွေသားအဖြစ် ထုတ်ယူလည်းကောင်း အလွယ်တကူ လွှဲပြောင်းနိုင်ပါသည်။",
-    bill_pay: "Bill Payment · ငွေပေးချေမှု", bill_type: "Bill Type", bill_name: "Name", bill_id: "Bill ID", bill_phone: "Phone", fee_acc: "Service Fee To", bill_amt: "Bill Amount", serv_fee: "Service Fee", record_bill: "RECORD BILL PAYMENT", recent_bills: "Recent Bill Payments · ငွေပေးချေမှု မှတ်တမ်း", type: "Type", name_phone: "Name/Phone", fee: "Fee",
+    bill_pay: "Bill Payment · ငွေပေးချေမှု", bill_type: "Bill Type", bill_name: "Name", bill_id: "Bill ID", bill_phone: "Phone", fee_acc: "Service Fee To", bill_amt: "Bill Amount", serv_fee: "Service Fee (Cash Income)", record_bill: "RECORD BILL PAYMENT", recent_bills: "Recent Bill Payments · ငွေပေးချေမှု မှတ်တမ်း", type: "Type", name_phone: "Name/Phone", fee: "Fee", hint_bill: "ဖောက်သည်ဆီမှ ငွေသား (Cash) အဖြစ် ရယူပြီး၊ ဘီးလ်ပမာဏကို ရွေးချယ်ထားတဲ့ အကောင့်မှ နှုတ်ယူ (Debit) သွားပါမယ်။ ဝန်ဆောင်ခ (Service Fee) သည် Cash ငွေသားထဲသို့ ဝင်ရောက်ပါမယ်။",
     daily_sum: "Daily Summary · နေ့စဉ် အဝင်အထွက်", start_date: "Start Date", end_date: "End Date", apply: "APPLY", day_by_day: "Day-by-Day Account Flow · အကောင့်အလိုက် နေ့စဉ်မှတ်တမ်း", cash_in_out: "Cash In Tx (Out)", cash_out_in: "Cash Out Tx (In)", expense: "Expense", net_flow: "Net Flow",
     ledger_menu: "Ledger · မှတ်တမ်းများ", all: "ALL", time: "Time", action: "Action", no_tx: "No transactions yet.", bill_pay_chip: "BILL PAY",
     reports_menu: "Monthly / Yearly Reports · လစဉ်/နှစ်စဉ် အစီရင်ခံစာ", monthly: "MONTHLY", yearly: "YEARLY", month: "Month", year: "Year", sum_report: "SUMMARY REPORT", total_cash_in: "TOTAL CASH IN", total_cash_out: "TOTAL CASH OUT", tx_income: "TX INCOME", other_income: "OTHER INCOME", net_profit: "NET PROFIT",
@@ -1020,7 +1015,7 @@ const translations = {
     rec_tx: "Record Transaction", cust_name: "Customer Name", phone: "Phone", tx_type: "Type (Select)", cash_in: "CASH IN", cash_out: "CASH OUT", amount: "Amount", account: "Account", income: "Income", income_to: "Income To", record_tx: "RECORD TRANSACTION",
     live_bal: "Live Balances", cash: "Cash", digital_total: "Digital Money Total", today_net: "Today's Net Income",
     int_trans: "Internal Transfer", from_acc: "From Account", to_acc: "To Account", note: "Note", record_trans: "RECORD TRANSFER", recent_trans: "Recent Transfers", date: "Date", from: "From", to: "To", hint_trans: "Easily transfer from Bank to Wallet, or withdraw from Wallet to Cash.",
-    bill_pay: "Bill Payment", bill_type: "Bill Type", bill_name: "Name", bill_id: "Bill ID", bill_phone: "Phone", fee_acc: "Service Fee To", bill_amt: "Bill Amount", serv_fee: "Service Fee", record_bill: "RECORD BILL PAYMENT", recent_bills: "Recent Bill Payments", type: "Type", name_phone: "Name/Phone", fee: "Fee",
+    bill_pay: "Bill Payment", bill_type: "Bill Type", bill_name: "Name", bill_id: "Bill ID", bill_phone: "Phone", fee_acc: "Service Fee To", bill_amt: "Bill Amount", serv_fee: "Service Fee (Cash Income)", record_bill: "RECORD BILL PAYMENT", recent_bills: "Recent Bill Payments", type: "Type", name_phone: "Name/Phone", fee: "Fee", hint_bill: "Receive cash from customer, deduct bill amount from selected account (Debit). Service fee goes to Cash.",
     daily_sum: "Daily Summary", start_date: "Start Date", end_date: "End Date", apply: "APPLY", day_by_day: "Day-by-Day Account Flow", cash_in_out: "Cash In Tx (Out)", cash_out_in: "Cash Out Tx (In)", expense: "Expense", net_flow: "Net Flow",
     ledger_menu: "Ledger", all: "ALL", time: "Time", action: "Action", no_tx: "No transactions yet.", bill_pay_chip: "BILL PAY",
     reports_menu: "Monthly / Yearly Reports", monthly: "MONTHLY", yearly: "YEARLY", month: "Month", year: "Year", sum_report: "SUMMARY REPORT", total_cash_in: "TOTAL CASH IN", total_cash_out: "TOTAL CASH OUT", tx_income: "TX INCOME", other_income: "OTHER INCOME", net_profit: "NET PROFIT",
@@ -1054,7 +1049,6 @@ let state = {
   logs: [],
   transfers: [],
   capital: [],
-  billPayments: [], // Added for bill_payments table sync
   loanTxCounter: 1,
   categories: {
     income: ['Commission', 'Salary', 'Other Income'],
@@ -1081,26 +1075,6 @@ let state = {
 };
 let currentRole = null;
 
-// Merges regular transactions and bill payments for rendering tables and summaries
-function getCombinedTx() {
-  const bills = (state.billPayments || []).map(b => {
-    let ts = b.ts;
-    if (!ts && b.created_at) {
-      const dateStr = b.created_at.includes('T') ? b.created_at : b.created_at.replace(' ', 'T') + 'Z';
-      ts = new Date(dateStr).getTime();
-    }
-    if (!ts) ts = Date.now();
-    return {
-      id: b.id, ts: ts,
-      type: 'bill', billType: b.bill_type, customerName: b.bill_name || b.bill_type,
-      phone: b.bill_phone || '', billId: b.bill_id || '',
-      account: b.from_account, incomeSource: b.service_fee_account,
-      amount: b.bill_amount, income: b.service_fee || 0
-    };
-  });
-  return [...state.transactions, ...bills];
-}
-
 function loadState() {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) {
@@ -1119,7 +1093,6 @@ function loadState() {
       if (!state.logs) state.logs = [];
       if (!state.transfers) state.transfers = [];
       if (!state.capital) state.capital = [];
-      if (!state.billPayments) state.billPayments = []; // Ensure array exists
       if (!state.loanTxCounter) state.loanTxCounter = 1;
       if (!state.loans) state.loans = [];
       state.loans.forEach(l => {
@@ -1351,7 +1324,7 @@ function renderBalances() {
   let totalDigital = 0;
   state.accounts.forEach(a => { totalDigital += (state.balances[a] || 0); w.innerHTML += `<div class="balance-row"><span class="label">${escapeHtml(a)}</span><span class="val">${fmt(state.balances[a]||0)}<small>MMK</small></span></div>`; });
   w.innerHTML += `<div class="balance-row is-digital-total"><span class="label">${t('digital_total')}</span><span class="val">${fmt(totalDigital)}<small>MMK</small></span></div>`;
-  const tInc = getCombinedTx().filter(t => isToday(t.ts)).reduce((s,t) => s+(t.income||0), 0);
+  const tInc = state.transactions.filter(t => isToday(t.ts)).reduce((s,t) => s+(t.income||0), 0);
   const tPnlInc = state.pnl.filter(p => isToday(p.ts) && p.type==='income').reduce((s,p)=>s+p.amount,0);
   const tPnlExp = state.pnl.filter(p => isToday(p.ts) && p.type==='expense').reduce((s,p)=>s+p.amount,0);
   w.innerHTML += `<div class="balance-row is-total"><span class="label">${t('today_net')}</span><span class="val">${fmt(tInc + tPnlInc - tPnlExp)}<small>MMK</small></span></div>`;
@@ -1371,23 +1344,18 @@ function renderTransfers() {
 function renderBills() {
   const b = document.getElementById('billBody');
   if (!b) return;
-  const bills = (state.billPayments || []).slice().reverse().slice(0, 15);
+  const bills = state.transactions.filter(t => t.type === 'bill').slice().reverse().slice(0, 15);
   if (bills.length === 0) { b.innerHTML = `<tr><td colspan="6" class="empty-state">${t('no_tx')}</td></tr>`; return; }
-  b.innerHTML = bills.map(bill => {
-    let ts = bill.ts;
-    if (!ts && bill.created_at) {
-      const dateStr = bill.created_at.includes('T') ? bill.created_at : bill.created_at.replace(' ', 'T') + 'Z';
-      ts = new Date(dateStr).getTime();
-    }
-    const dt = new Date(ts);
+  b.innerHTML = bills.map(t => {
+    const dt = new Date(t.ts);
     const ds = dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}) + ' ' + dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
     return `<tr>
       <td style="color:var(--text-soft)">${ds}</td>
-      <td class="type-bill">${escapeHtml(bill.bill_type)}</td>
-      <td>${escapeHtml(bill.bill_name || '-')}<br><span style="color:var(--text-soft);font-size:0.75rem">${escapeHtml(bill.bill_phone || '-')}</span></td>
-      <td class="amount">${fmt(bill.bill_amount)}</td>
-      <td style="color:var(--success)">+${fmt(bill.service_fee || 0)}</td>
-      <td style="color:var(--text-soft)">${escapeHtml(bill.from_account)}</td>
+      <td class="type-bill">${escapeHtml(t.billType)}</td>
+      <td>${escapeHtml(t.customerName || '-')}<br><span style="color:var(--text-soft);font-size:0.75rem">${escapeHtml(t.phone || '-')}</span></td>
+      <td class="amount">${fmt(t.amount)}</td>
+      <td style="color:var(--success)">+${fmt(t.income || 0)}</td>
+      <td style="color:var(--text-soft)">${escapeHtml(t.account)}</td>
     </tr>`;
   }).join('');
 }
@@ -1399,7 +1367,7 @@ function renderSummary() {
   if (ds && de) { useToday = false; startD = new Date(ds); startD.setHours(0,0,0,0); endD = new Date(de); endD.setHours(23,59,59,999); }
   const filterFn = (ts) => { if (useToday) return isToday(ts); const d = new Date(ts); return d >= startD && d <= endD; };
   let cIn=0, cOut=0;
-  getCombinedTx().filter(t => filterFn(t.ts)).forEach(t => { if(t.type==='in' || t.type==='bill') cIn+=t.amount; else cOut+=t.amount; });
+  state.transactions.filter(t => filterFn(t.ts)).forEach(t => { if(t.type==='in' || t.type==='bill') cIn+=t.amount; else cOut+=t.amount; });
   let pInc = state.pnl.filter(p => filterFn(p.ts) && p.type==='income').reduce((s,p)=>s+p.amount,0);
   let pExp = state.pnl.filter(p => filterFn(p.ts) && p.type==='expense').reduce((s,p)=>s+p.amount,0);
   const dateLabel = useToday ? 'TODAY' : `${ds} → ${de}`;
@@ -1412,7 +1380,7 @@ function renderSummary() {
     <div class="foot"><span class="k">${t('live_bal')}</span><span class="v">${fmt(state.balances.cash)}</span></div></div>`;
   state.accounts.forEach(a => {
     let dIn=0, dOut=0;
-    getCombinedTx().filter(t => filterFn(t.ts) && t.account===a).forEach(t => { if(t.type==='in' || t.type === 'bill') dOut+=t.amount; else dIn+=t.amount; });
+    state.transactions.filter(t => filterFn(t.ts) && t.account===a).forEach(t => { if(t.type==='in' || t.type==='bill') dOut+=t.amount; else dIn+=t.amount; });
     let aPInc = state.pnl.filter(p => filterFn(p.ts) && p.type==='income' && p.source===a).reduce((s,p)=>s+p.amount,0);
     let aPExp = state.pnl.filter(p => filterFn(p.ts) && p.type==='expense' && p.source===a).reduce((s,p)=>s+p.amount,0);
     w.innerHTML += `<div class="summary-cell"><div class="name">${escapeHtml(a)}</div>
@@ -1428,7 +1396,7 @@ function renderSummary() {
   if (!e.value) { e.value = new Date().toISOString().split('T')[0]; }
   let start = new Date(s.value); start.setHours(0,0,0,0); let end = new Date(e.value); end.setHours(23,59,59,999);
   const map = {};
-  getCombinedTx().filter(t => { const d=new Date(t.ts); return d>=start && d<=end; }).forEach(t => {
+  state.transactions.filter(t => { const d=new Date(t.ts); return d>=start && d<=end; }).forEach(t => {
     const d = new Date(t.ts); const dateStr = d.toLocaleDateString('en-GB'); const acc = t.account;
     if(!map[dateStr+'|'+acc]) map[dateStr+'|'+acc] = {dateStr, account: acc, txOut: 0, txIn: 0, pnlInc: 0, pnlExp: 0};
     if(t.type === 'in' || t.type === 'bill') map[dateStr+'|'+acc].txOut += t.amount; else map[dateStr+'|'+acc].txIn += t.amount;
@@ -1450,7 +1418,7 @@ function renderSummary() {
 
 function renderTx() {
   const b = document.getElementById('txBody'), e = document.getElementById('emptyState'), t = document.getElementById('txTable');
-  b.innerHTML = ''; let txs = getCombinedTx().slice().reverse();
+  b.innerHTML = ''; let txs = state.transactions.slice().reverse();
   if (state.filter === 'in') txs = txs.filter(t => t.type==='in');
   else if (state.filter === 'out') txs = txs.filter(t => t.type==='out');
   else if (state.filter === 'bill') txs = txs.filter(t => t.type==='bill');
@@ -1476,70 +1444,31 @@ function renderTx() {
 }
 function confirmDeleteTx(id) {
   if (!can('canDelete')) return;
-  const tx = state.transactions.find(x => x.id === id);
-  const bill = state.billPayments.find(x => x.id === id);
-  const target = tx || bill;
-  if(!target) return;
-  
-  let details = [];
-  if (bill) {
-    details = [
-      {k: t('type'), v: t('bill_pay_chip')},
-      {k: t('bill_type'), v: bill.bill_type},
-      {k: t('amount'), v: fmt(bill.bill_amount) + ' MMK'}
-    ];
-  } else {
-    details = [
-      {k: t('type'), v: tx.type === 'in' ? t('cash_in') : t('cash_out')},
-      {k: t('amount'), v: fmt(tx.amount) + ' MMK'},
-      {k: t('cust_name'), v: tx.customerName || tx.billType}
-    ];
-  }
-  showModal(t('warn_del_tx'), t('warn_del_tx_msg'), details, true, () => deleteTx(id));
+  const tx = state.transactions.find(x => x.id === id); if(!tx) return;
+  showModal(t('warn_del_tx'), t('warn_del_tx_msg'),
+    [{k: t('type'), v: tx.type === 'in' ? t('cash_in') : (tx.type === 'out' ? t('cash_out') : t('bill_pay_chip'))}, {k: t('amount'), v: fmt(tx.amount) + ' MMK'}, {k: t('cust_name'), v: tx.customerName || tx.billType}], true, () => deleteTx(id));
 }
 function deleteTx(id) {
-  const tx = state.transactions.find(x => x.id === id);
-  const bill = state.billPayments.find(x => x.id === id);
-  
-  if (bill) {
-    state.balances.cash = (state.balances.cash || 0) - (bill.bill_amount + (bill.service_fee || 0));
-    state.balances[bill.from_account] = (state.balances[bill.from_account] || 0) + bill.bill_amount;
-    if (bill.service_fee_account !== 'cash') {
-      state.balances.cash += (bill.service_fee || 0);
-      state.balances[bill.service_fee_account] = (state.balances[bill.service_fee_account] || 0) - (bill.service_fee || 0);
-    }
-    state.billPayments = state.billPayments.filter(x => x.id !== id);
-    state.pnl = state.pnl.filter(p => p.id !== 'pnl_bill_' + id);
-    addLog('DELETE_TX', `Deleted bill ${bill.bill_type} of ${fmt(bill.bill_amount)}`);
-    saveState(); renderAll(); showToast(t('deleted'));
-    return;
+  const tx = state.transactions.find(x => x.id === id); if(!tx) return;
+  if (tx.type === 'bill') {
+    state.balances[tx.account] += tx.amount;
+    state.balances.cash -= (tx.amount + tx.income);
+  } else if (tx.type==='in') { 
+    state.balances.cash -= tx.amount; state.balances[tx.account] += tx.amount; 
+    if(tx.income) state.balances[tx.incomeSource || 'cash'] -= tx.income;
+  } else if (tx.type==='out') { 
+    state.balances.cash += tx.amount; state.balances[tx.account] -= tx.amount; 
+    if(tx.income) state.balances[tx.incomeSource || 'cash'] -= tx.income;
   }
-  
-  if (tx) {
-    if (tx.type === 'bill') { // fallback for old data
-      state.balances.cash = (state.balances.cash || 0) - (tx.amount + (tx.income || 0));
-      state.balances[tx.account] = (state.balances[tx.account] || 0) + tx.amount;
-      if (tx.incomeSource !== 'cash') {
-        state.balances.cash += (tx.income || 0);
-        state.balances[tx.incomeSource] = (state.balances[tx.incomeSource] || 0) - (tx.income || 0);
-      }
-    } else if (tx.type==='in') { 
-      state.balances.cash -= tx.amount; state.balances[tx.account] += tx.amount; 
-      if(tx.income) state.balances[tx.incomeSource || 'cash'] -= tx.income;
-    } else if (tx.type==='out') { 
-      state.balances.cash += tx.amount; state.balances[tx.account] -= tx.amount; 
-      if(tx.income) state.balances[tx.incomeSource || 'cash'] -= tx.income;
-    }
-    state.transactions = state.transactions.filter(x => x.id!==id);
-    state.pnl = state.pnl.filter(p => p.id !== 'pnl_tx_' + id && p.id !== 'pnl_bill_' + id);
-    addLog('DELETE_TX', `Deleted ${tx.type} of ${fmt(tx.amount)} for ${tx.customerName || tx.billType}`);
-    saveState(); renderAll(); showToast(t('deleted'));
-  }
+  state.transactions = state.transactions.filter(x => x.id!==id);
+  state.pnl = state.pnl.filter(p => p.id !== 'pnl_tx_' + id && p.id !== 'pnl_bill_' + id);
+  addLog('DELETE_TX', `Deleted ${tx.type} of ${fmt(tx.amount)} for ${tx.customerName || tx.billType}`);
+  saveState(); renderAll(); showToast(t('deleted'));
 }
 
 function renderReports() {
   const ySel = document.getElementById('reportYear'), mSel = document.getElementById('reportMonth'), mWrap = document.getElementById('monthSelectWrap');
-  const years = [...new Set(getCombinedTx().map(t => new Date(t.ts).getFullYear()))];
+  const years = [...new Set(state.transactions.map(t => new Date(t.ts).getFullYear()))];
   if (years.length === 0) years.push(new Date().getFullYear());
   ySel.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join('');
   ySel.value = new Date().getFullYear();
@@ -1547,10 +1476,10 @@ function renderReports() {
   const y = parseInt(ySel.value), m = parseInt(mSel.value);
   let txs, pnls;
   if (state.currentReportType === 'monthly') {
-    txs = getCombinedTx().filter(t => { const d = new Date(t.ts); return d.getFullYear() === y && d.getMonth() === m; });
+    txs = state.transactions.filter(t => { const d = new Date(t.ts); return d.getFullYear() === y && d.getMonth() === m; });
     pnls = state.pnl.filter(p => { const d = new Date(p.ts); return d.getFullYear() === y && d.getMonth() === m; });
   } else {
-    txs = getCombinedTx().filter(t => { const d = new Date(t.ts); return d.getFullYear() === y; });
+    txs = state.transactions.filter(t => { const d = new Date(t.ts); return d.getFullYear() === y; });
     pnls = state.pnl.filter(p => { const d = new Date(p.ts); return d.getFullYear() === y; });
   }
   const grid = document.getElementById('reportGrid');
@@ -1923,12 +1852,11 @@ function exportData(format) {
   if (expType === 'flow') {
     fileName = 'Account_Flow'; sheetName = 'Account Flow';
     const map = {};
-    getCombinedTx().filter(t => { const d=new Date(t.ts); return d>=start && d<=end; }).forEach(t => {
+    state.transactions.filter(t => { const d=new Date(t.ts); return d>=start && d<=end; }).forEach(t => {
       const d = new Date(t.ts), dateStr = d.toLocaleDateString('en-GB'), accKey = t.account;
       if (acc !== 'all' && acc !== accKey) return;
       if(!map[dateStr+'|'+accKey]) map[dateStr+'|'+accKey] = {Date: dateStr, Account: accKey, 'Cash In Amount': 0, 'Cash Out Amount': 0, Income: 0, Expense: 0};
-      if(t.type === 'in') map[dateStr+'|'+accKey]['Cash In Amount'] += t.amount; 
-      else map[dateStr+'|'+accKey]['Cash Out Amount'] += t.amount;
+      if(t.type === 'in' || t.type === 'bill') map[dateStr+'|'+accKey]['Cash In Amount'] += t.amount; else map[dateStr+'|'+accKey]['Cash Out Amount'] += t.amount;
       if(t.income > 0 && t.incomeSource === accKey) map[dateStr+'|'+accKey].Income += t.income;
     });
     state.pnl.filter(p => { const d=new Date(p.ts); return d>=start && d<=end; }).forEach(p => {
@@ -1957,24 +1885,20 @@ function exportData(format) {
     }));
   } else if (expType === 'bills') {
     fileName = 'Bill_Details'; sheetName = 'Bills';
-    data = (state.billPayments || []).filter(bill => {
-      let ts = bill.ts;
-      if (!ts && bill.created_at) {
-        const dateStr = bill.created_at.includes('T') ? bill.created_at : bill.created_at.replace(' ', 'T') + 'Z';
-        ts = new Date(dateStr).getTime();
-      }
-      const d = new Date(ts);
+    data = state.transactions.filter(t => {
+      if (t.type !== 'bill') return false;
+      const d = new Date(t.ts);
       return d >= start && d <= end;
-    }).map(bill => ({
-      Date: new Date(bill.ts || new Date(bill.created_at.replace(' ', 'T') + 'Z').getTime()).toLocaleDateString('en-GB'),
-      Type: bill.bill_type,
-      Name: bill.bill_name || '-',
-      Phone: bill.bill_phone || '-',
-      BillID: bill.bill_id || '-',
-      Amount: bill.bill_amount,
-      Fee: bill.service_fee || 0,
-      FromAccount: bill.from_account,
-      FeeAccount: bill.service_fee_account
+    }).map(t => ({
+      Date: new Date(t.ts).toLocaleDateString('en-GB'),
+      Type: t.billType,
+      Name: t.customerName || '-',
+      Phone: t.phone || '-',
+      BillID: t.billId || '-',
+      Amount: t.amount,
+      Fee: t.income || 0,
+      FromAccount: t.account,
+      FeeAccount: t.incomeSource || 'cash'
     }));
   }
   
@@ -2051,59 +1975,54 @@ document.getElementById('billForm').onsubmit = e => { e.preventDefault();
   const bId = document.getElementById('billId').value.trim();
   const bPhone = document.getElementById('billPhone').value.trim();
   const fromAcc = document.getElementById('billFromAcc').value;
-  const incAcc = document.getElementById('billIncomeAcc').value;
   const amount = parseFloat(document.getElementById('billAmount').value);
   const fee = parseFloat(document.getElementById('billFee').value) || 0;
 
   if(!amount || amount <= 0) { showToast(t('invalid_amt')); return; }
   if((state.balances[fromAcc] || 0) < amount) { showToast(t('insuff_bal_from')); return; }
 
-  // Balance logic
-  state.balances.cash += (amount + fee);
+  // Debit from selected Account (Kpay/Wave/Bank)
   state.balances[fromAcc] -= amount;
-  if (incAcc !== 'cash') {
-    state.balances.cash -= fee;
-    state.balances[incAcc] += fee;
-  }
+  
+  // Credit to Cash (Bill Amount + Service Fee)
+  state.balances.cash += (amount + fee);
 
-  // Save directly into the billPayments array (matches DB table)
-  const billRecord = {
+  const tx = {
     id: 'bill_' + Date.now(),
     ts: Date.now(),
-    created_at: new Date(Date.now()).toISOString(),
-    bill_type: bType,
-    bill_name: bName,
-    bill_id: bId,
-    bill_phone: bPhone,
-    from_account: fromAcc,
-    service_fee_account: incAcc,
-    bill_amount: amount,
-    service_fee: fee
+    type: 'bill',
+    billType: bType,
+    customerName: bName || bType,
+    phone: bPhone,
+    billId: bId,
+    account: fromAcc,
+    incomeSource: 'cash', // Income is always cash
+    amount: amount,
+    income: fee
   };
-  state.billPayments.push(billRecord);
+  state.transactions.push(tx);
 
   if (fee > 0) {
     state.pnl.push({
-      id: 'pnl_bill_' + billRecord.id,
-      ts: billRecord.ts,
+      id: 'pnl_bill_' + tx.id,
+      ts: tx.ts,
       type: 'income',
       category: 'Bill Service Fee',
-      source: incAcc,
+      source: 'cash', // Income is always cash
       amount: fee,
       note: `Fee for ${bType} - ${bName || bId || bPhone}`
     });
   }
 
-  addLog('BILL_PAY', `Paid ${fmt(amount)} for ${bType}. Fee: ${fmt(fee)}`);
+  addLog('BILL_PAY', `Paid ${fmt(amount)} for ${bType} via ${fromAcc}. Fee (Cash): ${fmt(fee)}`);
   saveState(); renderAll();
   
   const details = [
     {k: t('bill_type'), v: bType},
     {k: t('bill_name'), v: bName || '-'},
     {k: t('bill_amt'), v: fmt(amount) + ' MMK'},
-    {k: t('serv_fee'), v: fmt(fee) + ' MMK'},
-    {k: t('from_acc'), v: fromAcc},
-    {k: t('fee_acc'), v: incAcc}
+    {k: t('serv_fee'), v: fmt(fee) + ' MMK (Cash)'},
+    {k: t('from_acc'), v: fromAcc}
   ];
   showModal(t('bill_complete'), t('bill_complete_msg'), details);
   
@@ -2193,7 +2112,7 @@ if (document.getElementById('transferTo')) document.getElementById('transferTo')
 function renderAll() {
   renderSources('txAccount'); renderSources('incomeSource'); renderSources('pnlSource'); renderSources('exportAccount', true, true);
   renderSources('capitalAccount'); renderSources('adjustTarget'); renderSources('loanSource');
-  renderSources('billFromAcc'); renderSources('billIncomeAcc');
+  renderSources('billFromAcc'); // Only billFromAcc is needed now
   renderTransferSources();
   renderBalances(); renderSummary(); renderTx(); renderReports(); renderPnl(); renderCategories(); renderAccountList(); renderAdjust(); renderLoans(); renderLogs(); renderTransfers(); renderBills(); renderCapital(); checkAlerts();
   updateMenuVisibility(); loadPermissionsUI();
