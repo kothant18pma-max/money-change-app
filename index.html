@@ -1053,6 +1053,7 @@ async function loadState() {
         if (!state.bills) state.bills = [];
         if (!state.billTypes) state.billTypes = ['Electric Bill', 'Phone Bill', 'Water Bill', 'Internet Bill', 'Other Bill'];
         if (!state.language) state.language = 'en';
+        if (!state.users || !state.users.admin || !state.users.user) state.users = { admin: '0000', user: '1111' };
         state.currentType = null;
         if (state.loans) {
           state.loans.forEach(l => {
@@ -1140,7 +1141,7 @@ function applyLanguage() {
     b.classList.toggle('active', b.dataset.lang === state.language);
   });
   
-  saveState();
+  if (currentRole) saveState();
 }
 
 function toggleLanguage() {
