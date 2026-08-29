@@ -210,10 +210,12 @@ export default {
             await env.DB.batch(logStmts);
           }
 
-          // Bill Payments ဒေတာအသစ်သွင်းခြင်း
-          if (state.billPayments && state.billPayments.length > 0) {
-            const billStmts = state.billPayments.map(b => env.DB.prepare("INSERT INTO bill_payments (id, bill_type, bill_name, bill_id, bill_phone, from_account, service_fee_account, bill_amount, service_fee, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-              .bind(b.id || null, b.bill_type, b.bill_name, b.bill_id, b.bill_phone, b.from_account, b.service_fee_account, b.bill_amount, b.service_fee || 0, b.created_at || null));
+                   // Bill Payments ဒေတာအသစ်သွင်းခြင်း (Post Request အတွင်း)
+          // state.billPayments ဆိုတာ သီးခြား မရှိခြင်ဖြစ်နေလို့ transactions ထဲကနေ ရှာယူပါမည်
+          const billTxs = state.transactions.filter(t => t.type === 'bill');
+          if (billTxs.length > 0) {
+            const billStmts = billTxs.map(b => env.DB.prepare("INSERT INTO bill_payments (id, bill_type, bill_name, bill_id, bill_phone, from_account, service_fee_account, bill_amount, service_fee, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+              .bind(b.id || ('bill_' + Date.now()), b.billType, b.customerName, b.billId, b.phone, b.account, 'cash', b.amount, b.income || 0, b.ts || Date.now()));
             await env.DB.batch(billStmts);
           }
 
