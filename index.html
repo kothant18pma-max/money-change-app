@@ -84,6 +84,16 @@ body.sidebar-hidden .main-content { margin-left: 0; }
 
 .topbar-right { display: flex; align-items: center; gap: 1rem; }
 .clock { font: 400 13.2px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; color: var(--text-soft); }
+
+/* Connection Status */
+.conn-status { display: flex; align-items: center; gap: 0.4rem; font: 400 10px/1 'JetBrains Mono', monospace; color: var(--text-soft); padding: 0.4rem 0.6rem; border: 1px solid var(--line); border-radius: 4px; background: rgba(255,255,255,0.03); }
+.conn-status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--warning); animation: pulse 1.5s infinite; }
+.conn-status.online .dot { background: var(--success); box-shadow: 0 0 6px var(--success); animation: none; }
+.conn-status.offline .dot { background: var(--danger); box-shadow: 0 0 6px var(--danger); animation: none; }
+.conn-status.online .text { color: var(--success); }
+.conn-status.offline .text { color: var(--danger); }
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
 .lang-toggle { background: transparent; border: 1px solid var(--line); color: var(--accent); padding: 0.4rem 0.8rem; font: 700 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; cursor: pointer; transition: all 300ms; border-radius: 4px; }
 .lang-toggle:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
 .logout-btn { background: transparent; border: 1px solid var(--line); padding: 0.5rem 1rem; font: 700 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; color: var(--text-soft); cursor: pointer; transition: all 300ms; border-radius: 4px; }
@@ -313,6 +323,9 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
         </div>
       </div>
       <div class="topbar-right">
+        <div class="conn-status" id="connStatus" title="Server Connection Status">
+          <span class="dot"></span> <span class="text">CONNECTING</span>
+        </div>
         <div class="clock" id="clock">--:--:--</div>
         <button class="lang-toggle" id="langToggle" onclick="toggleLanguage()">EN</button>
         <button class="logout-btn" id="logoutBtn">LOGOUT</button>
@@ -1033,20 +1046,17 @@ function playNotificationSound() {
       audioCtx.resume();
     }
     
-    // Success Chime (e.g., C5 -> E5)
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     
     osc.connect(gain);
     gain.connect(audioCtx.destination);
     
-    // First note
-    osc.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
+    osc.frequency.setValueAtTime(880, audioCtx.currentTime); 
     gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
     
-    // Second note
-    osc.frequency.setValueAtTime(1318.51, audioCtx.currentTime + 0.15); // E6
+    osc.frequency.setValueAtTime(1318.51, audioCtx.currentTime + 0.15); 
     gain.gain.setValueAtTime(0.1, audioCtx.currentTime + 0.15);
     gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
     
@@ -1057,7 +1067,26 @@ function playNotificationSound() {
   }
 }
 
+// ============ CONNECTION STATUS ============
+function setConnStatus(status) {
+  const el = document.getElementById('connStatus');
+  if (!el) return;
+  el.classList.remove('online', 'offline');
+  const text = el.querySelector('.text');
+  
+  if (status === 'online') {
+    el.classList.add('online');
+    text.textContent = 'ONLINE';
+  } else if (status === 'offline') {
+    el.classList.add('offline');
+    text.textContent = 'OFFLINE';
+  } else {
+    text.textContent = 'SYNCING...';
+  }
+}
+
 async function loadState() {
+  setConnStatus('syncing');
   try {
     const response = await fetch('/api/state');
     if (response.ok) {
@@ -1081,7 +1110,6 @@ async function loadState() {
         if (!state.transfers) state.transfers = [];
         if (!state.capital) state.capital = [];
         
-        // Backward Compatibility for Bill Payments Table
         if (!state.bill_payments) state.bill_payments = [];
         if (state.bills && state.bills.length > 0 && state.bill_payments.length === 0) {
           state.bill_payments = state.bills.map(b => {
@@ -1099,12 +1127,12 @@ async function loadState() {
               note: b.note || ''
             };
           });
-          delete state.bills; // Remove old key
+          delete state.bills;
         }
         
         if (state.bill_payments && state.bill_payments.length > 0) {
           state.bill_payments = state.bill_payments.map(b => {
-            if (b.from_account) return b; // Already migrated
+            if (b.from_account) return b;
             return {
               id: b.id || ('bill_' + Date.now()),
               bill_type: b.billType || b.bill_type || '',
@@ -1131,19 +1159,28 @@ async function loadState() {
           });
         }
       }
+      setConnStatus('online');
+    } else {
+      setConnStatus('offline');
     }
-  } catch (e) { console.error('Load state error:', e); }
+  } catch (e) { 
+    console.error('Load state error:', e); 
+    setConnStatus('offline');
+  }
 }
 
 async function saveState() {
+  setConnStatus('syncing');
   try {
     await fetch('/api/state', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(state)
     });
+    setConnStatus('online');
   } catch (e) { 
     console.error('Save state error:', e); 
+    setConnStatus('offline');
     showToast('SAVE FAILED - NETWORK ERROR'); 
   }
 }
@@ -1484,7 +1521,6 @@ function renderTransfers() {
   }).join('');
 }
 
-// ============ BILL PAYMENT (bill_payments) ============
 function renderBills() {
   const b = document.getElementById('billBody');
   if (!b) return;
@@ -1524,13 +1560,11 @@ function deleteBill(id) {
     ], true, (note) => {
       const totalCashReceived = bill.bill_amount + (bill.service_fee || 0);
       
-      // Check if Cash has enough balance to reverse
       if ((state.balances.cash || 0) < totalCashReceived) {
         showToast('CANNOT DELETE: Cash balance would go negative.');
         return;
       }
       
-      // Reverse balances: Add back to Account, Deduct from Cash
       state.balances.cash -= totalCashReceived;
       state.balances[bill.from_account] += bill.bill_amount;
       
@@ -1558,7 +1592,6 @@ function renderSummary() {
     const d = new Date(ts); return d >= startD && d <= endD;
   };
   
-  // Cash Summary
   let cIn=0, cOut=0;
   state.transactions.filter(t => filterFn(t.ts)).forEach(t => { if(t.type==='in') cIn+=t.amount; else cOut+=t.amount; });
   let cBillIn = state.bill_payments.filter(b => filterFn(b.created_at)).reduce((s,b)=>s+b.bill_amount,0);
@@ -1576,7 +1609,6 @@ function renderSummary() {
     <div class="foot"><span class="k">Balance</span><span class="v">${fmt(state.balances.cash)}</span></div>
   </div>`;
   
-  // Digital Accounts Summary
   state.accounts.forEach(a => {
     let dIn=0, dOut=0;
     state.transactions.filter(t => filterFn(t.ts) && t.account===a).forEach(t => { if(t.type==='in') dOut+=t.amount; else dIn+=t.amount; });
@@ -1590,12 +1622,11 @@ function renderSummary() {
       <div class="stat out"><span class="k">BILL PAID</span><span class="v">-${fmt(billOut)}</span></div>
       <div class="stat in"><span class="k">P&L INCOME</span><span class="v">+${fmt(aPInc)}</span></div>
       <div class="stat out"><span class="k">P&L EXPENSE</span><span class="v">-${fmt(aPExp)}</span></div>
-    <div class="stat net"><span class="k">NET FLOW</span><span class="v">${fmt(dIn - dOut - billOut + aPInc - aPExp)}</span></div>
+      <div class="stat net"><span class="k">NET FLOW</span><span class="v">${fmt(dIn - dOut - billOut + aPInc - aPExp)}</span></div>
       <div class="foot"><span class="k">Balance</span><span class="v">${fmt(state.balances[a]||0)}</span></div>
     </div>`;
   });
   
-  // Daily Flow Table
   const s = document.getElementById('sumStart'), e = document.getElementById('sumEnd');
   if (!s.value) { const d = new Date(); d.setDate(1); s.value = d.toISOString().split('T')[0]; }
   if (!e.value) { e.value = new Date().toISOString().split('T')[0]; }
@@ -1615,11 +1646,11 @@ function renderSummary() {
     const dateStr = d.toLocaleDateString('en-GB');
     const acc = b.from_account;
     if(!map[dateStr+'|'+acc]) map[dateStr+'|'+acc] = {dateStr, account: acc, txOut: 0, txIn: 0, billOut: 0, pnlInc: 0, pnlExp: 0};
-    map[dateStr+'|'+acc].billOut += b.bill_amount; // Debit from digital account
+    map[dateStr+'|'+acc].billOut += b.bill_amount;
     
     const cashAcc = 'cash';
     if(!map[dateStr+'|'+cashAcc]) map[dateStr+'|'+cashAcc] = {dateStr, account: cashAcc, txOut: 0, txIn: 0, billOut: 0, pnlInc: 0, pnlExp: 0};
-    map[dateStr+'|'+cashAcc].txOut += b.bill_amount; // Credit to Cash (treated as Cash In)
+    map[dateStr+'|'+cashAcc].txOut += b.bill_amount;
   });
   state.pnl.filter(p => { const d=new Date(p.ts); return d>=start && d<=end; }).forEach(p => {
     const d = new Date(p.ts);
@@ -1633,10 +1664,8 @@ function renderSummary() {
   b.innerHTML = Object.values(map).sort((a,b) => a.dateStr.localeCompare(b.dateStr) || a.account.localeCompare(b.account)).map(m => {
     let netFlow;
     if (m.account === 'cash') {
-      // For Cash: txOut is Cash In, txIn is Cash Out
       netFlow = m.txOut - m.txIn + m.pnlInc - m.pnlExp;
     } else {
-      // For Digital: txIn is Digital In, txOut is Digital Out
       netFlow = m.txIn - m.txOut + m.pnlInc - m.pnlExp - (m.billOut || 0);
     }
     return `<tr>
@@ -2210,14 +2239,12 @@ function exportData(format) {
     state.bill_payments.filter(b => { const d=new Date(b.created_at); return d>=start && d<=end; }).forEach(b => {
       const d = new Date(b.created_at), dateStr = d.toLocaleDateString('en-GB');
       
-      // 1. Deduct from Digital Account
       const accKey = b.from_account;
       if (acc === 'all' || acc === accKey) {
         if(!map[dateStr+'|'+accKey]) map[dateStr+'|'+accKey] = {Date: dateStr, Account: accKey, 'Cash In Amount': 0, 'Cash Out Amount': 0, Income: 0, Expense: 0};
         map[dateStr+'|'+accKey]['Cash Out Amount'] += b.bill_amount;
       }
       
-      // 2. Credit to Cash Account
       const cashKey = 'cash';
       if (acc === 'all' || acc === cashKey) {
         if(!map[dateStr+'|'+cashKey]) map[dateStr+'|'+cashKey] = {Date: dateStr, Account: cashKey, 'Cash In Amount': 0, 'Cash Out Amount': 0, Income: 0, Expense: 0};
@@ -2364,17 +2391,15 @@ document.getElementById('billForm').onsubmit = e => { e.preventDefault();
   const service_fee = parseFloat(document.getElementById('billFee').value) || 0;
   const from_account = document.getElementById('billDeductAccount').value;
   const note = document.getElementById('billNote').value.trim();
-  const service_fee_account = 'cash'; // Fixed to Cash
+  const service_fee_account = 'cash';
   
   if (!bill_amount || bill_amount <= 0) { showToast('CHECK BILL AMOUNT'); return; }
   
-  // Check if From Account has enough balance to pay the bill
   if ((state.balances[from_account] || 0) < bill_amount) { showToast('INSUFFICIENT BALANCE IN DEDUCT ACCOUNT'); return; }
   
-  // Debit from Account, Credit to Cash
   state.balances[from_account] -= bill_amount;
   state.balances.cash += bill_amount; 
-  state.balances[service_fee_account] += service_fee; // Credit fee to Cash
+  state.balances[service_fee_account] += service_fee;
   
   const bill = { 
     id: 'bill_' + Date.now(), 
