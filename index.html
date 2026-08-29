@@ -433,7 +433,7 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
             <div class="form-row-2">
               <div class="form-row">
                 <label>Name (Optional) <span class="mm">အမည်</span></label>
-                <input type="text" id="billCustomerName" placeholder="U Mya">
+                <input type="text" id="billName" placeholder="U Mya">
               </div>
               <div class="form-row">
                 <label>Bill ID (Optional) <span class="mm">ဘီလ် အိုင်ဒီ</span></label>
@@ -456,7 +456,7 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
                 <input type="number" id="billFee" placeholder="0" value="0">
               </div>
               <div class="form-row">
-                <label>Deduct From (Account) <span class="mm">ငွေထုတ်ပေးမည့် အကောင့်</span></label>
+                <label>From Account <span class="mm">ငွေထုတ်ပေးမည့် အကောင့်</span></label>
                 <select id="billDeductAccount"></select>
               </div>
             </div>
@@ -472,7 +472,7 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
           <div class="card-header">Bill History · ဘီလ် မှတ်တမ်း</div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Date</th><th>Type</th><th>Name</th><th>Bill ID</th><th>Amount</th><th>Fee</th><th>Paid From</th><th>Action</th></tr></thead>
+              <thead><tr><th>Created At</th><th>Type</th><th>Name</th><th>Bill ID</th><th>Amount</th><th>Fee</th><th>From Acc</th><th>Action</th></tr></thead>
               <tbody id="billBody"></tbody>
             </table>
           </div>
@@ -983,7 +983,6 @@ let state = {
   transfers: [],
   capital: [],
   bills: [],
-  billTypes: ['Electric Bill', 'Phone Bill', 'Water Bill', 'Internet Bill', 'Other Bill'],
   language: 'en',
   categories: {
     income: ['Commission', 'Salary', 'Bill Commission', 'Other Income'],
@@ -1047,12 +1046,27 @@ async function loadState() {
         if (!state.transfers) state.transfers = [];
         if (!state.capital) state.capital = [];
         if (!state.bills) state.bills = [];
-        if (state.bills) {
-          state.bills.forEach(b => {
-            if (!b.incomeAccount) b.incomeAccount = 'cash'; // Backward compatibility
+        
+        // Database Table Structure Migration for Bills
+        if (state.bills && state.bills.length > 0) {
+          state.bills = state.bills.map(b => {
+            if (b.from_account) return b; // Already migrated
+            return {
+              id: b.id || ('bill_' + Date.now()),
+              bill_type: b.billType || b.bill_type || '',
+              bill_name: b.customerName || b.bill_name || '',
+              bill_id: b.billId || b.bill_id || '',
+              bill_phone: b.phone || b.bill_phone || '',
+              from_account: b.deductAccount || b.from_account || 'cash',
+              service_fee_account: b.incomeAccount || b.service_fee_account || 'cash',
+              bill_amount: b.billAmount || b.bill_amount || 0,
+              service_fee: b.serviceFee || b.service_fee || 0,
+              created_at: b.ts || b.created_at || Date.now(),
+              note: b.note || ''
+            };
           });
         }
-        if (!state.billTypes) state.billTypes = ['Electric Bill', 'Phone Bill', 'Water Bill', 'Internet Bill', 'Other Bill'];
+        
         if (!state.language) state.language = 'en';
         if (!state.users || !state.users.admin || !state.users.user) state.users = { admin: '0000', user: '1111' };
         state.currentType = null;
@@ -1425,16 +1439,16 @@ function renderBills() {
   }
   const showDel = can('canDelete');
   b.innerHTML = state.bills.slice().reverse().map(bill => {
-    const dt = new Date(bill.ts);
+    const dt = new Date(bill.created_at);
     const ds = dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}) + ' ' + dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
     return `<tr>
       <td style="color:var(--text-soft)">${ds}</td>
-      <td>${escapeHtml(bill.billType)}</td>
-      <td>${escapeHtml(bill.customerName || '-')}</td>
-      <td style="color:var(--text-soft)">${escapeHtml(bill.billId || '-')}</td>
-      <td class="amount">${fmt(bill.billAmount)}</td>
-      <td style="color:var(--accent)">+${fmt(bill.serviceFee || 0)}</td>
-      <td style="color:var(--text-soft)">${escapeHtml(bill.deductAccount)}</td>
+      <td>${escapeHtml(bill.bill_type)}</td>
+      <td>${escapeHtml(bill.bill_name || '-')}</td>
+      <td style="color:var(--text-soft)">${escapeHtml(bill.bill_id || '-')}</td>
+      <td class="amount">${fmt(bill.bill_amount)}</td>
+      <td style="color:var(--accent)">+${fmt(bill.service_fee || 0)}</td>
+      <td style="color:var(--text-soft)">${escapeHtml(bill.from_account)}</td>
       <td>${showDel ? `<button class="btn-danger" onclick="deleteBill('${bill.id}')">DEL</button>` : ''}</td>
     </tr>`;
   }).join('');
@@ -1447,13 +1461,13 @@ function deleteBill(id) {
   
   showModal('WARNING: DELETE BILL · ဘီလ်ဖျက်ရန်', 'ဤ ဘီလ် မှတ်တမ်းကို ဖျက်လိုက်ပါက ငွေပမာဏများ အလိုလို ပြန်လည် ပြောင်းလဲသွားပါမည်။',
     [
-      {k: 'Bill Type', v: bill.billType},
-      {k: 'Bill Amount', v: fmt(bill.billAmount) + ' MMK'},
-      {k: 'Service Fee', v: fmt(bill.serviceFee || 0) + ' MMK'},
-      {k: 'Deducted From', v: bill.deductAccount},
-      {k: 'Received in Cash', v: fmt(bill.billAmount + (bill.serviceFee || 0)) + ' MMK'}
+      {k: 'Bill Type', v: bill.bill_type},
+      {k: 'Bill Amount', v: fmt(bill.bill_amount) + ' MMK'},
+      {k: 'Service Fee', v: fmt(bill.service_fee || 0) + ' MMK'},
+      {k: 'Deducted From', v: bill.from_account},
+      {k: 'Received in Cash', v: fmt(bill.bill_amount + (bill.service_fee || 0)) + ' MMK'}
     ], true, (note) => {
-      const totalCashReceived = bill.billAmount + (bill.serviceFee || 0);
+      const totalCashReceived = bill.bill_amount + (bill.service_fee || 0);
       
       // Check if Cash has enough balance to reverse
       if ((state.balances.cash || 0) < totalCashReceived) {
@@ -1463,12 +1477,12 @@ function deleteBill(id) {
       
       // Reverse balances: Add back to Account, Deduct from Cash
       state.balances.cash -= totalCashReceived;
-      state.balances[bill.deductAccount] += bill.billAmount;
+      state.balances[bill.from_account] += bill.bill_amount;
       
       state.bills = state.bills.filter(x => x.id !== id);
       state.pnl = state.pnl.filter(p => p.id !== 'pnl_bill_' + id);
       
-      addLog('DEL_BILL', `Deleted ${bill.billType} bill ${fmt(bill.billAmount)}. Note: ${note || 'N/A'}`);
+      addLog('DEL_BILL', `Deleted ${bill.bill_type} bill ${fmt(bill.bill_amount)}. Note: ${note || 'N/A'}`);
       renderAll();
       showToast('BILL DELETED');
     }, 'DELETE', 'ဖျက်သည့် အကြောင်းပြချက် (optional)');
@@ -1492,7 +1506,7 @@ function renderSummary() {
   // Cash Summary
   let cIn=0, cOut=0;
   state.transactions.filter(t => filterFn(t.ts)).forEach(t => { if(t.type==='in') cIn+=t.amount; else cOut+=t.amount; });
-  let cBillIn = state.bills.filter(b => filterFn(b.ts)).reduce((s,b)=>s+b.billAmount,0);
+  let cBillIn = state.bills.filter(b => filterFn(b.created_at)).reduce((s,b)=>s+b.bill_amount,0);
   let pInc = state.pnl.filter(p => filterFn(p.ts) && p.type==='income' && p.source==='cash').reduce((s,p)=>s+p.amount,0);
   let pExp = state.pnl.filter(p => filterFn(p.ts) && p.type==='expense' && p.source==='cash').reduce((s,p)=>s+p.amount,0);
   const dateLabel = useToday ? 'TODAY' : `${ds} → ${de}`;
@@ -1511,7 +1525,7 @@ function renderSummary() {
   state.accounts.forEach(a => {
     let dIn=0, dOut=0;
     state.transactions.filter(t => filterFn(t.ts) && t.account===a).forEach(t => { if(t.type==='in') dOut+=t.amount; else dIn+=t.amount; });
-    let billOut = state.bills.filter(b => filterFn(b.ts) && b.deductAccount===a).reduce((s,b)=>s+b.billAmount,0);
+    let billOut = state.bills.filter(b => filterFn(b.created_at) && b.from_account===a).reduce((s,b)=>s+b.bill_amount,0);
     let aPInc = state.pnl.filter(p => filterFn(p.ts) && p.type==='income' && p.source===a).reduce((s,p)=>s+p.amount,0);
     let aPExp = state.pnl.filter(p => filterFn(p.ts) && p.type==='expense' && p.source===a).reduce((s,p)=>s+p.amount,0);
     w.innerHTML += `<div class="summary-cell">
@@ -1541,16 +1555,16 @@ function renderSummary() {
     if(t.type === 'in') map[dateStr+'|'+acc].txOut += t.amount; else map[dateStr+'|'+acc].txIn += t.amount;
     if(t.income > 0 && t.incomeSource === acc) map[dateStr+'|'+acc].pnlInc += t.income;
   });
-  state.bills.filter(b => { const d=new Date(b.ts); return d>=start && d<=end; }).forEach(b => {
-    const d = new Date(b.ts);
+  state.bills.filter(b => { const d=new Date(b.created_at); return d>=start && d<=end; }).forEach(b => {
+    const d = new Date(b.created_at);
     const dateStr = d.toLocaleDateString('en-GB');
-    const acc = b.deductAccount;
+    const acc = b.from_account;
     if(!map[dateStr+'|'+acc]) map[dateStr+'|'+acc] = {dateStr, account: acc, txOut: 0, txIn: 0, billOut: 0, pnlInc: 0, pnlExp: 0};
-    map[dateStr+'|'+acc].billOut += b.billAmount; // Debit from digital account
+    map[dateStr+'|'+acc].billOut += b.bill_amount; // Debit from digital account
     
     const cashAcc = 'cash';
     if(!map[dateStr+'|'+cashAcc]) map[dateStr+'|'+cashAcc] = {dateStr, account: cashAcc, txOut: 0, txIn: 0, billOut: 0, pnlInc: 0, pnlExp: 0};
-    map[dateStr+'|'+cashAcc].txOut += b.billAmount; // Credit to Cash (treated as Cash In)
+    map[dateStr+'|'+cashAcc].txOut += b.bill_amount; // Credit to Cash (treated as Cash In)
   });
   state.pnl.filter(p => { const d=new Date(p.ts); return d>=start && d<=end; }).forEach(p => {
     const d = new Date(p.ts);
@@ -1588,11 +1602,11 @@ function renderTx() {
   state.transactions.forEach(tx => { allEntries.push({...tx}); });
   state.bills.forEach(bill => {
     allEntries.push({
-      id: bill.id, ts: bill.ts,
-      customerName: bill.customerName || '-', phone: bill.phone || '-',
-      type: 'bill', account: bill.deductAccount,
-      amount: bill.billAmount, income: bill.serviceFee || 0,
-      incomeSource: 'cash', billType: bill.billType, billId: bill.billId
+      id: bill.id, ts: bill.created_at,
+      customerName: bill.bill_name || '-', phone: bill.bill_phone || '-',
+      type: 'bill', account: bill.from_account,
+      amount: bill.bill_amount, income: bill.service_fee || 0,
+      incomeSource: bill.service_fee_account, billType: bill.bill_type, billId: bill.bill_id
     });
   });
   
@@ -2136,21 +2150,21 @@ function exportData(format) {
       if(t.type === 'in') map[dateStr+'|'+accKey]['Cash In Amount'] += t.amount; else map[dateStr+'|'+accKey]['Cash Out Amount'] += t.amount;
       if(t.income > 0 && t.incomeSource === accKey) map[dateStr+'|'+accKey].Income += t.income;
     });
-    state.bills.filter(b => { const d=new Date(b.ts); return d>=start && d<=end; }).forEach(b => {
-      const d = new Date(b.ts), dateStr = d.toLocaleDateString('en-GB');
+    state.bills.filter(b => { const d=new Date(b.created_at); return d>=start && d<=end; }).forEach(b => {
+      const d = new Date(b.created_at), dateStr = d.toLocaleDateString('en-GB');
       
       // 1. Deduct from Digital Account
-      const accKey = b.deductAccount;
+      const accKey = b.from_account;
       if (acc === 'all' || acc === accKey) {
         if(!map[dateStr+'|'+accKey]) map[dateStr+'|'+accKey] = {Date: dateStr, Account: accKey, 'Cash In Amount': 0, 'Cash Out Amount': 0, Income: 0, Expense: 0};
-        map[dateStr+'|'+accKey]['Cash Out Amount'] += b.billAmount;
+        map[dateStr+'|'+accKey]['Cash Out Amount'] += b.bill_amount;
       }
       
       // 2. Credit to Cash Account
       const cashKey = 'cash';
       if (acc === 'all' || acc === cashKey) {
         if(!map[dateStr+'|'+cashKey]) map[dateStr+'|'+cashKey] = {Date: dateStr, Account: cashKey, 'Cash In Amount': 0, 'Cash Out Amount': 0, Income: 0, Expense: 0};
-        map[dateStr+'|'+cashKey]['Cash In Amount'] += b.billAmount;
+        map[dateStr+'|'+cashKey]['Cash In Amount'] += b.bill_amount;
       }
     });
     state.pnl.filter(p => { const d=new Date(p.ts); return d>=start && d<=end; }).forEach(p => {
@@ -2168,11 +2182,17 @@ function exportData(format) {
     }));
   } else if (expType === 'bills') {
     fileName = 'Bill_Details'; sheetName = 'Bills';
-    data = state.bills.filter(b => { const d = new Date(b.ts); return d>=start && d<=end; }).map(b => ({
-      Date: new Date(b.ts).toLocaleDateString('en-GB'), Type: b.billType,
-      Name: b.customerName || '-', BillID: b.billId || '-', Phone: b.phone || '-',
-      BillAmount: b.billAmount, ServiceFee: b.serviceFee || 0,
-      DeductAccount: b.deductAccount, IncomeAccount: 'cash', Note: b.note || ''
+    data = state.bills.filter(b => { const d = new Date(b.created_at); return d>=start && d<=end; }).map(b => ({
+      id: b.id,
+      bill_type: b.bill_type,
+      bill_name: b.bill_name || '-',
+      bill_id: b.bill_id || '-',
+      bill_phone: b.bill_phone || '-',
+      from_account: b.from_account,
+      service_fee_account: b.service_fee_account,
+      bill_amount: b.bill_amount,
+      service_fee: b.service_fee || 0,
+      created_at: new Date(b.created_at).toLocaleString()
     }));
   } else if (expType === 'loans') {
     fileName = 'Loan_Details'; sheetName = 'Loans';
@@ -2277,47 +2297,68 @@ document.getElementById('transferForm').onsubmit = e => { e.preventDefault();
 };
 
 document.getElementById('billForm').onsubmit = e => { e.preventDefault();
-  const billType = document.getElementById('billType').value;
-  const customerName = document.getElementById('billCustomerName').value.trim();
-  const billId = document.getElementById('billId').value.trim();
-  const phone = document.getElementById('billPhone').value.trim();
-  const billAmount = parseFloat(document.getElementById('billAmount').value);
-  const serviceFee = parseFloat(document.getElementById('billFee').value) || 0;
-  const deductAccount = document.getElementById('billDeductAccount').value;
+  const bill_type = document.getElementById('billType').value;
+  const bill_name = document.getElementById('billName').value.trim();
+  const bill_id = document.getElementById('billId').value.trim();
+  const bill_phone = document.getElementById('billPhone').value.trim();
+  const bill_amount = parseFloat(document.getElementById('billAmount').value);
+  const service_fee = parseFloat(document.getElementById('billFee').value) || 0;
+  const from_account = document.getElementById('billDeductAccount').value;
   const note = document.getElementById('billNote').value.trim();
+  const service_fee_account = 'cash'; // Fixed to Cash
   
-  if (!billAmount || billAmount <= 0) { showToast('CHECK BILL AMOUNT'); return; }
+  if (!bill_amount || bill_amount <= 0) { showToast('CHECK BILL AMOUNT'); return; }
   
-  // Check if Deduct Account has enough balance to pay the bill
-  if ((state.balances[deductAccount] || 0) < billAmount) { showToast('INSUFFICIENT BALANCE IN DEDUCT ACCOUNT'); return; }
+  // Check if From Account has enough balance to pay the bill
+  if ((state.balances[from_account] || 0) < bill_amount) { showToast('INSUFFICIENT BALANCE IN DEDUCT ACCOUNT'); return; }
   
   // Debit from Account, Credit to Cash
-  state.balances[deductAccount] -= billAmount;
-  state.balances.cash += billAmount; 
-  state.balances.cash += serviceFee; // Income to Cash
+  state.balances[from_account] -= bill_amount;
+  state.balances.cash += bill_amount; 
+  state.balances[service_fee_account] += service_fee; // Credit fee to Cash
   
-  const bill = { id: 'bill_' + Date.now(), ts: Date.now(), billType, customerName, billId, phone, billAmount, serviceFee, deductAccount, incomeAccount: 'cash', note };
+  const bill = { 
+    id: 'bill_' + Date.now(), 
+    created_at: Date.now(), 
+    bill_type, 
+    bill_name, 
+    bill_id, 
+    bill_phone, 
+    bill_amount, 
+    service_fee, 
+    from_account, 
+    service_fee_account, 
+    note 
+  };
   state.bills.push(bill);
   
-  if (serviceFee > 0) {
-    state.pnl.push({ id: 'pnl_bill_' + bill.id, ts: bill.ts, type: 'income', category: 'Bill Commission', source: 'cash', amount: serviceFee, note: `Bill fee - ${billType}${customerName ? ' (' + customerName + ')' : ''}` });
+  if (service_fee > 0) {
+    state.pnl.push({ 
+      id: 'pnl_bill_' + bill.id, 
+      ts: bill.created_at, 
+      type: 'income', 
+      category: 'Bill Commission', 
+      source: service_fee_account, 
+      amount: service_fee, 
+      note: `Bill fee - ${bill_type}${bill_name ? ' (' + bill_name + ')' : ''}` 
+    });
   }
   
-  addLog('BILL_PAY', `Paid ${billType} ${fmt(billAmount)} via ${deductAccount}. Cash received: ${fmt(billAmount + serviceFee)}`);
+  addLog('BILL_PAY', `Paid ${bill_type} ${fmt(bill_amount)} via ${from_account}. Cash received: ${fmt(bill_amount + service_fee)}`);
   renderAll();
   
   const details = [
-    {k: 'Bill Type', v: billType},
-    {k: 'Bill Amount', v: fmt(billAmount) + ' MMK'},
-    {k: 'Service Fee', v: fmt(serviceFee) + ' MMK'},
-    {k: 'Paid From', v: deductAccount},
-    {k: 'Received in Cash', v: fmt(billAmount + serviceFee) + ' MMK'}
+    {k: 'Bill Type', v: bill_type},
+    {k: 'Bill Amount', v: fmt(bill_amount) + ' MMK'},
+    {k: 'Service Fee', v: fmt(service_fee) + ' MMK'},
+    {k: 'Paid From', v: from_account},
+    {k: 'Received in Cash', v: fmt(bill_amount + service_fee) + ' MMK'}
   ];
-  showModal('BILL PAYMENT COMPLETE', 'ဘီလ် ပေးဆောင်မှု အောင်မြင်ပါသည်။', details);
+  showModal('BILL PAYMENT COMPLETE', 'ဘီလ် ပေါင်ဆောင်မှု အောင်မြင်ပါသည်။', details);
   
   document.getElementById('billAmount').value = '';
   document.getElementById('billFee').value = '0';
-  document.getElementById('billCustomerName').value = '';
+  document.getElementById('billName').value = '';
   document.getElementById('billId').value = '';
   document.getElementById('billPhone').value = '';
   document.getElementById('billNote').value = '';
