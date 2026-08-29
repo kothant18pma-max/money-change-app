@@ -62,6 +62,9 @@ export default {
         allData.AppSettings = (await env.DB.prepare("SELECT * FROM AppSettings").all()).results;
         allData.AppTransactions = (await env.DB.prepare("SELECT * FROM AppTransactions").all()).results;
         allData.AppTransfers = (await env.DB.prepare("SELECT * FROM AppTransfers").all()).results;
+        
+        // Bill Payments Table အသစ်ကို ထည့်ပေးခြင်း
+        allData.billPayments = (await env.DB.prepare("SELECT * FROM bill_payments").all()).results;
 
         return new Response(JSON.stringify(allData), { status: 200, headers: corsHeaders });
       } catch (error) {
@@ -80,6 +83,7 @@ export default {
             accounts: ['Kpay(TZ)', 'Wave(TZ)', 'Bank(TZ)'],
             balances: { 'Kpay(TZ)': 0, 'Wave(TZ)': 0, 'Bank(TZ)': 0, 'cash': 0 },
             transactions: [], pnl: [], loans: [], transfers: [], capital: [], adjustments: [], logs: [],
+            billPayments: [], // Bill Payments အတွက် array အသစ်ထည့်ပေးခြင်း
             categories: { income: ['Commission', 'Salary', 'Other Income'], expense: ['Rent', 'Food', 'Transport', 'Utility', 'Other Expense'] },
             userPermissions: { canDelete: false, canAdjust: false, canLoans: false, canCapital: false, canCategories: false, canReports: true, canExport: true, canBackup: false },
             users: { admin: '0000', user: '1111' }
@@ -124,6 +128,14 @@ export default {
           const logsRes = await env.DB.prepare("SELECT * FROM AppLogs").all();
           if(logsRes.results) state.logs = logsRes.results.map(l => ({ id: l.id, ts: l.ts, user: l.user, action: l.action, details: l.details }));
 
+          // Bill Payments ဒေတာများကို ဖတ်ယူခြင်း
+          const billRes = await env.DB.prepare("SELECT * FROM bill_payments").all();
+          if(billRes.results) state.billPayments = billRes.results.map(b => ({
+            id: b.id, created_at: b.created_at, bill_type: b.bill_type, bill_name: b.bill_name,
+            bill_id: b.bill_id, bill_phone: b.bill_phone, from_account: b.from_account,
+            service_fee_account: b.service_fee_account, bill_amount: b.bill_amount, service_fee: b.service_fee || 0
+          }));
+
           return new Response(JSON.stringify(state), { status: 200, headers: corsHeaders });
         }
 
@@ -140,7 +152,8 @@ export default {
             env.DB.prepare("DELETE FROM AppTransfers"),
             env.DB.prepare("DELETE FROM AppCapital"),
             env.DB.prepare("DELETE FROM AppAdjustments"),
-            env.DB.prepare("DELETE FROM AppLogs")
+            env.DB.prepare("DELETE FROM AppLogs"),
+            env.DB.prepare("DELETE FROM bill_payments") // Bill Payments ဒေတာဟောင်းဖျက်ခြင်း
           ]);
 
           const settingsKeys = ['categories', 'userPermissions', 'users'];
@@ -195,6 +208,13 @@ export default {
             const logStmts = state.logs.map(l => env.DB.prepare("INSERT INTO AppLogs (id, ts, user, action, details) VALUES (?, ?, ?, ?, ?)")
               .bind(l.id, l.ts, l.user, l.action, l.details));
             await env.DB.batch(logStmts);
+          }
+
+          // Bill Payments ဒေတာအသစ်သွင်းခြင်း
+          if (state.billPayments && state.billPayments.length > 0) {
+            const billStmts = state.billPayments.map(b => env.DB.prepare("INSERT INTO bill_payments (id, bill_type, bill_name, bill_id, bill_phone, from_account, service_fee_account, bill_amount, service_fee, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+              .bind(b.id || null, b.bill_type, b.bill_name, b.bill_id, b.bill_phone, b.from_account, b.service_fee_account, b.bill_amount, b.service_fee || 0, b.created_at || null));
+            await env.DB.batch(billStmts);
           }
 
           return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders });
