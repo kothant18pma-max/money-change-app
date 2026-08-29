@@ -11,95 +11,1104 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 <style>
-/* CSS ပိုင်းဆိုင်ရာများ (အတိုက္ချုံ့ထားသည်) */
-:root { --bg: #0a0a0a; --text: #ffffff; --text-soft: #dadada; --accent: rgba(200,170,130, 1); --accent-soft: rgba(200,170,130, 0.25); --accent-dim: rgba(200,170,130, 0.45); --line: rgba(255,255,255,0.10); --line-soft: rgba(255,255,255,0.06); --danger: #d99a9a; --success: #9bc8a0; --warning: #e8a87c; --info: #7a9cc6; --ease-quiet: cubic-bezier(.22, 1, .36, 1); }
+:root {
+  --bg: #0a0a0a;
+  --text: #ffffff;
+  --text-soft: #dadada;
+  --accent: rgba(200,170,130, 1);
+  --accent-soft: rgba(200,170,130, 0.25);
+  --accent-dim: rgba(200,170,130, 0.45);
+  --line: rgba(255,255,255,0.10);
+  --line-soft: rgba(255,255,255,0.06);
+  --danger: #d99a9a;
+  --success: #9bc8a0;
+  --warning: #e8a87c;
+  --info: #7a9cc6;
+  --ease-quiet: cubic-bezier(.22, 1, .36, 1);
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { background: var(--bg); color: var(--text); font-family: 'Inter', 'Noto Sans Myanmar', sans-serif; font-weight: 400; line-height: 1.6; overflow-x: hidden; height: 100%; }
+
 canvas.rain { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.2; pointer-events: none; }
-/* ကျန် HTML/CSS များကို သင့်ရဲ့ မူရင်း Code အတိုင်း ထည့်ထားပါ */
+
+/* ============ LOGIN ============ */
+.login-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(10,10,10,0.96); backdrop-filter: blur(20px); display: flex; align-items: center; justify-content: center; padding: 2rem; }
+.login-overlay.is-hidden { display: none; }
+.login-card { border: 1px solid var(--line); background: rgba(18,18,18,0.85); padding: 2.5rem 2.2rem; max-width: 360px; width: 100%; text-align: center; position: relative; }
+.login-card::before { content: ''; position: absolute; left: 0; top: 0; width: 2px; height: 100%; background: var(--accent); }
+.login-brand { font: 700 14px/1 'JetBrains Mono', monospace; letter-spacing: 0.22em; margin-bottom: 0.5rem; }
+.login-brand span { color: var(--accent); }
+.login-sub { font: 400 12px/1.4 'Noto Sans Myanmar', sans-serif; color: var(--text-soft); margin-bottom: 1.75rem; }
+.role-tabs { display: grid; grid-template-columns: 1fr 1fr; margin-bottom: 1.5rem; border: 1px solid var(--line); }
+.role-tab { background: transparent; border: none; padding: 0.85rem; font: 700 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.18em; color: var(--text-soft); cursor: pointer; transition: all 300ms var(--ease-quiet); }
+.role-tab.active { background: var(--accent); color: var(--bg); }
+.pin-display { font: 700 2rem/1 'JetBrains Mono', monospace; letter-spacing: 0.4em; color: var(--accent); margin: 1.25rem 0 1.5rem; min-height: 2.5rem; display: flex; justify-content: center; align-items: center; gap: 0.5rem; }
+.pin-dot { width: 14px; height: 14px; border: 1px solid var(--accent); border-radius: 50%; display: inline-block; }
+.pin-dot.filled { background: var(--accent); }
+.pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; margin-bottom: 1rem; }
+.pin-key { background: transparent; border: 1px solid var(--line); padding: 0.9rem 0; font: 700 1.05rem/1 'JetBrains Mono', monospace; color: var(--text); cursor: pointer; transition: all 200ms; }
+.pin-key:hover { border-color: var(--accent); color: var(--accent); }
+.pin-key:active { background: var(--accent); color: var(--bg); }
+.pin-key.util { color: var(--text-soft); font-size: 0.85rem; }
+.login-hint { font: 400 10px/1.5 'JetBrains Mono', monospace; color: var(--text-soft); opacity: 0.6; margin-top: 1rem; }
+.login-error { font: 400 11px/1 'JetBrains Mono', monospace; color: var(--danger); margin-top: 0.75rem; min-height: 1rem; }
+
+/* ============ APP LAYOUT ============ */
+.app-layout { display: flex; min-height: 100vh; position: relative; z-index: 2; }
+.sidebar { width: 240px; background: rgba(10,10,10,0.95); border-right: 1px solid var(--line); padding: 1.5rem 0; display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; left: 0; z-index: 50; overflow-y: auto; transition: transform 400ms var(--ease-quiet); }
+body.sidebar-hidden .sidebar { transform: translateX(-240px); }
+.sidebar-brand { padding: 0 1.5rem 1.5rem; border-bottom: 1px solid var(--line-soft); margin-bottom: 1rem; }
+.sidebar-brand .title { font: 700 13px/1 'JetBrains Mono', monospace; letter-spacing: 0.18em; }
+.sidebar-brand .title span { color: var(--accent); }
+.sidebar-brand .role { font: 400 10px/1 'JetBrains Mono', monospace; color: var(--text-soft); margin-top: 0.5rem; letter-spacing: 0.15em; }
+
+.nav-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.9rem 1.5rem; font: 400 0.9rem/1 'Inter', 'Noto Sans Myanmar', sans-serif; color: var(--text-soft); cursor: pointer; border-left: 2px solid transparent; transition: all 300ms var(--ease-quiet); text-decoration: none; }
+.nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+.nav-item.active { color: var(--accent); border-left-color: var(--accent); background: rgba(200,170,130,0.05); }
+.nav-item .ico { font: 700 12px/1 'JetBrains Mono', monospace; width: 20px; text-align: center; }
+.nav-section-label { padding: 1.5rem 1.5rem 0.5rem; font: 400 10px/1 'JetBrains Mono', monospace; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-soft); opacity: 0.5; }
+
+.main-content { margin-left: 240px; flex: 1; padding: 2rem; width: 100%; transition: margin-left 400ms var(--ease-quiet); }
+body.sidebar-hidden .main-content { margin-left: 0; }
+
+.topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--line-soft); gap: 1rem; }
+.topbar-left { display: flex; align-items: center; gap: 1rem; }
+.menu-toggle { background: transparent; border: 1px solid var(--line); color: var(--accent); padding: 0.5rem 0.8rem; font: 700 12px/1 'JetBrains Mono', monospace; cursor: pointer; transition: all 300ms; border-radius: 4px; }
+.menu-toggle:hover { background: var(--accent); color: var(--bg); }
+.topbar-title { font: 700 1.5rem/1 'JetBrains Mono', monospace; letter-spacing: -0.02em; display: flex; align-items: center; gap: 1rem; }
+.topbar-title span { color: var(--accent); }
+
+.fullscreen-btn { background: transparent; border: 1px solid var(--line); color: var(--accent); padding: 0.4rem 0.6rem; font: 700 14px/1 'JetBrains Mono', monospace; cursor: pointer; transition: all 300ms; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; }
+.fullscreen-btn:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+.topbar-right { display: flex; align-items: center; gap: 1rem; }
+.clock { font: 400 12px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; color: var(--text-soft); }
+.logout-btn { background: transparent; border: 1px solid var(--line); padding: 0.5rem 1rem; font: 700 10px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; color: var(--text-soft); cursor: pointer; transition: all 300ms; border-radius: 4px; }
+.logout-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+/* ============ ALERTS ============ */
+.alert-banner { background: rgba(217, 154, 154, 0.1); border: 1px solid var(--danger); padding: 1rem 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; border-radius: 4px; }
+.alert-banner .icon { color: var(--danger); font-size: 1.2rem; }
+.alert-banner .content { flex: 1; }
+.alert-banner .title { font: 700 11px/1 'JetBrains Mono', monospace; color: var(--danger); letter-spacing: 0.15em; margin-bottom: 0.3rem; }
+.alert-banner .desc { font: 400 0.85rem/1.4 'Noto Sans Myanmar', sans-serif; color: var(--text); }
+.alert-banner .desc strong { color: var(--danger); }
+
+/* ============ SECTIONS ============ */
+.app-section { display: none; animation: fadeIn 400ms var(--ease-quiet); }
+.app-section.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* ============ FORMS & CARDS ============ */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; }
+@media (max-width: 900px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+.card { border: 1px solid var(--line); background: rgba(18,18,18,0.5); padding: 1.75rem; margin-bottom: 1.5rem; border-radius: 4px; }
+.card-header { font: 400 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--line-soft); }
+
+.form-row { margin-bottom: 1.2rem; }
+.form-row label { display: block; font: 400 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); margin-bottom: 0.6rem; }
+.form-row label .mm { font-family: 'Noto Sans Myanmar', sans-serif; letter-spacing: 0.02em; color: rgba(218,218,218,0.6); margin-left: 0.5rem; text-transform: none; }
+
+.form-row input, .form-row select { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 0.75rem 0.85rem; font: 400 0.9rem/1 'JetBrains Mono', monospace; color: var(--text); outline: none; transition: all 300ms var(--ease-quiet); }
+.form-row input::placeholder { color: rgba(255,255,255,0.3); }
+.form-row input:focus, .form-row select:focus { border-color: var(--accent); background: rgba(200,170,130,0.1); box-shadow: 0 0 0 1px var(--accent-soft); }
+.form-row select option { background: var(--bg); color: var(--text); }
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.form-row input.readonly { opacity: 0.6; cursor: default; }
+
+.balance-hint { font: 400 0.75rem/1 'JetBrains Mono', monospace; color: var(--accent-dim); margin-top: 0.4rem; letter-spacing: 0.05em; padding-left: 0.2rem; }
+.balance-hint.empty { opacity: 0; }
+
+.toggle-group { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; overflow: hidden; }
+.toggle-btn { background: rgba(255,255,255,0.05); border: none; padding: 0.85rem; font: 700 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; color: var(--text-soft); cursor: pointer; transition: all 300ms; }
+.toggle-btn.active { background: var(--accent); color: var(--bg); }
+.toggle-btn:hover:not(.active) { color: var(--accent); }
+.toggle-group.no-default .toggle-btn { background: rgba(255,255,255,0.05); }
+.toggle-group.no-default .toggle-btn::before { content: '○ '; opacity: 0.5; }
+.toggle-group.no-default .toggle-btn.active::before { content: '● '; opacity: 1; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.chip { background: transparent; border: 1px solid var(--line); padding: 0.6rem 1rem; font: 400 12px/1 'JetBrains Mono', monospace; letter-spacing: 0.05em; color: var(--text-soft); cursor: pointer; transition: all 300ms; display: inline-flex; align-items: center; gap: 0.5rem; border-radius: 4px; }
+.chip.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.chip:hover:not(.active) { border-color: var(--text); color: var(--text); }
+
+.btn-primary { width: 100%; background: var(--accent); color: var(--bg); border: none; padding: 1rem; font: 700 12px/1 'JetBrains Mono', monospace; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; transition: all 300ms; margin-top: 0.5rem; border-radius: 4px; }
+.btn-primary:hover { background: var(--text); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-secondary { background: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 0.8rem 1.5rem; font: 700 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; cursor: pointer; transition: all 300ms; display: inline-flex; align-items: center; gap: 0.5rem; border-radius: 4px; }
+.btn-secondary:hover { background: var(--accent); color: var(--bg); }
+.btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 0.3rem 0.5rem; font: 700 10px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; cursor: pointer; transition: all 300ms; border-radius: 4px; }
+.btn-danger:hover { background: var(--danger); color: var(--bg); }
+.btn-sm { padding: 0.3rem 0.6rem; font-size: 10px; }
+
+/* ============ BALANCES ============ */
+.balance-stack { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.balance-row { padding: 1.2rem 1.5rem; display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--line-soft); position: relative; transition: background 300ms; }
+.balance-row:last-child { border-bottom: none; }
+.balance-row:hover { background: rgba(200,170,130,0.03); }
+.balance-row .label { font: 400 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); }
+.balance-row .label .mm { font-family: 'Noto Sans Myanmar', sans-serif; text-transform: none; margin-left: 0.5rem; color: rgba(218,218,218,0.5); }
+.balance-row .val { font: 700 1.3rem/1 'JetBrains Mono', monospace; letter-spacing: -0.02em; }
+.balance-row .val small { font-size: 0.55em; color: var(--text-soft); letter-spacing: 0.1em; font-weight: 400; margin-left: 0.3rem; }
+.balance-row.is-cash .val { color: var(--accent); }
+.balance-row.is-digital-total { background: rgba(255,255,255,0.03); border-top: 1px solid var(--line); }
+.balance-row.is-digital-total .val { color: var(--text); font-size: 1.4rem; }
+.balance-row.is-total { background: rgba(200,170,130,0.05); border-top: 1px solid var(--accent-soft); }
+.balance-row.is-total .val { color: var(--accent); font-size: 1.5rem; }
+
+/* ============ TABLES ============ */
+.table-wrap { border: 1px solid var(--line); overflow-x: auto; border-radius: 4px; }
+table { width: 100%; border-collapse: collapse; font: 400 0.85rem/1.4 'JetBrains Mono', monospace; min-width: 800px; }
+thead th { text-align: left; padding: 1rem 1.2rem; font: 400 10px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); border-bottom: 1px solid var(--line); background: rgba(255,255,255,0.02); white-space: nowrap; }
+tbody tr { border-bottom: 1px solid var(--line-soft); transition: background 200ms; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: rgba(200,170,130,0.04); }
+tbody td { padding: 0.9rem 1.2rem; color: var(--text); white-space: nowrap; }
+td.idx { color: var(--text-soft); opacity: 0.6; }
+td.type-in { color: var(--success); font-weight: 700; }
+td.type-out { color: var(--danger); font-weight: 700; }
+td.type-bill { color: var(--info); font-weight: 700; }
+td.amount { color: var(--accent); font-weight: 700; }
+.empty-state { padding: 3rem 2rem; text-align: center; font: 400 0.85rem/1.6 'JetBrains Mono', monospace; color: var(--text-soft); opacity: 0.5; }
+
+/* ============ SUMMARY ============ */
+.summary-date-controls { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; margin-bottom: 1.5rem; }
+.summary-date-controls .form-row { margin-bottom: 0; min-width: 150px; }
+.summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.summary-cell { background: var(--bg); padding: 1.5rem; transition: background 300ms; }
+.summary-cell:hover { background: rgba(200,170,130,0.02); }
+.summary-cell .name { font: 700 13px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 1.2rem; }
+.summary-cell .stat { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--line-soft); font-size: 0.8rem; }
+.summary-cell .stat:last-of-type { border-bottom: none; }
+.summary-cell .stat .k { color: var(--text-soft); font-size: 0.7rem; letter-spacing: 0.05em; }
+.summary-cell .stat .v { color: var(--text); }
+.summary-cell .stat.in .v { color: var(--success); }
+.summary-cell .stat.out .v { color: var(--danger); }
+.summary-cell .stat.net .v { color: var(--accent); font-weight: 700; }
+.summary-cell .foot { margin-top: 1rem; padding-top: 0.8rem; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: baseline; }
+.summary-cell .foot .k { font: 400 10px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); }
+.summary-cell .foot .v { font: 700 1.3rem/1 'JetBrains Mono', monospace; color: var(--accent); }
+
+.export-controls { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; margin-bottom: 2rem; }
+.export-controls .form-row { margin-bottom: 0; min-width: 150px; }
+
+/* ============ PERMISSIONS ============ */
+.perm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+@media (max-width: 600px) { .perm-grid { grid-template-columns: 1fr; } }
+.perm-item { display: flex; align-items: center; gap: 0.7rem; font: 400 0.85rem/1 'Inter', 'Noto Sans Myanmar', sans-serif; color: var(--text); cursor: pointer; padding: 0.5rem; border: 1px solid var(--line); border-radius: 4px; transition: all 300ms; }
+.perm-item:hover { border-color: var(--accent); }
+.perm-item input { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+
+/* ============ STATUS BADGES ============ */
+.status-badge { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.6rem; border-radius: 3px; font: 700 9px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; }
+.status-badge::before { content: '●'; font-size: 8px; }
+.status-badge.pending { background: rgba(217, 154, 154, 0.12); color: var(--danger); border: 1px solid rgba(217, 154, 154, 0.3); }
+.status-badge.partial { background: rgba(232, 168, 124, 0.12); color: var(--warning); border: 1px solid rgba(232, 168, 124, 0.3); }
+.status-badge.settled { background: rgba(155, 200, 160, 0.12); color: var(--success); border: 1px solid rgba(155, 200, 160, 0.3); }
+.status-badge.overpaid { background: rgba(122, 156, 198, 0.12); color: var(--info); border: 1px solid rgba(122, 156, 198, 0.3); }
+
+/* ============ LOAN LIST ============ */
+.loan-list { max-height: 450px; overflow-y: auto; border: 1px solid var(--line); border-radius: 4px; }
+.loan-list-item { padding: 0.85rem 1rem; border-bottom: 1px solid var(--line-soft); cursor: pointer; transition: all 200ms; display: grid; grid-template-columns: auto 1fr auto auto; gap: 0.8rem; align-items: center; }
+.loan-list-item:last-child { border-bottom: none; }
+.loan-list-item:hover { background: rgba(200,170,130,0.04); }
+.loan-list-item.selected { background: rgba(200,170,130,0.1); border-left: 3px solid var(--accent); }
+.loan-list-transid { font: 700 10px/1 'JetBrains Mono', monospace; color: var(--accent); }
+.loan-list-name { font: 400 0.85rem/1.2 'Inter', sans-serif; color: var(--text); }
+.loan-list-remaining { font: 700 0.85rem/1 'JetBrains Mono', monospace; color: var(--text); text-align: right; }
+
+/* ============ LOAN DETAILS ============ */
+.loan-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1.5rem; }
+@media (max-width: 500px) { .loan-details-grid { grid-template-columns: 1fr; } }
+.loan-detail-item { padding: 0.75rem; background: rgba(255,255,255,0.03); border-radius: 4px; border: 1px solid var(--line-soft); }
+.loan-detail-item .k { font: 400 9px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); margin-bottom: 0.4rem; }
+.loan-detail-item .v { font: 700 0.95rem/1 'JetBrains Mono', monospace; color: var(--text); }
+.loan-detail-item.highlight { background: rgba(200,170,130,0.08); border-color: var(--accent-soft); }
+.loan-detail-item.highlight .v { color: var(--accent); font-size: 1.1rem; }
+.loan-detail-item .v.success { color: var(--success); }
+
+.payment-error { font: 400 0.75rem/1.4 'Noto Sans Myanmar', sans-serif; color: var(--danger); margin-top: 0.5rem; display: none; }
+.payment-error.show { display: block; }
+
+.payment-history-table { width: 100%; border-collapse: collapse; font: 400 0.8rem/1.4 'JetBrains Mono', monospace; }
+.payment-history-table th { text-align: left; padding: 0.6rem; font: 400 9px/1 'JetBrains Mono', monospace; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-soft); border-bottom: 1px solid var(--line); }
+.payment-history-table td { padding: 0.6rem; color: var(--text); border-bottom: 1px solid var(--line-soft); }
+
+/* ============ MODAL ============ */
+.modal-overlay { position: fixed; inset: 0; background: rgba(10,10,10,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 500; padding: 2rem; }
+.modal-overlay.active { display: flex; }
+.modal-box { background: rgba(18,18,18,0.95); border: 1px solid var(--accent); padding: 2.5rem; max-width: 420px; width: 100%; text-align: center; position: relative; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto; }
+.modal-box.warning { border-color: var(--danger); }
+.modal-box.large { max-width: 720px; text-align: left; }
+.modal-icon { font-size: 2.5rem; margin-bottom: 1rem; color: var(--accent); }
+.modal-box.warning .modal-icon { color: var(--danger); }
+.modal-title { font: 700 1.2rem/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; margin-bottom: 1rem; color: var(--text); }
+.modal-text { font: 400 0.9rem/1.6 'Noto Sans Myanmar', sans-serif; color: var(--text-soft); margin-bottom: 1.5rem; }
+.modal-details { background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; text-align: left; font: 400 0.85rem/1.5 'JetBrains Mono', monospace; color: var(--text); }
+.modal-details .row { display: flex; justify-content: space-between; }
+.modal-details .row span { color: var(--text-soft); }
+.modal-actions { display: flex; gap: 1rem; }
+.modal-actions button { flex: 1; padding: 0.9rem; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; font: 700 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.15em; transition: all 300ms; border-radius: 4px; }
+.modal-actions button:hover { border-color: var(--text); }
+.modal-actions button.btn-confirm { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.modal-actions button.btn-confirm:hover { background: var(--text); }
+.modal-actions button.btn-delete { background: var(--danger); color: var(--bg); border-color: var(--danger); }
+.modal-actions button.btn-delete:hover { opacity: 0.8; }
+
+.toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--text); color: var(--bg); padding: 0.8rem 1.4rem; font: 700 11px/1 'JetBrains Mono', monospace; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0; pointer-events: none; transition: opacity 300ms, transform 300ms var(--ease-quiet); z-index: 200; border-radius: 4px; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.hint { font: 400 0.75rem/1.5 'Noto Sans Myanmar', sans-serif; color: var(--text-soft); opacity: 0.6; margin-top: 1rem; }
+
+/* Role Visibility */
+.admin-only { display: none !important; }
+body.role-admin .admin-only.inline { display: inline-block !important; }
+body.role-admin .nav-item.admin-only { display: flex !important; }
+body.role-admin .nav-section-label.admin-only { display: block !important; }
+body.role-admin .app-section.admin-only { display: none !important; }
+body.role-admin .app-section.admin-only.active { display: block !important; }
+
+.loan-panel { display: none; }
+.loan-panel.active { display: block; }
+
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-240px); }
+  body.sidebar-hidden .sidebar { transform: translateX(0); }
+  .main-content { margin-left: 0; }
+  body.sidebar-hidden .main-content { margin-left: 240px; }
+  .topbar-title { font-size: 1.2rem; }
+  .loan-list-item { grid-template-columns: 1fr auto; gap: 0.4rem; }
+  .loan-list-transid { grid-column: 1; }
+  .loan-list-name { grid-column: 1; }
+  .loan-list-remaining { grid-column: 2; grid-row: 1 / 3; }
+  .loan-list-item .status-badge { grid-column: 2; }
+}
 </style>
 </head>
 <body>
 
-<!-- သင့်ရဲ့ HTML Body ပိုင်းဆိုင်ရာများ (Form, Menu, Table များ) ကို မူရင်းအတိုင်း ထည့်ထားပါ -->
+<canvas class="rain"></canvas>
+
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-card">
+    <div class="login-brand">MONEY<span>::</span>CHANGE</div>
+    <div class="login-sub" data-i18n="login_sub">SELECT ROLE · အခန်းကဏ္ဍ ရွေးချယ်ပါ</div>
+    <div class="role-tabs" id="roleTabs">
+      <button class="role-tab active" data-role="admin">ADMIN</button>
+      <button class="role-tab" data-role="user">USER</button>
+    </div>
+    <div class="pin-display" id="pinDisplay"></div>
+    <div class="pin-pad" id="pinPad">
+      <button class="pin-key" data-key="1">1</button><button class="pin-key" data-key="2">2</button><button class="pin-key" data-key="3">3</button>
+      <button class="pin-key" data-key="4">4</button><button class="pin-key" data-key="5">5</button><button class="pin-key" data-key="6">6</button>
+      <button class="pin-key" data-key="7">7</button><button class="pin-key" data-key="8">8</button><button class="pin-key" data-key="9">9</button>
+      <button class="pin-key util" data-key="clear">C</button><button class="pin-key" data-key="0">0</button><button class="pin-key util" data-key="back">⌫</button>
+    </div>
+    <div class="login-hint" data-i18n="login_hint">DEFAULT PIN · ADMIN=0000 / USER=1111</div>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="title">MONEY<span>::</span>CHANGE</div>
+      <div class="role" id="sidebarRole">—</div>
+    </div>
+    <a class="nav-item active" data-section="dashboard"><span class="ico">[1]</span><span data-i18n="nav_dashboard">Dashboard</span></a>
+    <a class="nav-item" data-section="transfer"><span class="ico">[2]</span><span data-i18n="nav_transfer">Transfers</span></a>
+    <a class="nav-item" data-section="bills"><span class="ico">[3]</span><span data-i18n="nav_bills">Bill Payment</span></a>
+    <a class="nav-item" data-section="summary"><span class="ico">[4]</span><span data-i18n="nav_summary">Daily Summary</span></a>
+    <a class="nav-item" data-section="ledger"><span class="ico">[5]</span><span data-i18n="nav_ledger">Ledger</span></a>
+    <a class="nav-item" data-section="reports"><span class="ico">[6]</span><span data-i18n="nav_reports">Monthly / Yearly</span></a>
+    <a class="nav-item" data-section="pnl"><span class="ico">[7]</span><span data-i18n="nav_pnl">Income / Expense</span></a>
+    <a class="nav-item" data-section="categories"><span class="ico">[8]</span><span data-i18n="nav_categories">Categories</span></a>
+    <a class="nav-item" data-section="export"><span class="ico">[9]</span><span data-i18n="nav_export">Export Data</span></a>
+    <a class="nav-item" data-section="backup"><span class="ico">[10]</span><span data-i18n="nav_backup">Backup</span></a>
+    <div class="nav-section-label admin-only" data-i18n="nav_admin_only">ADMIN ONLY</div>
+    <a class="nav-item admin-only" data-section="accounts"><span class="ico">[A]</span><span data-i18n="nav_accounts">Accounts</span></a>
+    <a class="nav-item admin-only" data-section="adjust"><span class="ico">[B]</span><span data-i18n="nav_adjust">Adjustment</span></a>
+    <a class="nav-item admin-only" data-section="loans"><span class="ico">[C]</span><span data-i18n="nav_loans">Loans</span></a>
+    <a class="nav-item admin-only" data-section="logs"><span class="ico">[D]</span><span data-i18n="nav_logs">System Logs</span></a>
+    <a class="nav-item admin-only" data-section="capital"><span class="ico">[E]</span><span data-i18n="nav_capital">Capital</span></a>
+    
+    <div style="margin-top: auto; padding: 1rem 1.5rem; border-top: 1px solid var(--line-soft);">
+      <div class="toggle-group" id="langToggle">
+        <button type="button" data-lang="my" class="toggle-btn active">MYANMAR</button>
+        <button type="button" data-lang="en" class="toggle-btn">ENGLISH</button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle" data-i18n="menu">☰ MENU</button>
+        <div class="topbar-title" id="topbarTitle">
+          <span id="topbarTitleText">Dashboard</span>
+          <button class="fullscreen-btn" id="fullscreenBtn" title="Toggle Fullscreen">⛶</button>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="clock" id="clock">--:--:--</div>
+        <button class="logout-btn" id="logoutBtn" data-i18n="logout">LOGOUT</button>
+      </div>
+    </div>
+
+    <div id="alertContainer"></div>
+
+    <!-- DASHBOARD -->
+    <div class="app-section active" id="section-dashboard">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header" data-i18n="rec_tx">Record Transaction · လဲလှယ်မှု သွင်းရန်</div>
+          <form id="txForm">
+            <div class="form-row-2">
+              <div class="form-row">
+                <label data-i18n="cust_name">Customer Name</label>
+                <input type="text" id="customerName" placeholder="U Mya" required>
+              </div>
+              <div class="form-row">
+                <label data-i18n="phone">Phone</label>
+                <input type="tel" id="phone" placeholder="09-xxx" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <label data-i18n="tx_type">Type · အမျိုးအစား (ရွေးချယ်ပါ)</label>
+              <div class="toggle-group no-default" id="typeToggle">
+                <button type="button" data-type="in" class="toggle-btn" data-i18n="cash_in">CASH IN</button>
+                <button type="button" data-type="out" class="toggle-btn" data-i18n="cash_out">CASH OUT</button>
+              </div>
+            </div>
+            <div class="form-row-2">
+              <div class="form-row">
+                <label data-i18n="amount">Amount</label>
+                <input type="number" id="amount" placeholder="100000" required>
+              </div>
+              <div class="form-row">
+                <label data-i18n="account">Account</label>
+                <select id="txAccount"></select>
+              </div>
+            </div>
+            <div class="form-row-2">
+              <div class="form-row">
+                <label data-i18n="income">Income</label>
+                <input type="number" id="income" placeholder="0" value="0">
+              </div>
+              <div class="form-row">
+                <label data-i18n="income_to">Income To</label>
+                <select id="incomeSource"></select>
+              </div>
+            </div>
+            <button type="submit" class="btn-primary" data-i18n="record_tx">RECORD TRANSACTION</button>
+          </form>
+        </div>
+        <div class="card">
+          <div class="card-header" data-i18n="live_bal">Live Balances · လက်ကျန်ငွေ</div>
+          <div class="balance-stack" id="balanceStack"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRANSFERS -->
+    <div class="app-section" id="section-transfer">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header" data-i18n="int_trans">Internal Transfer · ငွေလွှဲပြောင်းခြင်း</div>
+          <form id="transferForm">
+            <div class="form-row-2">
+              <div class="form-row">
+                <label data-i18n="from_acc">From Account</label>
+                <select id="transferFrom"></select>
+                <div class="balance-hint empty" id="transferFromBal"></div>
+              </div>
+              <div class="form-row">
+                <label data-i18n="to_acc">To Account</label>
+                <select id="transferTo"></select>
+                <div class="balance-hint empty" id="transferToBal"></div>
+              </div>
+            </div>
+            <div class="form-row">
+              <label data-i18n="amount">Amount</label>
+              <input type="number" id="transferAmount" placeholder="10000" required>
+            </div>
+            <div class="form-row">
+              <label data-i18n="note">Note</label>
+              <input type="text" id="transferNote" placeholder="Bank to Wallet / Cash to Wallet">
+            </div>
+            <button type="submit" class="btn-primary" data-i18n="record_trans">RECORD TRANSFER</button>
+          </form>
+          <div class="hint" data-i18n="hint_trans">ဘဏ်မှ Wallet သို့လည်းကောင်း၊ Wallet မှ ငွေသားအဖြစ် ထုတ်ယူလည်းကောင်း အလွယ်တကူ လွှဲပြောင်းနိုင်ပါသည်။</div>
+        </div>
+        <div class="card">
+          <div class="card-header" data-i18n="recent_trans">Recent Transfers · လွှဲပြောင်းမှု မှတ်တမ်း</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th data-i18n="date">Date</th><th data-i18n="from">From</th><th data-i18n="to">To</th><th data-i18n="amount">Amount</th><th data-i18n="note">Note</th></tr></thead>
+              <tbody id="transferBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BILL PAYMENT -->
+    <div class="app-section" id="section-bills">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header" data-i18n="bill_pay">Bill Payment · ငွေပေးချေမှု</div>
+          <form id="billForm">
+            <div class="form-row-2">
+              <div class="form-row">
+                <label data-i18n="bill_type">Bill Type</label>
+                <select id="billType">
+                  <option>Electric Bill</option>
+                  <option>Phone Bill</option>
+                  <option>Water Bill</option>
+                  <option>Internet Bill</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label data-i18n="bill_name">Name (Optional)</label>
+                <input type="text" id="billName" placeholder="U Mya">
+              </div>
+            </div>
+            <div class="form-row-2">
+              <div class="form-row">
+                <label data-i18n="bill_id">Bill ID (Optional)</label>
+                <input type="text" id="billId" placeholder="EB-12345">
+              </div>
+              <div class="form-row">
+                <label data-i18n="bill_phone">Phone (Optional)</label>
+                <input type="tel" id="billPhone" placeholder="09-xxx">
+              </div>
+            </div>
+            <div class="form-row-2">
+              <div class="form-row">
+                <label data-i18n="from_acc">From Account</label>
+                <select id="billFromAcc" required></select>
+              </div>
+              <div class="form-row">
+                <label data-i18n="fee_acc">Service Fee To</label>
+                <select id="billIncomeAcc" required></select>
+              </div>
+            </div>
+            <div class="form-row-2">
+              <div class="form-row">
+                <label data-i18n="bill_amt">Bill Amount</label>
+                <input type="number" id="billAmount" placeholder="50000" required>
+              </div>
+              <div class="form-row">
+                <label data-i18n="serv_fee">Service Fee</label>
+                <input type="number" id="billFee" placeholder="1000" value="0" required>
+              </div>
+            </div>
+            <button type="submit" class="btn-primary" data-i18n="record_bill">RECORD BILL PAYMENT</button>
+          </form>
+        </div>
+        <div class="card">
+          <div class="card-header" data-i18n="recent_bills">Recent Bill Payments · ငွေပေးချေမှု မှတ်တမ်း</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th data-i18n="date">Date</th><th data-i18n="type">Type</th><th data-i18n="name_phone">Name/Phone</th><th data-i18n="amount">Amount</th><th data-i18n="fee">Fee</th><th data-i18n="from_acc">From Acc</th></tr></thead>
+              <tbody id="billBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="app-section" id="section-summary">
+      <div class="card">
+        <div class="card-header" data-i18n="daily_sum">Daily Summary · နေ့စဉ် အဝင်အထွက်</div>
+        <div class="summary-date-controls">
+          <div class="form-row">
+            <label data-i18n="start_date">Start Date</label>
+            <input type="date" id="sumDateStart">
+          </div>
+          <div class="form-row">
+            <label data-i18n="end_date">End Date</label>
+            <input type="date" id="sumDateEnd">
+          </div>
+          <button class="btn-secondary" onclick="renderSummary()" data-i18n="apply">APPLY</button>
+        </div>
+        <div class="summary-grid" id="summaryGrid"></div>
+      </div>
+      <div class="card">
+        <div class="card-header" data-i18n="day_by_day">Day-by-Day Account Flow · အကောင့်အလိုက် နေ့စဉ်မှတ်တမ်း</div>
+        <div class="form-row-2" style="margin-bottom:1.5rem">
+          <div class="form-row">
+            <label data-i18n="start_date">Start Date</label>
+            <input type="date" id="sumStart">
+          </div>
+          <div class="form-row">
+            <label data-i18n="end_date">End Date</label>
+            <input type="date" id="sumEnd">
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th data-i18n="date">Date</th><th data-i18n="account">Account</th><th data-i18n="cash_in_out">Cash In Tx (Out)</th><th data-i18n="cash_out_in">Cash Out Tx (In)</th><th data-i18n="income">Income</th><th data-i18n="expense">Expense</th><th data-i18n="net_flow">Net Flow</th></tr></thead>
+            <tbody id="dailyBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEDGER -->
+    <div class="app-section" id="section-ledger">
+      <div class="card">
+        <div class="card-header" data-i18n="ledger_menu">Ledger · မှတ်တမ်းများ</div>
+        <div class="form-row-2" style="margin-bottom:1.5rem">
+          <div class="form-row">
+            <label data-i18n="start_date">Start Date</label>
+            <input type="date" id="ledgerStart">
+          </div>
+          <div class="form-row">
+            <label data-i18n="end_date">End Date</label>
+            <input type="date" id="ledgerEnd">
+          </div>
+        </div>
+        <div class="chips" id="filterBar" style="margin-bottom:1.5rem">
+          <button class="chip active" data-filter="all" data-i18n="all">ALL</button>
+          <button class="chip" data-filter="in" data-i18n="cash_in">CASH IN</button>
+          <button class="chip" data-filter="out" data-i18n="cash_out">CASH OUT</button>
+          <button class="chip" data-filter="bill" data-i18n="bill_pay_chip">BILL PAY</button>
+        </div>
+        <div class="table-wrap">
+          <table id="txTable">
+            <thead><tr><th>#</th><th data-i18n="time">Time</th><th data-i18n="cust_name">Customer</th><th data-i18n="phone">Phone</th><th data-i18n="type">Type</th><th data-i18n="account">Account</th><th data-i18n="amount">Amount</th><th data-i18n="income">Income</th><th class="action-col" style="display:none" data-i18n="action">Action</th></tr></thead>
+            <tbody id="txBody"></tbody>
+          </table>
+          <div class="empty-state" id="emptyState" style="display:none" data-i18n="no_tx">No transactions yet.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPORTS -->
+    <div class="app-section" id="section-reports">
+      <div class="card">
+        <div class="card-header" data-i18n="reports_menu">Monthly / Yearly Reports · လစဉ်/နှစ်စဉ် အစီရင်ခံစာ</div>
+        <div class="form-row-2" style="margin-bottom:1.5rem">
+          <div class="form-row">
+            <label data-i18n="type">Type</label>
+            <div class="toggle-group" id="reportTypeToggle">
+              <button type="button" data-type="monthly" class="toggle-btn active" data-i18n="monthly">MONTHLY</button>
+              <button type="button" data-type="yearly" class="toggle-btn" data-i18n="yearly">YEARLY</button>
+            </div>
+          </div>
+          <div class="form-row" id="monthSelectWrap">
+            <label data-i18n="month">Month</label>
+            <select id="reportMonth">
+              <option value="0">January</option><option value="1">February</option><option value="2">March</option>
+              <option value="3">April</option><option value="4">May</option><option value="5">June</option>
+              <option value="6">July</option><option value="7">August</option><option value="8">September</option>
+              <option value="9">October</option><option value="10">November</option><option value="11">December</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label data-i18n="year">Year</label>
+            <select id="reportYear"></select>
+          </div>
+        </div>
+        <div class="summary-grid" id="reportGrid" style="grid-template-columns:1fr"></div>
+      </div>
+    </div>
+
+    <!-- INCOME/EXPENSE -->
+    <div class="app-section" id="section-pnl">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header" data-i18n="pnl_add">Add Income / Expense · အမြတ်/ကုန်ကျစရိတ် ထည့်ရန်</div>
+          <form id="pnlForm">
+            <div class="form-row">
+              <label data-i18n="type">Type</label>
+              <div class="toggle-group" id="pnlTypeToggle">
+                <button type="button" data-type="income" class="toggle-btn active" data-i18n="income">INCOME</button>
+                <button type="button" data-type="expense" class="toggle-btn" data-i18n="expense">EXPENSE</button>
+              </div>
+            </div>
+            <div class="form-row-2">
+              <div class="form-row">
+                <label data-i18n="category">Category</label>
+                <select id="pnlCategory"></select>
+              </div>
+              <div class="form-row">
+                <label data-i18n="source">Source</label>
+                <select id="pnlSource"></select>
+              </div>
+            </div>
+            <div class="form-row">
+              <label data-i18n="amount">Amount</label>
+              <input type="number" id="pnlAmount" placeholder="10000" required>
+            </div>
+            <div class="form-row">
+              <label data-i18n="note">Note</label>
+              <input type="text" id="pnlNote" placeholder="Description">
+            </div>
+            <button type="submit" class="btn-primary" data-i18n="record">RECORD</button>
+          </form>
+        </div>
+        <div class="card">
+          <div class="card-header" data-i18n="pnl_sum">P&L Summary · အမြတ်/ကုန်ကျ စာရင်း</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th data-i18n="date">Date</th><th data-i18n="type">Type</th><th data-i18n="category">Category</th><th data-i18n="source">Source</th><th data-i18n="amount">Amount</th><th data-i18n="note">Note</th></tr></thead>
+              <tbody id="pnlBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CATEGORIES -->
+    <div class="app-section" id="section-categories">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header" data-i18n="inc_cat">Income Categories · ဝင်ငွေ ခေါင်းစဉ်များ</div>
+          <div class="form-row-2" style="margin-bottom:1.5rem">
+            <input type="text" id="newIncomeCat" placeholder="New Income Category">
+            <button class="btn-primary" style="width:auto; padding:0.8rem 2rem" onclick="addCategory('income')" data-i18n="add">+ ADD</button>
+          </div>
+          <div class="chips" id="incomeCatList"></div>
+        </div>
+        <div class="card">
+          <div class="card-header" data-i18n="exp_cat">Expense Categories · ထွက်ငွေ ခေါင်းစဉ်များ</div>
+          <div class="form-row-2" style="margin-bottom:1.5rem">
+            <input type="text" id="newExpenseCat" placeholder="New Expense Category">
+            <button class="btn-primary" style="width:auto; padding:0.8rem 2rem" onclick="addCategory('expense')" data-i18n="add">+ ADD</button>
+          </div>
+          <div class="chips" id="expenseCatList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPORT -->
+    <div class="app-section" id="section-export">
+      <div class="card">
+        <div class="card-header" data-i18n="export_data">Export Data · စာရင်းထုတ်ရန်</div>
+        <div class="export-controls">
+          <div class="form-row" style="min-width:200px">
+            <label data-i18n="report_type">Report Type</label>
+            <select id="exportType">
+              <option value="flow" data-i18n="exp_flow">Account Flow (Cash In/Out)</option>
+              <option value="pnl" data-i18n="exp_pnl">Income / Expense Details</option>
+              <option value="loans" data-i18n="exp_loans">Loan Details</option>
+              <option value="capital" data-i18n="exp_capital">Capital Details</option>
+              <option value="bills" data-i18n="exp_bills">Bill Payment Details</option>
+            </select>
+          </div>
+          <div class="form-row" style="min-width:180px">
+            <label data-i18n="account">Account</label>
+            <select id="exportAccount"></select>
+          </div>
+          <div class="form-row" style="min-width:150px">
+            <label data-i18n="start_date">Start Date</label>
+            <input type="date" id="exportStart">
+          </div>
+          <div class="form-row" style="min-width:150px">
+            <label data-i18n="end_date">End Date</label>
+            <input type="date" id="exportEnd">
+          </div>
+        </div>
+        <div style="display:flex; gap:1rem; flex-wrap:wrap">
+          <button class="btn-secondary" onclick="exportData('excel')" data-i18n="export_excel">⬇ EXPORT EXCEL</button>
+          <button class="btn-secondary" onclick="exportData('pdf')" data-i18n="export_pdf">⬇ EXPORT PDF</button>
+        </div>
+        <div class="hint" data-i18n="hint_export">Report Type ကို ရွေးချယ်ပြီး သက်ဆိုင်ရာ အသေးစိတ် စာရင်းများကို ထုတ်ယူနိုင်ပါသည်။</div>
+      </div>
+    </div>
+
+    <!-- BACKUP -->
+    <div class="app-section" id="section-backup">
+      <div class="card">
+        <div class="card-header" data-i18n="backup_menu">Backup & Restore · ဒေတာ သိမ်းဆည်း/ပြန်လည်ရယူရန်</div>
+        <p style="margin-bottom:1.5rem; color:var(--text-soft); font-size:0.9rem" data-i18n="backup_desc">Data မပျောက်ပျစ်ောင်အတွက် နေ့စဉ် ဒီမှာ Download လုပ်ပြီး Google Drive တွင် တင်သိမ်းပါ။</p>
+        <div style="display:flex; gap:1rem; flex-wrap:wrap">
+          <button class="btn-secondary" onclick="downloadBackup()" data-i18n="dl_backup">⬇ DOWNLOAD BACKUP (.JSON)</button>
+          <button class="btn-secondary" onclick="document.getElementById('restoreFile').click()" data-i18n="res_backup">⬆ RESTORE BACKUP</button>
+          <input type="file" id="restoreFile" accept=".json" style="display:none" onchange="restoreBackup(event)">
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCOUNTS (ADMIN) -->
+    <div class="app-section admin-only" id="section-accounts">
+      <div class="card">
+        <div class="card-header" data-i18n="man_acc">Manage Accounts · အကောင့်များ</div>
+        <div class="form-row-2" style="margin-bottom:1.5rem">
+          <input type="text" id="newAccountName" placeholder="New Account Name (e.g. Kpay(MDY))">
+          <input type="number" id="newAccountBalance" placeholder="Initial Balance" value="0">
+        </div>
+        <button class="btn-primary" style="width:auto; padding:0.8rem 2rem" onclick="addAccount()" data-i18n="add_acc">+ ADD ACCOUNT</button>
+        <div class="chips" id="accountList" style="margin-top:1.5rem"></div>
+      </div>
+      <div class="card">
+        <div class="card-header" data-i18n="user_perm">User Permissions · User အခွင့်အရေး သတ်မှတ်ရန်</div>
+        <div class="perm-grid">
+          <label class="perm-item"><input type="checkbox" id="permDelete"> Delete Transactions</label>
+          <label class="perm-item"><input type="checkbox" id="permAdjust"> Adjustment Menu</label>
+          <label class="perm-item"><input type="checkbox" id="permLoans"> Loans Menu</label>
+          <label class="perm-item"><input type="checkbox" id="permCapital"> Capital Menu</label>
+          <label class="perm-item"><input type="checkbox" id="permCategories"> Categories Menu</label>
+          <label class="perm-item"><input type="checkbox" id="permReports"> Monthly / Yearly</label>
+          <label class="perm-item"><input type="checkbox" id="permExport"> Export Data</label>
+          <label class="perm-item"><input type="checkbox" id="permBackup"> Backup Menu</label>
+        </div>
+        <button class="btn-primary" style="width:auto; padding:0.8rem 2rem" onclick="savePermissions()" data-i18n="save_perm">SAVE PERMISSIONS</button>
+        <div class="hint" data-i18n="hint_perm">User အနေဖြင့် လုပ်ဆောင်ခွင့်ရှိသည့် အရာများကို သတ်မှတ်ပေးပါ။</div>
+      </div>
+      <div class="card">
+        <div class="card-header" data-i18n="change_pin">Change PIN · PIN ပြင်ရန်</div>
+        <div class="form-row-2">
+          <select id="pinChangeRole"><option value="admin">ADMIN</option><option value="user">USER</option></select>
+          <input type="password" id="pinChangeNew" placeholder="New 4-digit PIN" maxlength="4">
+        </div>
+        <button class="btn-secondary" onclick="changePIN()" data-i18n="update_pin">UPDATE PIN</button>
+      </div>
+    </div>
+
+    <!-- ADJUSTMENT (ADMIN) -->
+    <div class="app-section admin-only" id="section-adjust">
+      <div class="card">
+        <div class="card-header" data-i18n="bal_adj">Balance Adjustment · လက်ကျန် ပြင်ဆင်ရန်</div>
+        <div class="form-row">
+          <label data-i18n="target_acc">Target Account</label>
+          <select id="adjustTarget"></select>
+        </div>
+        <div style="font: 700 1.5rem/1 'JetBrains Mono', monospace; color: var(--accent); margin: 0.5rem 0 1.5rem;" id="adjustCurrent">— MMK</div>
+        <div class="form-row-2">
+          <div class="form-row">
+            <label data-i18n="new_bal">New Balance</label>
+            <input type="number" id="adjustNew" placeholder="0">
+          </div>
+          <div class="form-row">
+            <label data-i18n="reason">Reason</label>
+            <input type="text" id="adjustNote" placeholder="Counting error / Float top-up">
+          </div>
+        </div>
+        <button class="btn-primary" style="width:auto; padding:0.8rem 2rem" onclick="applyAdjustment()" data-i18n="apply_adj">APPLY ADJUSTMENT</button>
+        <div style="margin-top:2rem; border-top:1px solid var(--line); padding-top:1rem">
+          <div class="card-header" style="margin-bottom:1rem" data-i18n="recent_adj">Recent Adjustments</div>
+          <div class="table-wrap">
+            <table><thead><tr><th data-i18n="date">Date</th><th data-i18n="account">Account</th><th>Diff</th><th data-i18n="note">Note</th></tr></thead><tbody id="adjustHistory"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOANS (ADMIN) -->
+    <div class="app-section admin-only" id="section-loans">
+      <div class="card" style="margin-bottom:1.5rem">
+        <div class="toggle-group" id="loanModeToggle" style="margin-bottom:0">
+          <button type="button" data-mode="new" class="toggle-btn active" data-i18n="new_loan">NEW LOAN</button>
+          <button type="button" data-mode="repay" class="toggle-btn" data-i18n="repay_coll">REPAYMENT / COLLECTION</button>
+        </div>
+      </div>
+
+      <div class="loan-panel active" id="loanPanelNew">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header" data-i18n="rec_loan">Record Loan · ချေးငွေ မှတ်တမ်း</div>
+            <form id="loanForm">
+              <div class="form-row">
+                <label data-i18n="tx_id">Transaction ID</label>
+                <input type="text" id="loanTxIdPreview" class="readonly" readonly>
+              </div>
+              <div class="form-row">
+                <label data-i18n="loan_type">Loan Type</label>
+                <div class="toggle-group" id="loanTypeToggle">
+                  <button type="button" data-type="borrow" class="toggle-btn active" data-i18n="borrow">ချေးယူ (Borrow)</button>
+                  <button type="button" data-type="lend" class="toggle-btn" data-i18n="lend">ချေးပေး (Lend)</button>
+                </div>
+              </div>
+              <div class="form-row-2">
+                <div class="form-row">
+                  <label data-i18n="person_name">Person/Bank Name</label>
+                  <input type="text" id="loanName" placeholder="U Aung / AYA Bank" required>
+                </div>
+                <div class="form-row">
+                  <label data-i18n="amount">Amount</label>
+                  <input type="number" id="loanAmount" placeholder="50000" required>
+                </div>
+              </div>
+              <div class="form-row-2">
+                <div class="form-row">
+                  <label data-i18n="source">Source</label>
+                  <select id="loanSource"></select>
+                </div>
+                <div class="form-row">
+                  <label data-i18n="repay_date">Repayment Date</label>
+                  <input type="date" id="loanRepayDate">
+                </div>
+              </div>
+              <div class="form-row">
+                <label data-i18n="note">Note</label>
+                <input type="text" id="loanNote" placeholder="Reason / Terms">
+              </div>
+              <button type="submit" class="btn-primary" data-i18n="record_loan">RECORD LOAN</button>
+            </form>
+            <div class="hint" data-i18n="hint_loan">ချေးယူ(Borrow) = ငွေဝင်လာပါမယ်။ ချေးပေး(Lend) = ငွေထွက်သွားပါမယ်။</div>
+          </div>
+          <div class="card">
+            <div class="card-header" data-i18n="out_loans">Outstanding Loans · လက်ကျန် ချေးငွေများ</div>
+            <div class="summary-grid" id="loanOutstanding" style="grid-template-columns:1fr"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="loan-panel" id="loanPanelRepay">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header" data-i18n="sel_trans">Select Transaction · မှတ်တမ်း ရွေးချယ်ရန်</div>
+            <div class="form-row">
+              <label data-i18n="search">Search</label>
+              <input type="text" id="loanSearch" placeholder="LN-000001 or U Aung">
+            </div>
+            <div class="chips" id="loanFilterBar" style="margin-bottom:1rem">
+              <button class="chip active" data-lfilter="all" data-i18n="all">ALL</button>
+              <button class="chip" data-lfilter="pending" data-i18n="pending">PENDING</button>
+              <button class="chip" data-lfilter="partial" data-i18n="partial">PARTIALLY PAID</button>
+              <button class="chip" data-lfilter="settled" data-i18n="settled">FULLY SETTLED</button>
+            </div>
+            <div class="loan-list" id="loanList"></div>
+          </div>
+          <div class="card">
+            <div class="card-header" data-i18n="repay_coll2">Repayment / Collection · ပြန်ဆပ် / ပြန်တောင်း</div>
+            <div id="repayPanel">
+              <div class="empty-state" style="padding:3rem 1rem">← ဘယ်ဖက်မှ မှတ်တမ်းတစ်ခုကို ရွေးချယ်ပါ။</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" data-i18n="full_hist">Full History · အပြည့်အစုံ</div>
+        <div class="form-row">
+          <label data-i18n="search">Search</label>
+          <input type="text" id="loanHistorySearch" placeholder="LN-000001 or U Aung">
+        </div>
+        <div class="chips" id="loanHistoryFilterBar" style="margin-bottom:1.5rem">
+          <button class="chip active" data-hlfilter="all" data-i18n="all">ALL</button>
+          <button class="chip" data-hlfilter="pending" data-i18n="pending">PENDING</button>
+          <button class="chip" data-hlfilter="partial" data-i18n="partial">PARTIALLY PAID</button>
+          <button class="chip" data-hlfilter="settled" data-i18n="settled">FULLY SETTLED</button>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th data-i18n="tx_id">Trans ID</th><th data-i18n="date">Date</th><th data-i18n="type">Type</th><th data-i18n="name">Name</th><th data-i18n="original">Original</th><th data-i18n="paid">Paid</th><th data-i18n="remaining">Remaining</th><th data-i18n="status">Status</th><th data-i18n="payments">Payments</th><th data-i18n="action">Action</th></tr></thead><tbody id="loanHistory"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOGS (ADMIN) -->
+    <div class="app-section admin-only" id="section-logs">
+      <div class="card">
+        <div class="card-header" data-i18n="sys_logs">System Logs · စနစ်အတွင်း ပြောင်းလဲမှုများ</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th data-i18n="time">Time</th><th data-i18n="user">User</th><th data-i18n="action">Action</th><th data-i18n="details">Details</th></tr></thead>
+            <tbody id="logsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAPITAL (ADMIN) -->
+    <div class="app-section admin-only" id="section-capital">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header" data-i18n="add_cap">Add Capital · ငွေအရင်းအနှီး ထည့်သွင်းရန်</div>
+          <form id="capitalForm">
+            <div class="form-row-2">
+              <div class="form-row">
+                <label data-i18n="date">Date</label>
+                <input type="date" id="capitalDate" required>
+              </div>
+              <div class="form-row">
+                <label data-i18n="target_acc">Target Account</label>
+                <select id="capitalAccount" required></select>
+              </div>
+            </div>
+            <div class="form-row">
+              <label data-i18n="cap_amt">Capital Amount</label>
+              <input type="number" id="capitalAmount" placeholder="500000" required>
+            </div>
+            <div class="form-row">
+              <label data-i18n="note">Note</label>
+              <input type="text" id="capitalNote" placeholder="Owner investment / Top-up">
+            </div>
+            <button type="submit" class="btn-primary" data-i18n="record_cap">RECORD CAPITAL</button>
+          </form>
+          <div class="hint" data-i18n="hint_cap">သက်ဆိုင်ရာ အကောင့်၏ လက်ကျန်ငွေကို ထည့်သွင်းလိုက်သည့် ပမာဏအတိုင်း အလိုလို တိုးစေပါမယ်။</div>
+        </div>
+        <div class="card">
+          <div class="card-header" data-i18n="cap_hist">Capital History · အရင်းအနှီး မှတ်တမ်း</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th data-i18n="date">Date</th><th data-i18n="account">Account</th><th data-i18n="amount">Amount</th><th data-i18n="note">Note</th><th data-i18n="action">Action</th></tr></thead>
+              <tbody id="capitalBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box" id="modalBox">
+    <div class="modal-icon" id="modalIcon">✓</div>
+    <div class="modal-title" id="modalTitle">TRANSACTION COMPLETE</div>
+    <div class="modal-text" id="modalText">The transaction has been recorded successfully.</div>
+    <div class="modal-details" id="modalDetails" style="display:none"></div>
+    <div class="modal-actions">
+      <button class="btn-confirm" onclick="closeModal()">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOAN DETAILS MODAL -->
+<div class="modal-overlay" id="loanModalOverlay">
+  <div class="modal-box large">
+    <div class="modal-title" id="loanModalTitle" style="text-align:center; margin-bottom:1.5rem;">LOAN DETAILS</div>
+    <div id="loanModalContent"></div>
+    <div class="modal-actions" style="margin-top:1.5rem;">
+      <button class="btn-confirm" onclick="closeLoanModal()">CLOSE</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">RECORDED</div>
 
 <script>
 // ============ TRANSLATIONS ============
-const translations = { /* သင့်ရဲ့ ဘာသာပြန်စာများကို ဒီမှာ ထည့်ပါ */ };
-function t(key) { const lang = state.lang || 'my'; return translations[lang][key] || translations['my'][key] || key; }
+const translations = {
+  my: {
+    nav_dashboard: "Dashboard", nav_transfer: "Transfers", nav_bills: "Bill Payment", nav_summary: "Daily Summary", nav_ledger: "Ledger", nav_reports: "Monthly / Yearly", nav_pnl: "Income / Expense", nav_categories: "Categories", nav_export: "Export Data", nav_backup: "Backup", nav_admin_only: "ADMIN ONLY", nav_accounts: "Accounts", nav_adjust: "Adjustment", nav_loans: "Loans", nav_logs: "System Logs", nav_capital: "Capital",
+    menu: "☰ MENU", logout: "LOGOUT", login_sub: "SELECT ROLE · အခန်းကဏ္ဍ ရွေးချယ်ပါ", login_hint: "DEFAULT PIN · ADMIN=0000 / USER=1111", login_error: "WRONG PIN", login_ok: "LOGGED IN AS",
+    rec_tx: "Record Transaction · လဲလှယ်မှု သွင်းရန်", cust_name: "Customer Name", phone: "Phone", tx_type: "Type · အမျိုးအစား (ရွေးချယ်ပါ)", cash_in: "CASH IN", cash_out: "CASH OUT", amount: "Amount", account: "Account", income: "Income", income_to: "Income To", record_tx: "RECORD TRANSACTION",
+    live_bal: "Live Balances · လက်ကျန်ငွေ", cash: "Cash", digital_total: "Digital Money Total", today_net: "Today's Net Income",
+    int_trans: "Internal Transfer · ငွေလွှဲပြောင်းခြင်း", from_acc: "From Account", to_acc: "To Account", note: "Note", record_trans: "RECORD TRANSFER", recent_trans: "Recent Transfers · လွှဲပြောင်းမှု မှတ်တမ်း", date: "Date", from: "From", to: "To", hint_trans: "ဘဏ်မှ Wallet သို့လည်းကောင်း၊ Wallet မှ ငွေသားအဖြစ် ထုတ်ယူလည်းကောင်း အလွယ်တကူ လွှဲပြောင်းနိုင်ပါသည်။",
+    bill_pay: "Bill Payment · ငွေပေးချေမှု", bill_type: "Bill Type", bill_name: "Name", bill_id: "Bill ID", bill_phone: "Phone", fee_acc: "Service Fee To", bill_amt: "Bill Amount", serv_fee: "Service Fee", record_bill: "RECORD BILL PAYMENT", recent_bills: "Recent Bill Payments · ငွေပေးချေမှု မှတ်တမ်း", type: "Type", name_phone: "Name/Phone", fee: "Fee",
+    daily_sum: "Daily Summary · နေ့စဉ် အဝင်အထွက်", start_date: "Start Date", end_date: "End Date", apply: "APPLY", day_by_day: "Day-by-Day Account Flow · အကောင့်အလိုက် နေ့စဉ်မှတ်တမ်း", cash_in_out: "Cash In Tx (Out)", cash_out_in: "Cash Out Tx (In)", expense: "Expense", net_flow: "Net Flow",
+    ledger_menu: "Ledger · မှတ်တမ်းများ", all: "ALL", time: "Time", action: "Action", no_tx: "No transactions yet.", bill_pay_chip: "BILL PAY",
+    reports_menu: "Monthly / Yearly Reports · လစဉ်/နှစ်စဉ် အစီရင်ခံစာ", monthly: "MONTHLY", yearly: "YEARLY", month: "Month", year: "Year", sum_report: "SUMMARY REPORT", total_cash_in: "TOTAL CASH IN", total_cash_out: "TOTAL CASH OUT", tx_income: "TX INCOME", other_income: "OTHER INCOME", net_profit: "NET PROFIT",
+    pnl_add: "Add Income / Expense · အမြတ်/ကုန်ကျစရိတ် ထည့်ရန်", category: "Category", source: "Source", record: "RECORD", pnl_sum: "P&L Summary · အမြတ်/ကုန်ကျ စာရင်း",
+    inc_cat: "Income Categories · ဝင်ငွေ ခေါင်းစဉ်များ", exp_cat: "Expense Categories · ထွက်ငွေ ခေါင်းစဉ်များ", new_cat: "New Category", add: "+ ADD",
+    export_data: "Export Data · စာရင်းထုတ်ရန်", report_type: "Report Type", exp_flow: "Account Flow (Cash In/Out)", exp_pnl: "Income / Expense Details", exp_loans: "Loan Details", exp_capital: "Capital Details", exp_bills: "Bill Payment Details", export_excel: "⬇ EXPORT EXCEL", export_pdf: "⬇ EXPORT PDF", hint_export: "Report Type ကို ရွေးချယ်ပြီး သက်ဆိုင်ရာ အသေးစိတ် စာရင်းများကို ထုတ်ယူနိုင်ပါသည်။",
+    backup_menu: "Backup & Restore · ဒေတာ သိမ်းဆည်း/ပြန်လည်ရယူရန်", dl_backup: "⬇ DOWNLOAD BACKUP (.JSON)", res_backup: "⬆ RESTORE BACKUP", backup_desc: "Data မပျောက်ပျစ်ောင်အတွက် နေ့စဉ် ဒီမှာ Download လုပ်ပြီး Google Drive တွင် တင်သိမ်းပါ။",
+    man_acc: "Manage Accounts · အကောင့်များ", add_acc: "+ ADD ACCOUNT", user_perm: "User Permissions · User အခွင့်အရေး သတ်မှတ်ရန်", save_perm: "SAVE PERMISSIONS", hint_perm: "User အနေဖြင့် လုပ်ဆောင်ခွင့်ရှိသည့် အရာများကို သတ်မှတ်ပေးပါ။", change_pin: "Change PIN · PIN ပြင်ရန်", update_pin: "UPDATE PIN",
+    bal_adj: "Balance Adjustment · လက်ကျန် ပြင်ဆင်ရန်", target_acc: "Target Account", new_bal: "New Balance", reason: "Reason", apply_adj: "APPLY ADJUSTMENT", recent_adj: "Recent Adjustments",
+    new_loan: "NEW LOAN", repay_coll: "REPAYMENT / COLLECTION", tx_id: "Transaction ID", loan_type: "Loan Type", borrow: "ချေးယူ (Borrow)", lend: "ချေးပေး (Lend)", person_name: "Person/Bank Name", repay_date: "Repayment Date", record_loan: "RECORD LOAN", out_loans: "Outstanding Loans · လက်ကျန် ချေးငွေများ", sel_trans: "Select Transaction · မှတ်တမ်း ရွေးချယ်ရန်", search: "Search", repay_coll2: "Repayment / Collection · ပြန်ဆပ် / ပြန်တောင်း", pay_date: "Payment Date", pay_amt: "Payment Amount", pay_full: "PAY FULL AMOUNT", confirm_btn: "CONFIRM", pay_hist: "Payment History · ပြန်ဆပ်မှု မှတ်တမ်း", full_hist: "Full History · အပြည့်အစုံ", pending: "PENDING", partial: "PARTIALLY PAID", settled: "FULLY SETTLED", hint_loan: "ချေးယူ(Borrow) = ငွေဝင်လာပါမယ်။ ချေးပေး(Lend) = ငွေထွက်သွားပါမယ်။",
+    sys_logs: "System Logs · စနစ်အတွင်း ပြောင်းလဲမှုများ", user: "User", details: "Details",
+    add_cap: "Add Capital · ငွေအရင်းအနှီး ထည့်သွင်းရန်", cap_amt: "Capital Amount", record_cap: "RECORD CAPITAL", cap_hist: "Capital History · အရင်းအနှီး မှတ်တမ်း", hint_cap: "သက်ဆိုင်ရာ အကောင့်၏ လက်ကျန်ငွေကို ထည့်သွင်းလိုက်သည့် ပမာဏအတိုင်း အလိုလို တိုးစေပါမယ်။",
+    name: "Name", original: "Original", paid: "Paid", remaining: "Remaining", status: "Status", payments: "Payments",
+    tx_complete: "TRANSACTION COMPLETE", tx_complete_msg: "မှတ်တမ်း အောင်မြင်စွာ သွင်းပြီးပါပြီ။", trans_complete: "TRANSFER COMPLETE", trans_complete_msg: "ငွေလွှဲပြောင်းမှု အောင်မြင်ပါသည်။", bill_complete: "BILL PAYMENT COMPLETE", bill_complete_msg: "ငွေပေးချေမှု မှတ်တမ်း အောင်မြင်စွာ သွင်းပြီးပါပြီ။", loan_recorded: "LOAN RECORDED", loan_recorded_msg: "ချေးငွေ မှတ်တမ်း အောင်မြင်စွာ တင်ပြီးပါပြီ။", pay_recorded: "PAYMENT RECORDED", pay_recorded_msg: "ပြန်ဆပ်မှု အောင်မြင်စွာ မှတ်တမ်းတင်ပြီးပါပြီ။", warn_del_tx: "WARNING: DELETE TRANSACTION", warn_del_tx_msg: "ဤ မှတ်တမ်းကို ဖျက်လိုက်ပါက ငွေပမာဏများ အလိုလို ပြန်လည် ပြောင်းလဲသွားပါမည်။ ဖျက်ရန် သေချာပါသလား?", warn_del_loan: "WARNING: DELETE LOAN", warn_del_loan_msg: "ဤ ချေးငွေမှတ်တမ်းကို ဖျက်လိုက်ပါက မူလငွေနှင့် ပြန်ဆပ်မှုအားလုံး၏ သက်ရောက်မှုများ ပြန်လည်ပြောင်းသွားပါမည်။", ok: "OK", cancel: "CANCEL", del_btn: "DELETE", close: "CLOSE",
+    check_inputs: "CHECK INPUTS", insuff_bal: "INSUFFICIENT BAL", insuff_cash: "INSUFFICIENT CASH", sel_type_first: "SELECT TYPE FIRST · အမျိုးအစား ရွေးပါ", deleted: "DELETED", recorded: "RECORDED", exported: "EXPORTED", restored: "RESTORED", invalid_file: "INVALID FILE", invalid_name: "INVALID NAME", must_4_digits: "MUST BE 4 DIGITS", pin_changed: "PIN CHANGED", no_data_export: "NO DATA TO EXPORT", insuff_bal_from: "INSUFFICIENT BALANCE IN FROM ACCOUNT", invalid_amt: "INVALID AMOUNT", invalid_pay_amt: "INVALID PAYMENT AMOUNT", bal_not_zero: "BALANCE NOT ZERO", cannot_remove_last: "CANNOT REMOVE LAST", perm_saved: "PERMISSIONS SAVED", fullscreen_err: "Fullscreen not allowed", cap_deleted: "CAPITAL DELETED", loan_deleted: "LOAN DELETED", loan_reversed: "LOAN REVERSED", pay_amt_zero: "Payment amount must be greater than 0.", pay_amt_exceed: "Payment amount cannot be greater than the remaining balance"
+  },
+  en: {
+    nav_dashboard: "Dashboard", nav_transfer: "Transfers", nav_bills: "Bill Payment", nav_summary: "Daily Summary", nav_ledger: "Ledger", nav_reports: "Monthly / Yearly", nav_pnl: "Income / Expense", nav_categories: "Categories", nav_export: "Export Data", nav_backup: "Backup", nav_admin_only: "ADMIN ONLY", nav_accounts: "Accounts", nav_adjust: "Adjustment", nav_loans: "Loans", nav_logs: "System Logs", nav_capital: "Capital",
+    menu: "☰ MENU", logout: "LOGOUT", login_sub: "SELECT ROLE", login_hint: "DEFAULT PIN · ADMIN=0000 / USER=1111", login_error: "WRONG PIN", login_ok: "LOGGED IN AS",
+    rec_tx: "Record Transaction", cust_name: "Customer Name", phone: "Phone", tx_type: "Type (Select)", cash_in: "CASH IN", cash_out: "CASH OUT", amount: "Amount", account: "Account", income: "Income", income_to: "Income To", record_tx: "RECORD TRANSACTION",
+    live_bal: "Live Balances", cash: "Cash", digital_total: "Digital Money Total", today_net: "Today's Net Income",
+    int_trans: "Internal Transfer", from_acc: "From Account", to_acc: "To Account", note: "Note", record_trans: "RECORD TRANSFER", recent_trans: "Recent Transfers", date: "Date", from: "From", to: "To", hint_trans: "Easily transfer from Bank to Wallet, or withdraw from Wallet to Cash.",
+    bill_pay: "Bill Payment", bill_type: "Bill Type", bill_name: "Name", bill_id: "Bill ID", bill_phone: "Phone", fee_acc: "Service Fee To", bill_amt: "Bill Amount", serv_fee: "Service Fee", record_bill: "RECORD BILL PAYMENT", recent_bills: "Recent Bill Payments", type: "Type", name_phone: "Name/Phone", fee: "Fee",
+    daily_sum: "Daily Summary", start_date: "Start Date", end_date: "End Date", apply: "APPLY", day_by_day: "Day-by-Day Account Flow", cash_in_out: "Cash In Tx (Out)", cash_out_in: "Cash Out Tx (In)", expense: "Expense", net_flow: "Net Flow",
+    ledger_menu: "Ledger", all: "ALL", time: "Time", action: "Action", no_tx: "No transactions yet.", bill_pay_chip: "BILL PAY",
+    reports_menu: "Monthly / Yearly Reports", monthly: "MONTHLY", yearly: "YEARLY", month: "Month", year: "Year", sum_report: "SUMMARY REPORT", total_cash_in: "TOTAL CASH IN", total_cash_out: "TOTAL CASH OUT", tx_income: "TX INCOME", other_income: "OTHER INCOME", net_profit: "NET PROFIT",
+    pnl_add: "Add Income / Expense", category: "Category", source: "Source", record: "RECORD", pnl_sum: "P&L Summary",
+    inc_cat: "Income Categories", exp_cat: "Expense Categories", new_cat: "New Category", add: "+ ADD",
+    export_data: "Export Data", report_type: "Report Type", exp_flow: "Account Flow (Cash In/Out)", exp_pnl: "Income / Expense Details", exp_loans: "Loan Details", exp_capital: "Capital Details", exp_bills: "Bill Payment Details", export_excel: "⬇ EXPORT EXCEL", export_pdf: "⬇ EXPORT PDF", hint_export: "Select Report Type to extract specific details.",
+    backup_menu: "Backup & Restore", dl_backup: "⬇ DOWNLOAD BACKUP (.JSON)", res_backup: "⬆ RESTORE BACKUP", backup_desc: "Download daily and save to Google Drive to prevent data loss.",
+    man_acc: "Manage Accounts", add_acc: "+ ADD ACCOUNT", user_perm: "User Permissions", save_perm: "SAVE PERMISSIONS", hint_perm: "Specify what the User is allowed to do.", change_pin: "Change PIN", update_pin: "UPDATE PIN",
+    bal_adj: "Balance Adjustment", target_acc: "Target Account", new_bal: "New Balance", reason: "Reason", apply_adj: "APPLY ADJUSTMENT", recent_adj: "Recent Adjustments",
+    new_loan: "NEW LOAN", repay_coll: "REPAYMENT / COLLECTION", tx_id: "Transaction ID", loan_type: "Loan Type", borrow: "Borrow", lend: "Lend", person_name: "Person/Bank Name", repay_date: "Repayment Date", record_loan: "RECORD LOAN", out_loans: "Outstanding Loans", sel_trans: "Select Transaction", search: "Search", repay_coll2: "Repayment / Collection", pay_date: "Payment Date", pay_amt: "Payment Amount", pay_full: "PAY FULL AMOUNT", confirm_btn: "CONFIRM", pay_hist: "Payment History", full_hist: "Full History", pending: "PENDING", partial: "PARTIALLY PAID", settled: "FULLY SETTLED", hint_loan: "Borrow = Money comes in. Lend = Money goes out.",
+    sys_logs: "System Logs", user: "User", details: "Details",
+    add_cap: "Add Capital", cap_amt: "Capital Amount", record_cap: "RECORD CAPITAL", cap_hist: "Capital History", hint_cap: "Automatically increases the selected account's balance by the entered amount.",
+    name: "Name", original: "Original", paid: "Paid", remaining: "Remaining", status: "Status", payments: "Payments",
+    tx_complete: "TRANSACTION COMPLETE", tx_complete_msg: "Transaction recorded successfully.", trans_complete: "TRANSFER COMPLETE", trans_complete_msg: "Transfer completed successfully.", bill_complete: "BILL PAYMENT COMPLETE", bill_complete_msg: "Bill payment recorded successfully.", loan_recorded: "LOAN RECORDED", loan_recorded_msg: "Loan recorded successfully.", pay_recorded: "PAYMENT RECORDED", pay_recorded_msg: "Payment recorded successfully.", warn_del_tx: "WARNING: DELETE TRANSACTION", warn_del_tx_msg: "Deleting this record will automatically revert the amounts. Are you sure?", warn_del_loan: "WARNING: DELETE LOAN", warn_del_loan_msg: "Deleting this loan will revert the original and all payment effects.", ok: "OK", cancel: "CANCEL", del_btn: "DELETE", close: "CLOSE",
+    check_inputs: "CHECK INPUTS", insuff_bal: "INSUFFICIENT BAL", insuff_cash: "INSUFFICIENT CASH", sel_type_first: "SELECT TYPE FIRST", deleted: "DELETED", recorded: "RECORDED", exported: "EXPORTED", restored: "RESTORED", invalid_file: "INVALID FILE", invalid_name: "INVALID NAME", must_4_digits: "MUST BE 4 DIGITS", pin_changed: "PIN CHANGED", no_data_export: "NO DATA TO EXPORT", insuff_bal_from: "INSUFFICIENT BALANCE IN FROM ACCOUNT", invalid_amt: "INVALID AMOUNT", invalid_pay_amt: "INVALID PAYMENT AMOUNT", bal_not_zero: "BALANCE NOT ZERO", cannot_remove_last: "CANNOT REMOVE LAST", perm_saved: "PERMISSIONS SAVED", fullscreen_err: "Fullscreen not allowed", cap_deleted: "CAPITAL DELETED", loan_deleted: "LOAN DELETED", loan_reversed: "LOAN REVERSED", pay_amt_zero: "Payment amount must be greater than 0.", pay_amt_exceed: "Payment amount cannot be greater than the remaining balance"
+  }
+};
+function t(key) {
+  const lang = state.lang || 'my';
+  return translations[lang][key] || translations['my'][key] || key;
+}
 
-const STORAGE_KEY = 'moneychange_v21';
-let state = { /* သင့်ရဲ့ State များကို ဒီမှာ ထည့်ပါ */ };
+const STORAGE_KEY = 'moneychange_v19';
+let state = {
+  accounts: ['Kpay(TZ)', 'Wave(TZ)', 'Bank(TZ)'],
+  balances: { 'Kpay(TZ)': 0, 'Wave(TZ)': 0, 'Bank(TZ)': 0, 'cash': 0 },
+  transactions: [],
+  adjustments: [],
+  loans: [],
+  pnl: [],
+  logs: [],
+  transfers: [],
+  capital: [],
+  loanTxCounter: 1,
+  categories: {
+    income: ['Commission', 'Salary', 'Other Income'],
+    expense: ['Rent', 'Food', 'Transport', 'Utility', 'Other Expense']
+  },
+  userPermissions: {
+    canDelete: false, canAdjust: false, canLoans: false, canCapital: false,
+    canCategories: false, canReports: true, canExport: true, canBackup: false
+  },
+  users: { admin: '0000', user: '1111' },
+  lang: 'my',
+  currentType: null,
+  currentAccount: 'Kpay(TZ)',
+  currentPnlType: 'income',
+  currentLoanType: 'borrow',
+  currentLoanMode: 'new',
+  currentReportType: 'monthly',
+  selectedLoanId: null,
+  loanSearchQuery: '',
+  loanFilter: 'all',
+  loanHistorySearch: '',
+  loanHistoryFilter: 'all',
+  filter: 'all'
+};
 let currentRole = null;
 
-// Database နဲ့ ချိတ်ဆက်ဖို့အတွက် API URL
-const API_URL = '/api/state'; 
-
-// ==========================================
-// FIX 1: loadState Function (No async/await, fallback to localStorage)
-// ==========================================
 function loadState() {
-  // 1. အရင်ဆုံး localStorage မှ ဒေတာတွေ အလျှင်အမြန် ဖတ်ယူပါတယ် (UI က အလောတကြောပြောင်းဖို့အတွက်)
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) {
     try {
       const p = JSON.parse(saved);
       state = {...state, ...p};
-    } catch (err) {}
-  }
-
-  // 2. Database API မှ ဒေတာတွေ ဆွဲယူပြီး Update လုပ်ပါမယ် (Background Sync)
-  fetch(API_URL)
-    .then(response => {
-      if (!response.ok) throw new Error('Network response was not ok');
-      return response.json();
-    })
-    .then(p => {
-      if (p && Object.keys(p).length > 0) {
-        state = {...state, ...p};
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        applyLanguage();
-        renderAll(); // Database ကနေ ဒေတာ ရလျှင် မျက်နှာပြင်ကို ပြန်ရင်းပါမယ်
+      if (typeof state.balances.cash !== 'number') state.balances.cash = 0;
+      state.accounts.forEach(a => { if (typeof state.balances[a] !== 'number') state.balances[a] = 0; });
+      if (!state.accounts.includes(state.currentAccount)) state.currentAccount = state.accounts[0];
+      if (!state.categories || Array.isArray(state.categories)) {
+        state.categories = { income: ['Commission', 'Salary', 'Other Income'], expense: ['Rent', 'Food', 'Transport', 'Utility', 'Other Expense'] };
       }
-    })
-    .catch(err => console.error("API fetch error, using local data:", err));
-
-  // 3. Data Validation (နှစ်ခုလုံးမှ ရလာသော data ကို စစ်ဆေးခြင်း)
-  if (typeof state.balances.cash !== 'number') state.balances.cash = 0;
-  state.accounts.forEach(a => { if (typeof state.balances[a] !== 'number') state.balances[a] = 0; });
-  if (!state.accounts.includes(state.currentAccount)) state.currentAccount = state.accounts[0];
-  if (!state.categories || Array.isArray(state.categories)) {
-    state.categories = { income: ['Commission', 'Salary', 'Other Income'], expense: ['Rent', 'Food', 'Transport', 'Utility', 'Other Expense'] };
+      if (!state.userPermissions) {
+        state.userPermissions = { canDelete: false, canAdjust: false, canLoans: false, canCapital: false, canCategories: false, canReports: true, canExport: true, canBackup: false };
+      }
+      if (!state.logs) state.logs = [];
+      if (!state.transfers) state.transfers = [];
+      if (!state.capital) state.capital = [];
+      if (!state.loanTxCounter) state.loanTxCounter = 1;
+      if (!state.loans) state.loans = [];
+      state.loans.forEach(l => {
+        if (!l.transactionId) { l.transactionId = `LN-${String(state.loanTxCounter).padStart(6, '0')}`; state.loanTxCounter++; }
+        if (!l.payments) l.payments = [];
+      });
+      state.currentType = null;
+    } catch (e) {}
   }
-  if (!state.userPermissions) {
-    state.userPermissions = { canDelete: false, canAdjust: false, canLoans: false, canCapital: false, canCategories: false, canReports: true, canExport: true, canBackup: false };
-  }
-  if (!state.logs) state.logs = [];
-  if (!state.transfers) state.transfers = [];
-  if (!state.capital) state.capital = [];
-  if (!state.loanTxCounter) state.loanTxCounter = 1;
-  if (!state.loans) state.loans = [];
-  state.loans.forEach(l => {
-    if (!l.transactionId) { l.transactionId = `LN-${String(state.loanTxCounter).padStart(6, '0')}`; state.loanTxCounter++; }
-    if (!l.payments) l.payments = [];
-  });
-  state.currentType = null;
 }
-
-// ==========================================
-// FIX 2: saveState Function (Non-blocking API Save)
-// ==========================================
-function saveState() {
-  // 1. ပုံမှန်အတိုင်း localStorage ထဲမှာ အရင်သိမ်းပါ (Instant UI အတွက်)
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  
-  // 2. Cloudflare D1 Database ထဲကို Update တင်ပါမယ် (Background)
-  fetch(API_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(state)
-  }).catch(err => console.error("Database save error:", err));
-}
+function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
 function fmt(n) { if (typeof n !== 'number' || isNaN(n)) n = 0; return Math.round(n).toLocaleString('en-US'); }
 function isToday(ts) { const d = new Date(ts), n = new Date(); return d.toDateString() === n.toDateString(); }
@@ -107,48 +1116,1029 @@ function isAdmin() { return currentRole === 'admin'; }
 function escapeHtml(s) { if(!s) return ''; return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(window._tt); window._tt = setTimeout(() => t.classList.remove('show'), 2200); }
 
-/* ကျန် JS Functions များကို သင့်ရဲ့ မူရင်း Code အတိုင်း ဆက်ထည့်ပါ (renderBalances, renderTx, deleteTx, စသည်) */
+function addLog(action, details) {
+  if (!currentRole) return;
+  state.logs.unshift({ id: 'log_' + Date.now(), ts: Date.now(), user: currentRole.toUpperCase(), action, details });
+  if (state.logs.length > 200) state.logs.pop();
+  saveState();
+}
 
-// ==========================================
-// FIX 3: App Initialization (No async/await block)
-// ==========================================
-// UI က အလောတကြော ပြသွားအောင် localStorage ကနေ အရင်ဖတ်ပြီး Database ကိုတော့ နောက်က Sync လုပ်ပါမယ်
-loadState();
-applyLanguage();
-renderPinDisplay();
+function renderSources(selectId, includeCash = true, includeAll = false) {
+  const sel = document.getElementById(selectId);
+  if(!sel) return;
+  const cur = sel.value;
+  let opts = '';
+  if (includeAll) opts += '<option value="all">' + t('all') + '</option>';
+  if (includeCash) opts += `<option value="cash">${t('cash')} · ငွေသား</option>`;
+  state.accounts.forEach(a => opts += `<option value="${a}">${a}</option>`);
+  sel.innerHTML = opts;
+  if (cur && (cur === 'cash' || cur === 'all' || state.accounts.includes(cur))) sel.value = cur;
+}
 
-</script>
+function renderTransferSources() {
+  const fromSel = document.getElementById('transferFrom');
+  const toSel = document.getElementById('transferTo');
+  if(!fromSel || !toSel) return;
+  let opts = `<option value="cash">${t('cash')} · ငွေသား</option>`;
+  state.accounts.forEach(a => opts += `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`);
+  fromSel.innerHTML = opts;
+  toSel.innerHTML = opts;
+  updateTransferBalances();
+}
 
-<!-- 
-=========================================
-BACKEND API CODE (Cloudflare Worker အတွက် နမူနာ)
-ဒီ Code ကို သင့်ရဲ့ Server မှာ တင်ပေးရပါမည်။ (D1 Database သုံးထားပါသည်)
-=========================================
-export default {
-  async fetch(request, env) {
-    const corsHeaders = {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    };
-    if (request.method === 'OPTIONS') {
-      return new Response(null, { headers: corsHeaders });
+function updateTransferBalances() {
+  const fromVal = document.getElementById('transferFrom')?.value;
+  const toVal = document.getElementById('transferTo')?.value;
+  const fromBal = document.getElementById('transferFromBal');
+  const toBal = document.getElementById('transferToBal');
+  if (fromBal) { if (fromVal) { fromBal.textContent = `${t('live_bal')}: ${fmt(state.balances[fromVal] || 0)} MMK`; fromBal.classList.remove('empty'); } else { fromBal.classList.add('empty'); } }
+  if (toBal) { if (toVal) { toBal.textContent = `${t('live_bal')}: ${fmt(state.balances[toVal] || 0)} MMK`; toBal.classList.remove('empty'); } else { toBal.classList.add('empty'); } }
+}
+
+function can(action) { if (isAdmin()) return true; return state.userPermissions && state.userPermissions[action]; }
+
+function updateMenuVisibility() {
+  const p = state.userPermissions || {};
+  document.querySelectorAll('.nav-item').forEach(item => {
+    const sec = item.dataset.section;
+    if (sec === 'logs' || sec === 'accounts') { item.style.display = isAdmin() ? 'flex' : 'none'; }
+    else if (sec === 'dashboard' || sec === 'transfer' || sec === 'bills' || sec === 'summary' || sec === 'ledger' || sec === 'pnl') { item.style.display = 'flex'; }
+    else {
+      let perm = false;
+      if (sec === 'adjust') perm = p.canAdjust;
+      else if (sec === 'loans') perm = p.canLoans;
+      else if (sec === 'capital') perm = p.canCapital;
+      else if (sec === 'categories') perm = p.canCategories;
+      else if (sec === 'reports') perm = p.canReports;
+      else if (sec === 'export') perm = p.canExport;
+      else if (sec === 'backup') perm = p.canBackup;
+      item.style.display = (isAdmin() || perm) ? 'flex' : 'none';
     }
-    const url = new URL(request.url);
-    if (url.pathname === '/api/state') {
-      if (request.method === 'GET') {
-        const result = await env.DB.prepare("SELECT data FROM app_state WHERE id = 1").first();
-        return new Response(result ? result.data : '{}', { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
-      }
-      if (request.method === 'POST') {
-        const body = await request.text();
-        await env.DB.prepare("INSERT OR REPLACE INTO app_state (id, data) VALUES (1, ?)").bind(body);
-        return new Response('{"status":"ok"}', { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
-      }
-    }
-    return new Response('Not Found', { status: 404, headers: corsHeaders });
-  }
+  });
+}
+
+function loadPermissionsUI() {
+  const p = state.userPermissions || {};
+  ['Delete','Adjust','Loans','Capital','Categories','Reports','Export','Backup'].forEach(k => {
+    const el = document.getElementById('perm' + k);
+    if (el) el.checked = p['can' + k] || false;
+  });
+}
+
+function savePermissions() {
+  state.userPermissions = {
+    canDelete: document.getElementById('permDelete').checked, canAdjust: document.getElementById('permAdjust').checked,
+    canLoans: document.getElementById('permLoans').checked, canCapital: document.getElementById('permCapital').checked,
+    canCategories: document.getElementById('permCategories').checked, canReports: document.getElementById('permReports').checked,
+    canExport: document.getElementById('permExport').checked, canBackup: document.getElementById('permBackup').checked
+  };
+  saveState(); updateMenuVisibility(); showToast(t('perm_saved'));
+}
+
+function showModal(title, text, details = null, isWarning = false, confirmCallback = null) {
+  const box = document.getElementById('modalBox');
+  const icon = document.getElementById('modalIcon');
+  const titleEl = document.getElementById('modalTitle');
+  const textEl = document.getElementById('modalText');
+  const detailsEl = document.getElementById('modalDetails');
+  const actionsEl = document.querySelector('#modalOverlay .modal-actions');
+  box.className = 'modal-box' + (isWarning ? ' warning' : '');
+  icon.textContent = isWarning ? '!' : '✓';
+  titleEl.textContent = title; textEl.innerHTML = text;
+  if (details) { detailsEl.style.display = 'block'; detailsEl.innerHTML = details.map(d => `<div class="row"><span>${d.k}</span><strong>${d.v}</strong></div>`).join(''); }
+  else { detailsEl.style.display = 'none'; }
+  if (confirmCallback) {
+    actionsEl.innerHTML = `<button onclick="closeModal()">${t('cancel')}</button><button class="btn-delete" id="modalConfirmBtn">${t('del_btn')}</button>`;
+    document.getElementById('modalConfirmBtn').onclick = () => { confirmCallback(); closeModal(); };
+  } else { actionsEl.innerHTML = `<button class="btn-confirm" onclick="closeModal()">${t('ok')}</button>`; }
+  document.getElementById('modalOverlay').classList.add('active');
+}
+function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); }
+function closeLoanModal() { document.getElementById('loanModalOverlay').classList.remove('active'); }
+
+let loginRole = 'admin', pinEntry = '';
+function renderPinDisplay() { let h=''; for(let i=0;i<4;i++){h+=`<span class="pin-dot ${i<pinEntry.length?'filled':''}"></span>`;} document.getElementById('pinDisplay').innerHTML=h; }
+function tryLogin() {
+  if (pinEntry === state.users[loginRole]) {
+    currentRole = loginRole; addLog('LOGIN', `User logged in`);
+    document.getElementById('loginOverlay').classList.add('is-hidden');
+    document.body.className = 'role-' + currentRole;
+    document.getElementById('sidebarRole').textContent = currentRole.toUpperCase();
+    applyLanguage(); renderAll(); showSection('dashboard');
+    showToast(t('login_ok') + ' ' + currentRole.toUpperCase());
+  } else { document.getElementById('loginError').textContent = t('login_error'); pinEntry = ''; renderPinDisplay(); }
+}
+document.querySelectorAll('.role-tab').forEach(t => t.onclick = () => {
+  document.querySelectorAll('.role-tab').forEach(x => x.classList.remove('active'));
+  t.classList.add('active'); loginRole = t.dataset.role; pinEntry=''; renderPinDisplay();
+  document.getElementById('loginError').textContent = '';
+});
+document.querySelectorAll('.pin-key').forEach(k => k.onclick = () => {
+  const v = k.dataset.key;
+  if (v === 'clear') pinEntry = ''; else if (v === 'back') pinEntry = pinEntry.slice(0,-1);
+  else if (pinEntry.length < 4) { pinEntry += v; if (pinEntry.length === 4) setTimeout(tryLogin, 150); }
+  renderPinDisplay(); document.getElementById('loginError').textContent = '';
+});
+document.getElementById('logoutBtn').onclick = () => {
+  addLog('LOGOUT', `User logged out`);
+  currentRole = null; pinEntry=''; document.body.className='';
+  document.getElementById('loginOverlay').classList.remove('is-hidden'); renderPinDisplay();
 };
--->
+
+// ============ LANGUAGE TOGGLE ============
+document.querySelectorAll('#langToggle button').forEach(b => b.onclick = () => {
+  state.lang = b.dataset.lang;
+  saveState();
+  applyLanguage();
+  renderAll();
+});
+
+function applyLanguage() {
+  document.querySelectorAll('#langToggle button').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === state.lang);
+  });
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (key) el.textContent = t(key);
+  });
+}
+
+document.getElementById('menuToggle').onclick = () => document.body.classList.toggle('sidebar-hidden');
+let sidebarBlurTimer = null;
+function setupAutoHideSidebar() {
+  document.addEventListener('focusin', (e) => { if (e.target.matches('input, select, textarea')) { clearTimeout(sidebarBlurTimer); document.body.classList.add('sidebar-hidden'); } });
+  document.addEventListener('focusout', (e) => { if (e.target.matches('input, select, textarea')) { clearTimeout(sidebarBlurTimer); sidebarBlurTimer = setTimeout(() => { document.body.classList.remove('sidebar-hidden'); }, 300); } });
+}
+const fsBtn = document.getElementById('fullscreenBtn');
+if (fsBtn) { fsBtn.onclick = () => { if (!document.fullscreenElement) { if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(err => showToast(t('fullscreen_err'))); } else { if (document.exitFullscreen) document.exitFullscreen(); } }; }
+
+document.querySelectorAll('.nav-item').forEach(item => { item.onclick = () => { if (item.style.display === 'none') return; showSection(item.dataset.section); }; });
+function showSection(id) {
+  const nav = document.querySelector(`.nav-item[data-section="${id}"]`);
+  if (!nav || nav.style.display === 'none') return;
+  document.querySelectorAll('.app-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const sec = document.getElementById('section-' + id);
+  if (sec) sec.classList.add('active');
+  nav.classList.add('active');
+  document.getElementById('topbarTitleText').textContent = nav.querySelector('span:last-child').textContent;
+  checkAlerts();
+}
+
+function checkAlerts() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const alerts = [];
+  state.loans.forEach(l => {
+    if (l.repaymentDate) {
+      const status = getLoanStatus(l);
+      if (status === 'settled' || status === 'overpaid') return;
+      const due = new Date(l.repaymentDate); due.setHours(0,0,0,0);
+      const diff = Math.round((due - today) / 86400000);
+      if (diff >= 0 && diff <= 2) { alerts.push({ name: l.borrowerName, amount: getLoanRemaining(l), dueDate: l.repaymentDate, diff, type: l.direction, transId: l.transactionId }); }
+    }
+  });
+  const c = document.getElementById('alertContainer');
+  if (alerts.length === 0) { c.innerHTML = ''; return; }
+  c.innerHTML = alerts.map(a => `
+    <div class="alert-banner">
+      <div class="icon">!</div>
+      <div class="content">
+        <div class="title">UPCOMING REPAYMENT · ပြန်ဆပ်ရမည့် ရက် နီးကပ်လာသည်</div>
+        <div class="desc"><strong>${escapeHtml(a.transId)}</strong> · ${escapeHtml(a.name)} သို့ ${a.type === 'borrow' ? 'ပြန်ဆပ်ရန်' : 'ပြန်တောင်းရန်'} <strong>${fmt(a.amount)} MMK</strong> · ရက်စွဲ: ${a.dueDate} (${a.diff === 0 ? 'ယနေ့' : a.diff + ' ရက်အလို'})</div>
+      </div>
+    </div>`).join('');
+}
+
+function generateLoanId() { return `LN-${String(state.loanTxCounter).padStart(6, '0')}`; }
+function getLoanTotalPaid(loan) { return (loan.payments || []).reduce((s, p) => s + p.amount, 0); }
+function getLoanRemaining(loan) { return loan.amount - getLoanTotalPaid(loan); }
+function getLoanStatus(loan) {
+  const remaining = getLoanRemaining(loan);
+  const totalPaid = getLoanTotalPaid(loan);
+  if (remaining < 0) return 'overpaid';
+  if (remaining === 0) return 'settled';
+  if (totalPaid > 0) return 'partial';
+  return 'pending';
+}
+function getLoanStatusText(s) { return t(s); }
+function getLoanLastPaymentDate(loan) { if (!loan.payments || loan.payments.length === 0) return null; return loan.payments[loan.payments.length - 1].date; }
+
+function renderBalances() {
+  const w = document.getElementById('balanceStack'); w.innerHTML = '';
+  w.innerHTML += `<div class="balance-row is-cash"><span class="label">${t('cash')}</span><span class="val">${fmt(state.balances.cash)}<small>MMK</small></span></div>`;
+  let totalDigital = 0;
+  state.accounts.forEach(a => { totalDigital += (state.balances[a] || 0); w.innerHTML += `<div class="balance-row"><span class="label">${escapeHtml(a)}</span><span class="val">${fmt(state.balances[a]||0)}<small>MMK</small></span></div>`; });
+  w.innerHTML += `<div class="balance-row is-digital-total"><span class="label">${t('digital_total')}</span><span class="val">${fmt(totalDigital)}<small>MMK</small></span></div>`;
+  const tInc = state.transactions.filter(t => isToday(t.ts)).reduce((s,t) => s+(t.income||0), 0);
+  const tPnlInc = state.pnl.filter(p => isToday(p.ts) && p.type==='income').reduce((s,p)=>s+p.amount,0);
+  const tPnlExp = state.pnl.filter(p => isToday(p.ts) && p.type==='expense').reduce((s,p)=>s+p.amount,0);
+  w.innerHTML += `<div class="balance-row is-total"><span class="label">${t('today_net')}</span><span class="val">${fmt(tInc + tPnlInc - tPnlExp)}<small>MMK</small></span></div>`;
+}
+
+function renderTransfers() {
+  const b = document.getElementById('transferBody');
+  if (!b) return;
+  if (!state.transfers || state.transfers.length === 0) { b.innerHTML = `<tr><td colspan="5" class="empty-state">${t('no_tx')}</td></tr>`; return; }
+  b.innerHTML = state.transfers.slice().reverse().slice(0, 15).map(t => {
+    const dt = new Date(t.ts);
+    const ds = dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}) + ' ' + dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+    return `<tr><td style="color:var(--text-soft)">${ds}</td><td>${escapeHtml(t.from)}</td><td>${escapeHtml(t.to)}</td><td class="amount">${fmt(t.amount)}</td><td style="color:var(--text-soft)">${escapeHtml(t.note||'')}</td></tr>`;
+  }).join('');
+}
+
+function renderBills() {
+  const b = document.getElementById('billBody');
+  if (!b) return;
+  const bills = state.transactions.filter(t => t.type === 'bill').slice().reverse().slice(0, 15);
+  if (bills.length === 0) { b.innerHTML = `<tr><td colspan="6" class="empty-state">${t('no_tx')}</td></tr>`; return; }
+  b.innerHTML = bills.map(t => {
+    const dt = new Date(t.ts);
+    const ds = dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}) + ' ' + dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+    return `<tr>
+      <td style="color:var(--text-soft)">${ds}</td>
+      <td class="type-bill">${escapeHtml(t.billType)}</td>
+      <td>${escapeHtml(t.customerName || '-')}<br><span style="color:var(--text-soft);font-size:0.75rem">${escapeHtml(t.phone || '-')}</span></td>
+      <td class="amount">${fmt(t.amount)}</td>
+      <td style="color:var(--success)">+${fmt(t.income || 0)}</td>
+      <td style="color:var(--text-soft)">${escapeHtml(t.account)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderSummary() {
+  const w = document.getElementById('summaryGrid'); w.innerHTML = '';
+  const ds = document.getElementById('sumDateStart')?.value, de = document.getElementById('sumDateEnd')?.value;
+  let useToday = true, startD = null, endD = null;
+  if (ds && de) { useToday = false; startD = new Date(ds); startD.setHours(0,0,0,0); endD = new Date(de); endD.setHours(23,59,59,999); }
+  const filterFn = (ts) => { if (useToday) return isToday(ts); const d = new Date(ts); return d >= startD && d <= endD; };
+  let cIn=0, cOut=0;
+  state.transactions.filter(t => filterFn(t.ts)).forEach(t => { if(t.type==='in' || t.type==='bill') cIn+=t.amount; else cOut+=t.amount; });
+  let pInc = state.pnl.filter(p => filterFn(p.ts) && p.type==='income').reduce((s,p)=>s+p.amount,0);
+  let pExp = state.pnl.filter(p => filterFn(p.ts) && p.type==='expense').reduce((s,p)=>s+p.amount,0);
+  const dateLabel = useToday ? 'TODAY' : `${ds} → ${de}`;
+  w.innerHTML += `<div class="summary-cell"><div class="name">CASH · ${dateLabel}</div>
+    <div class="stat in"><span class="k">${t('cash_in')}</span><span class="v">+${fmt(cIn)}</span></div>
+    <div class="stat out"><span class="k">${t('cash_out')}</span><span class="v">-${fmt(cOut)}</span></div>
+    <div class="stat in"><span class="k">P&L ${t('income')}</span><span class="v">+${fmt(pInc)}</span></div>
+    <div class="stat out"><span class="k">P&L ${t('expense')}</span><span class="v">-${fmt(pExp)}</span></div>
+    <div class="stat net"><span class="k">${t('net_flow')}</span><span class="v">${fmt(cIn - cOut + pInc - pExp)}</span></div>
+    <div class="foot"><span class="k">${t('live_bal')}</span><span class="v">${fmt(state.balances.cash)}</span></div></div>`;
+  state.accounts.forEach(a => {
+    let dIn=0, dOut=0;
+    state.transactions.filter(t => filterFn(t.ts) && t.account===a).forEach(t => { if(t.type==='in' || t.type==='bill') dOut+=t.amount; else dIn+=t.amount; });
+    let aPInc = state.pnl.filter(p => filterFn(p.ts) && p.type==='income' && p.source===a).reduce((s,p)=>s+p.amount,0);
+    let aPExp = state.pnl.filter(p => filterFn(p.ts) && p.type==='expense' && p.source===a).reduce((s,p)=>s+p.amount,0);
+    w.innerHTML += `<div class="summary-cell"><div class="name">${escapeHtml(a)}</div>
+      <div class="stat in"><span class="k">DIGITAL IN</span><span class="v">+${fmt(dIn)}</span></div>
+      <div class="stat out"><span class="k">DIGITAL OUT</span><span class="v">-${fmt(dOut)}</span></div>
+      <div class="stat in"><span class="k">P&L ${t('income')}</span><span class="v">+${fmt(aPInc)}</span></div>
+      <div class="stat out"><span class="k">P&L ${t('expense')}</span><span class="v">-${fmt(aPExp)}</span></div>
+      <div class="stat net"><span class="k">${t('net_flow')}</span><span class="v">${fmt(dIn - dOut + aPInc - aPExp)}</span></div>
+      <div class="foot"><span class="k">${t('live_bal')}</span><span class="v">${fmt(state.balances[a]||0)}</span></div></div>`;
+  });
+  const s = document.getElementById('sumStart'), e = document.getElementById('sumEnd');
+  if (!s.value) { const d = new Date(); d.setDate(1); s.value = d.toISOString().split('T')[0]; }
+  if (!e.value) { e.value = new Date().toISOString().split('T')[0]; }
+  let start = new Date(s.value); start.setHours(0,0,0,0); let end = new Date(e.value); end.setHours(23,59,59,999);
+  const map = {};
+  state.transactions.filter(t => { const d=new Date(t.ts); return d>=start && d<=end; }).forEach(t => {
+    const d = new Date(t.ts); const dateStr = d.toLocaleDateString('en-GB'); const acc = t.account;
+    if(!map[dateStr+'|'+acc]) map[dateStr+'|'+acc] = {dateStr, account: acc, txOut: 0, txIn: 0, pnlInc: 0, pnlExp: 0};
+    if(t.type === 'in' || t.type === 'bill') map[dateStr+'|'+acc].txOut += t.amount; else map[dateStr+'|'+acc].txIn += t.amount;
+    if(t.income > 0 && t.incomeSource === acc) map[dateStr+'|'+acc].pnlInc += t.income;
+  });
+  state.pnl.filter(p => { const d=new Date(p.ts); return d>=start && d<=end; }).forEach(p => {
+    const d = new Date(p.ts); const dateStr = d.toLocaleDateString('en-GB'); const acc = p.source;
+    if(!map[dateStr+'|'+acc]) map[dateStr+'|'+acc] = {dateStr, account: acc, txOut: 0, txIn: 0, pnlInc: 0, pnlExp: 0};
+    if(p.type === 'income') map[dateStr+'|'+acc].pnlInc += p.amount; else map[dateStr+'|'+acc].pnlExp += p.amount;
+  });
+  const b = document.getElementById('dailyBody');
+  if(Object.keys(map).length === 0) { b.innerHTML = `<tr><td colspan="7" class="empty-state">${t('no_tx')}</td></tr>`; return; }
+  b.innerHTML = Object.values(map).sort((a,b) => a.dateStr.localeCompare(b.dateStr) || a.account.localeCompare(b.account)).map(m => `
+    <tr><td style="color:var(--text-soft)">${m.dateStr}</td><td>${escapeHtml(m.account)}</td>
+      <td class="type-out">${fmt(m.txOut)}</td><td class="type-in">${fmt(m.txIn)}</td>
+      <td class="type-in">${fmt(m.pnlInc)}</td><td class="type-out">${fmt(m.pnlExp)}</td>
+      <td class="amount" style="color:${(m.txIn + m.pnlInc - m.txOut - m.pnlExp)>=0?'var(--success)':'var(--danger)'}">${fmt(m.txIn + m.pnlInc - m.txOut - m.pnlExp)}</td></tr>`).join('');
+}
+
+function renderTx() {
+  const b = document.getElementById('txBody'), e = document.getElementById('emptyState'), t = document.getElementById('txTable');
+  b.innerHTML = ''; let txs = state.transactions.slice().reverse();
+  if (state.filter === 'in') txs = txs.filter(t => t.type==='in');
+  else if (state.filter === 'out') txs = txs.filter(t => t.type==='out');
+  else if (state.filter === 'bill') txs = txs.filter(t => t.type==='bill');
+  const ds = document.getElementById('ledgerStart').value, de = document.getElementById('ledgerEnd').value;
+  if (ds && de) { const start = new Date(ds); start.setHours(0,0,0,0); const end = new Date(de); end.setHours(23,59,59,999); txs = txs.filter(t => { const d = new Date(t.ts); return d >= start && d <= end; }); }
+  const showDel = can('canDelete');
+  const delTh = document.querySelector('#txTable th.action-col'); if (delTh) delTh.style.display = showDel ? 'table-cell' : 'none';
+  if (txs.length === 0) { e.style.display='block'; t.style.display='none'; return; } else { e.style.display='none'; t.style.display=''; }
+  txs.forEach((t, i) => {
+    const dt = new Date(t.ts);
+    const ds2 = dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}) + ' ' + dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+    const typeLabel = t.type === 'in' ? t('cash_in') : (t.type === 'out' ? t('cash_out') : t('bill_pay_chip'));
+    const typeClass = t.type === 'in' ? 'type-in' : (t.type === 'out' ? 'type-out' : 'type-bill');
+    let displayCust = escapeHtml(t.customerName);
+    if (t.type === 'bill') displayCust = escapeHtml(t.billType) + (t.billId ? ` (${escapeHtml(t.billId)})` : '');
+    b.innerHTML += `<tr>
+      <td class="idx">${String(txs.length-i).padStart(3,'0')}</td>
+      <td style="color:var(--text-soft)">${ds2}</td><td>${displayCust}</td><td style="color:var(--text-soft)">${escapeHtml(t.phone || '-')}</td>
+      <td class="${typeClass}">${typeLabel}</td><td style="color:var(--text-soft)">${escapeHtml(t.account)}</td>
+      <td class="amount">${fmt(t.amount)}</td><td style="color:var(--accent)">+${fmt(t.income||0)} (${escapeHtml(t.incomeSource||'cash')})</td>
+      <td style="display:${showDel ? 'table-cell' : 'none'}"><button class="btn-danger" onclick="confirmDeleteTx('${t.id}')">DEL</button></td></tr>`;
+  });
+}
+function confirmDeleteTx(id) {
+  if (!can('canDelete')) return;
+  const tx = state.transactions.find(x => x.id === id); if(!tx) return;
+  showModal(t('warn_del_tx'), t('warn_del_tx_msg'),
+    [{k: t('type'), v: tx.type === 'in' ? t('cash_in') : (tx.type === 'out' ? t('cash_out') : t('bill_pay_chip'))}, {k: t('amount'), v: fmt(tx.amount) + ' MMK'}, {k: t('cust_name'), v: tx.customerName || tx.billType}], true, () => deleteTx(id));
+}
+function deleteTx(id) {
+  const tx = state.transactions.find(x => x.id === id); if(!tx) return;
+  if (tx.type === 'bill') {
+    state.balances.cash = (state.balances.cash || 0) - (tx.amount + (tx.income || 0));
+    state.balances[tx.account] = (state.balances[tx.account] || 0) + tx.amount;
+    state.balances[tx.incomeSource] = (state.balances[tx.incomeSource] || 0) - (tx.income || 0);
+    if (tx.incomeSource !== 'cash') state.balances.cash += (tx.income || 0);
+  } else if (tx.type==='in') { 
+    state.balances.cash -= tx.amount; state.balances[tx.account] += tx.amount; 
+    if(tx.income) state.balances[tx.incomeSource || 'cash'] -= tx.income;
+  } else if (tx.type==='out') { 
+    state.balances.cash += tx.amount; state.balances[tx.account] -= tx.amount; 
+    if(tx.income) state.balances[tx.incomeSource || 'cash'] -= tx.income;
+  }
+  state.transactions = state.transactions.filter(x => x.id!==id);
+  state.pnl = state.pnl.filter(p => p.id !== 'pnl_tx_' + id && p.id !== 'pnl_bill_' + id);
+  addLog('DELETE_TX', `Deleted ${tx.type} of ${fmt(tx.amount)} for ${tx.customerName || tx.billType}`);
+  saveState(); renderAll(); showToast(t('deleted'));
+}
+
+function renderReports() {
+  const ySel = document.getElementById('reportYear'), mSel = document.getElementById('reportMonth'), mWrap = document.getElementById('monthSelectWrap');
+  const years = [...new Set(state.transactions.map(t => new Date(t.ts).getFullYear()))];
+  if (years.length === 0) years.push(new Date().getFullYear());
+  ySel.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join('');
+  ySel.value = new Date().getFullYear();
+  if (state.currentReportType === 'yearly') mWrap.style.display = 'none'; else mWrap.style.display = 'block';
+  const y = parseInt(ySel.value), m = parseInt(mSel.value);
+  let txs, pnls;
+  if (state.currentReportType === 'monthly') {
+    txs = state.transactions.filter(t => { const d = new Date(t.ts); return d.getFullYear() === y && d.getMonth() === m; });
+    pnls = state.pnl.filter(p => { const d = new Date(p.ts); return d.getFullYear() === y && d.getMonth() === m; });
+  } else {
+    txs = state.transactions.filter(t => { const d = new Date(t.ts); return d.getFullYear() === y; });
+    pnls = state.pnl.filter(p => { const d = new Date(p.ts); return d.getFullYear() === y; });
+  }
+  const grid = document.getElementById('reportGrid');
+  const cIn = txs.filter(t => t.type==='in' || t.type==='bill').reduce((s,t)=>s+t.amount, 0);
+  const cOut = txs.filter(t => t.type==='out').reduce((s,t)=>s+t.amount, 0);
+  const tInc = txs.reduce((s,t)=>s+(t.income||0), 0);
+  const pInc = pnls.filter(p=>p.type==='income').reduce((s,p)=>s+p.amount, 0);
+  const pExp = pnls.filter(p=>p.type==='expense').reduce((s,p)=>s+p.amount, 0);
+  grid.innerHTML = `<div class="summary-cell"><div class="name">${t('sum_report')}</div>
+    <div class="stat in"><span class="k">${t('total_cash_in')}</span><span class="v">+${fmt(cIn)}</span></div>
+    <div class="stat out"><span class="k">${t('total_cash_out')}</span><span class="v">-${fmt(cOut)}</span></div>
+    <div class="stat in"><span class="k">${t('tx_income')}</span><span class="v">+${fmt(tInc)}</span></div>
+    <div class="stat in"><span class="k">${t('other_income')}</span><span class="v">+${fmt(pInc)}</span></div>
+    <div class="stat out"><span class="k">${t('expense')}</span><span class="v">-${fmt(pExp)}</span></div>
+    <div class="stat net"><span class="k">${t('net_profit')}</span><span class="v">${fmt(tInc + pInc - pExp)}</span></div></div>`;
+}
+
+function renderPnl() {
+  const b = document.getElementById('pnlBody'); b.innerHTML = '';
+  state.pnl.slice().reverse().forEach(p => {
+    const dt = new Date(p.ts);
+    b.innerHTML += `<tr><td style="color:var(--text-soft)">${dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}</td>
+      <td class="type-${p.type==='income'?'in':'out'}">${p.type.toUpperCase()}</td><td>${escapeHtml(p.category)}</td>
+      <td style="color:var(--text-soft)">${escapeHtml(p.source)}</td><td class="amount">${p.type==='income'?'+':'-'}${fmt(p.amount)}</td>
+      <td style="color:var(--text-soft)">${escapeHtml(p.note||'')}</td></tr>`;
+  });
+}
+
+function renderCategories() {
+  const sel = document.getElementById('pnlCategory');
+  if (sel) { const cats = state.categories[state.currentPnlType] || []; sel.innerHTML = cats.map(c => `<option>${escapeHtml(c)}</option>`).join(''); }
+  const incList = document.getElementById('incomeCatList');
+  const expList = document.getElementById('expenseCatList');
+  if (incList) incList.innerHTML = state.categories.income.map(c => `<div class="chip" style="cursor:default">${escapeHtml(c)} <span style="margin-left:0.5rem;cursor:pointer;color:var(--danger)" onclick="removeCategory('income', '${escapeHtml(c)}')">✕</span></div>`).join('');
+  if (expList) expList.innerHTML = state.categories.expense.map(c => `<div class="chip" style="cursor:default">${escapeHtml(c)} <span style="margin-left:0.5rem;cursor:pointer;color:var(--danger)" onclick="removeCategory('expense', '${escapeHtml(c)}')">✕</span></div>`).join('');
+}
+function addCategory(type) {
+  const inputId = type === 'income' ? 'newIncomeCat' : 'newExpenseCat';
+  const n = document.getElementById(inputId).value.trim();
+  if (!n || state.categories[type].includes(n)) { showToast(t('invalid_name')); return; }
+  state.categories[type].push(n); addLog('ADD_CATEGORY', `Added ${type} category: ${n}`); saveState(); renderCategories();
+  document.getElementById(inputId).value = '';
+}
+function removeCategory(type, c) {
+  state.categories[type] = state.categories[type].filter(x => x !== c); addLog('DEL_CATEGORY', `Removed ${type} category: ${c}`); saveState(); renderCategories();
+}
+
+function renderAccountList() {
+  const w = document.getElementById('accountList'); w.innerHTML = '';
+  state.accounts.forEach(a => { w.innerHTML += `<div class="chip" style="cursor:default">${escapeHtml(a)} <span style="color:var(--accent);margin-left:0.5rem">${fmt(state.balances[a]||0)}</span> <span style="margin-left:0.5rem;cursor:pointer;color:var(--danger)" onclick="removeAccount('${escapeHtml(a)}')">✕</span></div>`; });
+}
+function addAccount() {
+  const n = document.getElementById('newAccountName').value.trim(), b = parseFloat(document.getElementById('newAccountBalance').value)||0;
+  if(!n || state.accounts.includes(n)) { showToast(t('invalid_name')); return; }
+  state.accounts.push(n); state.balances[n] = b; addLog('ADD_ACCOUNT', `Added account ${n} with balance ${b}`); saveState(); renderAll();
+  document.getElementById('newAccountName').value=''; document.getElementById('newAccountBalance').value='0';
+}
+function removeAccount(a) {
+  if(state.accounts.length<=1) return; if((state.balances[a]||0)!==0) { showToast(t('bal_not_zero')); return; }
+  state.accounts = state.accounts.filter(x=>x!==a); delete state.balances[a]; addLog('DEL_ACCOUNT', `Removed account ${a}`); saveState(); renderAll();
+}
+function changePIN() {
+  const r = document.getElementById('pinChangeRole').value, p = document.getElementById('pinChangeNew').value;
+  if(!/^\d{4}$/.test(p)) { showToast(t('must_4_digits')); return; }
+  state.users[r] = p; addLog('CHANGE_PIN', `Changed PIN for ${r}`); saveState(); showToast(t('pin_changed'));
+}
+
+function renderAdjust() {
+  renderSources('adjustTarget'); updateAdjustCurrent();
+  const h = document.getElementById('adjustHistory');
+  if(state.adjustments.length===0) { h.innerHTML = `<tr><td colspan="4" class="empty-state">${t('no_tx')}</td></tr>`; return; }
+  h.innerHTML = state.adjustments.slice().reverse().slice(0,10).map(a => {
+    const dt = new Date(a.ts);
+    return `<tr><td style="color:var(--text-soft)">${dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}</td><td>${escapeHtml(a.target)}</td><td style="color:${a.diff>=0?'var(--success)':'var(--danger)'}">${a.diff>=0?'+':''}${fmt(a.diff)}</td><td style="color:var(--text-soft)">${escapeHtml(a.note||'')}</td></tr>`;
+  }).join('');
+}
+function updateAdjustCurrent() { const t = document.getElementById('adjustTarget').value; document.getElementById('adjustCurrent').textContent = fmt(state.balances[t]||0) + ' MMK'; }
+function applyAdjustment() {
+  const t = document.getElementById('adjustTarget').value, n = parseFloat(document.getElementById('adjustNew').value), note = document.getElementById('adjustNote').value;
+  if(isNaN(n)||n<0) { showToast(t('invalid_amt')); return; }
+  const o = state.balances[t]||0; const d = n-o;
+  state.balances[t] = n; state.adjustments.push({id:'adj_'+Date.now(),target:t,oldBalance:o,newBalance:n,diff:d,note,ts:Date.now()});
+  addLog('ADJUST', `Adjusted ${t} from ${o} to ${n} (${d}) - ${note}`); saveState(); renderAll(); showToast(t('recorded'));
+  document.getElementById('adjustNew').value=''; document.getElementById('adjustNote').value='';
+}
+
+function renderLoans() {
+  renderSources('loanSource');
+  const preview = document.getElementById('loanTxIdPreview');
+  if (preview) preview.value = generateLoanId() + ' (Auto)';
+  document.querySelectorAll('#loanModeToggle button').forEach(b => { b.classList.toggle('active', b.dataset.mode === state.currentLoanMode); });
+  document.getElementById('loanPanelNew').classList.toggle('active', state.currentLoanMode === 'new');
+  document.getElementById('loanPanelRepay').classList.toggle('active', state.currentLoanMode === 'repay');
+  const o = document.getElementById('loanOutstanding');
+  const map = {};
+  state.loans.forEach(l => {
+    const status = getLoanStatus(l);
+    if (status === 'settled' || status === 'overpaid') return;
+    if(!map[l.borrowerName]) map[l.borrowerName] = {lent:0, borrowed:0, lastTs:0, repayDate:''};
+    if(l.direction==='lend') map[l.borrowerName].lent += getLoanRemaining(l);
+    else map[l.borrowerName].borrowed += getLoanRemaining(l);
+    if(l.ts > map[l.borrowerName].lastTs) { map[l.borrowerName].lastTs = l.ts; map[l.borrowerName].repayDate = l.repaymentDate; }
+  });
+  const keys = Object.keys(map);
+  if(keys.length===0) { o.innerHTML = `<div class="empty-state">${t('no_tx')}</div>`; }
+  else {
+    o.innerHTML = keys.map(n => {
+      const d = map[n];
+      return `<div class="summary-cell"><div class="name">${escapeHtml(n)}</div>
+        ${d.lent>0?`<div class="stat out"><span class="k">LENT OUT</span><span class="v">${fmt(d.lent)}</span></div>`:''}
+        ${d.borrowed>0?`<div class="stat in"><span class="k">BORROWED IN</span><span class="v">${fmt(d.borrowed)}</span></div>`:''}
+        ${d.repayDate?`<div class="stat"><span class="k">${t('repay_date')}</span><span class="v" style="color:var(--accent)">${d.repayDate}</span></div>`:''}</div>`;
+    }).join('');
+  }
+  renderLoanList(); renderRepayPanel(); renderLoanHistory();
+}
+
+function renderLoanList() {
+  const w = document.getElementById('loanList');
+  if (!w) return;
+  let loans = state.loans.slice().reverse();
+  if (state.loanSearchQuery) {
+    const q = state.loanSearchQuery.toLowerCase();
+    loans = loans.filter(l => (l.transactionId && l.transactionId.toLowerCase().includes(q)) || (l.borrowerName && l.borrowerName.toLowerCase().includes(q)));
+  }
+  if (state.loanFilter !== 'all') { loans = loans.filter(l => getLoanStatus(l) === state.loanFilter); }
+  if (loans.length === 0) { w.innerHTML = `<div class="empty-state" style="padding:2rem 1rem">${t('no_tx')}</div>`; return; }
+  w.innerHTML = loans.map(l => {
+    const status = getLoanStatus(l); const remaining = getLoanRemaining(l);
+    return `<div class="loan-list-item ${state.selectedLoanId === l.id ? 'selected' : ''}" onclick="selectLoan('${l.id}')">
+      <div><div class="loan-list-transid">${escapeHtml(l.transactionId)}</div><div class="loan-list-name">${escapeHtml(l.borrowerName)}</div></div>
+      <div></div>
+      <div class="loan-list-remaining">${fmt(remaining)}<br><small style="color:var(--text-soft);font-size:0.7rem">MMK</small></div>
+      <span class="status-badge ${status}">${t(status)}</span></div>`;
+  }).join('');
+}
+
+function selectLoan(id) { state.selectedLoanId = id; renderLoanList(); renderRepayPanel(); }
+
+function renderRepayPanel() {
+  const w = document.getElementById('repayPanel');
+  if (!w) return;
+  if (!state.selectedLoanId) { w.innerHTML = `<div class="empty-state" style="padding:3rem 1rem">← ${t('sel_trans')}</div>`; return; }
+  const loan = state.loans.find(l => l.id === state.selectedLoanId);
+  if (!loan) { w.innerHTML = `<div class="empty-state" style="padding:3rem 1rem">${t('no_tx')}</div>`; return; }
+  const status = getLoanStatus(loan); const totalPaid = getLoanTotalPaid(loan); const remaining = getLoanRemaining(loan);
+  const lastPay = getLoanLastPaymentDate(loan); const payCount = (loan.payments || []).length;
+  const isSettled = status === 'settled' || status === 'overpaid';
+  const actionLabel = loan.direction === 'borrow' ? t('repay_coll') : t('repay_coll');
+  let html = `
+    <div class="loan-details-grid">
+      <div class="loan-detail-item"><div class="k">${t('tx_id')}</div><div class="v" style="color:var(--accent)">${escapeHtml(loan.transactionId)}</div></div>
+      <div class="loan-detail-item"><div class="k">${t('status')}</div><div class="v"><span class="status-badge ${status}">${t(status)}</span></div></div>
+      <div class="loan-detail-item"><div class="k">${t('person_name')}</div><div class="v">${escapeHtml(loan.borrowerName)}</div></div>
+      <div class="loan-detail-item"><div class="k">${t('type')}</div><div class="v">${loan.direction.toUpperCase()}</div></div>
+      <div class="loan-detail-item"><div class="k">${t('original')}</div><div class="v">${fmt(loan.amount)} MMK</div></div>
+      <div class="loan-detail-item"><div class="k">${t('paid')}</div><div class="v success">${fmt(totalPaid)} MMK</div></div>
+      <div class="loan-detail-item highlight"><div class="k">${t('remaining')}</div><div class="v">${fmt(remaining)} MMK</div></div>
+      <div class="loan-detail-item"><div class="k">${t('payments')}</div><div class="v">${payCount} payment(s)</div></div>
+      ${lastPay ? `<div class="loan-detail-item"><div class="k">${t('pay_date')}</div><div class="v">${lastPay}</div></div>` : ''}
+    </div>`;
+  if (!isSettled) {
+    const today = new Date().toISOString().split('T')[0];
+    html += `<div style="margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--line);">
+      <div class="card-header" style="margin-bottom:1rem;">${actionLabel}</div>
+      <div class="form-row-2">
+        <div class="form-row"><label>${t('pay_date')}</label><input type="date" id="repayDate" value="${today}"></div>
+        <div class="form-row"><label>${t('pay_amt')}</label><input type="number" id="repayAmount" value="${remaining}" min="1" max="${remaining}">
+        <button type="button" class="btn-secondary btn-sm" style="margin-top:0.4rem;" onclick="document.getElementById('repayAmount').value=${remaining}; updatePaymentValidation();">${t('pay_full')}</button></div>
+      </div>
+      <div class="payment-error" id="repayError"></div>
+      <button class="btn-primary" id="confirmPaymentBtn" onclick="confirmPayment()">${t('confirm_btn')}</button></div>`;
+  } else {
+    html += `<div style="margin-top:1.5rem; padding:1.5rem; background:rgba(155,200,160,0.08); border:1px solid var(--success); border-radius:4px; text-align:center;">
+      <div style="font:700 14px/1 'JetBrains Mono',monospace; color:var(--success);">✓ ${t('settled')}</div>
+      <div style="font:400 0.85rem/1.4 'Noto Sans Myanmar',sans-serif; color:var(--text-soft); margin-top:0.5rem;">${t('pay_recorded_msg')}</div></div>`;
+  }
+  if (loan.payments && loan.payments.length > 0) {
+    html += `<div style="margin-top:1.5rem;"><div class="card-header" style="margin-bottom:1rem;">${t('pay_hist')}</div>
+      <div class="table-wrap"><table class="payment-history-table"><thead><tr><th>#</th><th>${t('date')}</th><th>${t('amount')}</th><th>${t('remaining')}</th></tr></thead><tbody>
+      ${loan.payments.map((p, i) => `<tr><td style="color:var(--text-soft)">${i + 1}</td><td>${escapeHtml(p.date)}</td><td class="amount">${fmt(p.amount)}</td><td>${fmt(p.runningBalance)}</td></tr>`).join('')}
+      </tbody></table></div></div>`;
+  }
+  w.innerHTML = html;
+  if (!isSettled) {
+    const amountInput = document.getElementById('repayAmount');
+    if (amountInput) { amountInput.addEventListener('input', updatePaymentValidation); updatePaymentValidation(); }
+  }
+}
+
+function updatePaymentValidation() {
+  const amountInput = document.getElementById('repayAmount');
+  const confirmBtn = document.getElementById('confirmPaymentBtn');
+  const errorEl = document.getElementById('repayError');
+  if (!amountInput || !confirmBtn) return;
+  const amount = parseFloat(amountInput.value) || 0;
+  const loan = state.loans.find(l => l.id === state.selectedLoanId);
+  if (!loan) { confirmBtn.disabled = true; return; }
+  const remaining = getLoanRemaining(loan);
+  if (amount <= 0) { errorEl.textContent = t('pay_amt_zero'); errorEl.classList.add('show'); confirmBtn.disabled = true; }
+  else if (amount > remaining) { errorEl.textContent = t('pay_amt_exceed') + ` (${fmt(remaining)} MMK).`; errorEl.classList.add('show'); confirmBtn.disabled = true; }
+  else { errorEl.classList.remove('show'); confirmBtn.disabled = false; }
+}
+
+function confirmPayment() {
+  const loan = state.loans.find(l => l.id === state.selectedLoanId); if (!loan) return;
+  const amount = parseFloat(document.getElementById('repayAmount').value) || 0;
+  const dateStr = document.getElementById('repayDate').value || new Date().toISOString().split('T')[0];
+  const remaining = getLoanRemaining(loan);
+  if (amount <= 0 || amount > remaining) { showToast(t('invalid_pay_amt')); return; }
+  if (loan.direction === 'borrow') { state.balances[loan.source] = (state.balances[loan.source] || 0) - amount; }
+  else { state.balances[loan.source] = (state.balances[loan.source] || 0) + amount; }
+  const newRemaining = remaining - amount;
+  loan.payments.push({ id: 'pay_' + Date.now(), date: dateStr, amount: amount, runningBalance: newRemaining });
+  const newStatus = getLoanStatus(loan);
+  addLog('LOAN_PAYMENT', `Payment of ${fmt(amount)} for ${loan.transactionId} (${loan.borrowerName}). Status: ${t(newStatus)}`);
+  saveState(); renderAll();
+  const details = [
+    {k: t('tx_id'), v: loan.transactionId},
+    {k: t('pay_amt'), v: fmt(amount) + ' MMK'},
+    {k: t('remaining'), v: fmt(newRemaining) + ' MMK'},
+    {k: t('status'), v: t(newStatus)}
+  ];
+  showModal(t('pay_recorded'), t('pay_recorded_msg'), details);
+}
+
+function renderLoanHistory() {
+  const h = document.getElementById('loanHistory'); if (!h) return;
+  let loans = state.loans.slice().reverse();
+  if (state.loanHistorySearch) {
+    const q = state.loanHistorySearch.toLowerCase();
+    loans = loans.filter(l => (l.transactionId && l.transactionId.toLowerCase().includes(q)) || (l.borrowerName && l.borrowerName.toLowerCase().includes(q)));
+  }
+  if (state.loanHistoryFilter !== 'all') { loans = loans.filter(l => getLoanStatus(l) === state.loanHistoryFilter); }
+  if (loans.length === 0) { h.innerHTML = `<tr><td colspan="10" class="empty-state">${t('no_tx')}</td></tr>`; return; }
+  h.innerHTML = loans.map(l => {
+    const dt = new Date(l.ts); const ds = dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'2-digit'});
+    const status = getLoanStatus(l); const totalPaid = getLoanTotalPaid(l); const remaining = getLoanRemaining(l);
+    const payCount = (l.payments || []).length; const lastPay = getLoanLastPaymentDate(l);
+    return `<tr>
+      <td style="color:var(--accent);font-weight:700">${escapeHtml(l.transactionId)}</td>
+      <td style="color:var(--text-soft)">${ds}</td>
+      <td class="type-${l.direction==='borrow'?'in':'out'}">${l.direction.toUpperCase()}</td>
+      <td>${escapeHtml(l.borrowerName)}</td>
+      <td class="amount">${fmt(l.amount)}</td>
+      <td style="color:var(--success)">${fmt(totalPaid)}</td>
+      <td style="color:${remaining > 0 ? 'var(--danger)' : 'var(--success)'}">${fmt(remaining)}</td>
+      <td><span class="status-badge ${status}">${t(status)}</span></td>
+      <td style="color:var(--text-soft);font-size:0.75rem">${payCount} payment(s)${lastPay ? '<br>Last: ' + lastPay : ''}</td>
+      <td>
+        <button class="btn-secondary btn-sm" style="margin-right:0.3rem" onclick="viewLoanDetails('${l.id}')">VIEW</button>
+        <button class="btn-danger" onclick="confirmDeleteLoan('${l.id}')">DEL</button>
+      </td></tr>`;
+  }).join('');
+}
+
+function viewLoanDetails(loanId) {
+  const loan = state.loans.find(l => l.id === loanId); if (!loan) return;
+  const status = getLoanStatus(loan); const totalPaid = getLoanTotalPaid(loan); const remaining = getLoanRemaining(loan);
+  const lastPay = getLoanLastPaymentDate(loan); const payCount = (loan.payments || []).length;
+  const content = document.getElementById('loanModalContent');
+  content.innerHTML = `
+    <div class="loan-details-grid">
+      <div class="loan-detail-item"><div class="k">${t('tx_id')}</div><div class="v" style="color:var(--accent)">${escapeHtml(loan.transactionId)}</div></div>
+      <div class="loan-detail-item"><div class="k">${t('status')}</div><div class="v"><span class="status-badge ${status}">${t(status)}</span></div></div>
+      <div class="loan-detail-item"><div class="k">${t('person_name')}</div><div class="v">${escapeHtml(loan.borrowerName)}</div></div>
+      <div class="loan-detail-item"><div class="k">${t('type')}</div><div class="v">${loan.direction.toUpperCase()}</div></div>
+      <div class="loan-detail-item"><div class="k">${t('original')}</div><div class="v">${fmt(loan.amount)} MMK</div></div>
+      <div class="loan-detail-item"><div class="k">${t('source')}</div><div class="v">${escapeHtml(loan.source)}</div></div>
+      <div class="loan-detail-item"><div class="k">${t('paid')}</div><div class="v success">${fmt(totalPaid)} MMK</div></div>
+      <div class="loan-detail-item highlight"><div class="k">${t('remaining')}</div><div class="v">${fmt(remaining)} MMK</div></div>
+      <div class="loan-detail-item"><div class="k">${t('payments')}</div><div class="v">${payCount} payment(s)</div></div>
+      <div class="loan-detail-item"><div class="k">${t('pay_date')}</div><div class="v">${lastPay || '-'}</div></div>
+      <div class="loan-detail-item"><div class="k">${t('repay_date')}</div><div class="v">${loan.repaymentDate || '-'}</div></div>
+      <div class="loan-detail-item"><div class="k">${t('note')}</div><div class="v">${escapeHtml(loan.note || '-')}</div></div>
+    </div>
+    <div style="margin-top:1.5rem;"><div class="card-header" style="margin-bottom:1rem;">${t('pay_hist')}</div>
+    ${loan.payments && loan.payments.length > 0 ? `
+      <div class="table-wrap"><table class="payment-history-table"><thead><tr><th>#</th><th>${t('date')}</th><th>${t('amount')}</th><th>${t('remaining')}</th></tr></thead><tbody>
+      ${loan.payments.map((p, i) => `<tr><td style="color:var(--text-soft)">${i + 1}</td><td>${escapeHtml(p.date)}</td><td class="amount">${fmt(p.amount)}</td><td>${fmt(p.runningBalance)}</td></tr>`).join('')}
+      </tbody></table></div>` : `<div class="empty-state">${t('no_tx')}</div>`}</div>`;
+  document.getElementById('loanModalOverlay').classList.add('active');
+}
+
+function recordLoan() {
+  const n = document.getElementById('loanName').value.trim();
+  const a = parseFloat(document.getElementById('loanAmount').value);
+  const s = document.getElementById('loanSource').value;
+  const d = state.currentLoanType;
+  const note = document.getElementById('loanNote').value;
+  const rd = document.getElementById('loanRepayDate').value;
+  if(!n || !a || a <= 0) { showToast(t('check_inputs')); return; }
+  if(d === 'lend' && (state.balances[s] || 0) < a) { showToast(t('insuff_bal')); return; }
+  const txId = generateLoanId(); state.loanTxCounter++;
+  if(d === 'lend') state.balances[s] = (state.balances[s] || 0) - a;
+  else state.balances[s] = (state.balances[s] || 0) + a;
+  state.loans.push({ id: 'loan_' + Date.now(), transactionId: txId, borrowerName: n, amount: a, source: s, direction: d, note, repaymentDate: rd, ts: Date.now(), payments: [] });
+  addLog('ADD_LOAN', `${d} ${fmt(a)} - ${txId} - ${n} via ${s}`);
+  saveState(); renderAll(); checkAlerts();
+  const details = [
+    {k: t('tx_id'), v: txId},
+    {k: t('type'), v: d === 'borrow' ? t('borrow') : t('lend')},
+    {k: t('name'), v: n}, {k: t('amount'), v: fmt(a) + ' MMK'},
+    {k: t('source'), v: s}, {k: t('status'), v: t('pending')}
+  ];
+  showModal(t('loan_recorded'), t('loan_recorded_msg'), details);
+  document.getElementById('loanName').value = ''; document.getElementById('loanAmount').value = ''; document.getElementById('loanNote').value = ''; document.getElementById('loanRepayDate').value = '';
+}
+
+function confirmDeleteLoan(id) {
+  const l = state.loans.find(x => x.id === id); if (!l) return;
+  const status = getLoanStatus(l); const totalPaid = getLoanTotalPaid(l);
+  showModal(t('warn_del_loan'), t('warn_del_loan_msg'),
+    [{k: t('tx_id'), v: l.transactionId}, {k: t('name'), v: l.borrowerName}, {k: t('original'), v: fmt(l.amount) + ' MMK'}, {k: t('paid'), v: fmt(totalPaid) + ' MMK'}, {k: t('payments'), v: (l.payments || []).length + ' payment(s)'}], true, () => deleteLoan(id));
+}
+
+function deleteLoan(id) {
+  const l = state.loans.find(x => x.id === id); if (!l) return;
+  if (l.direction === 'lend') state.balances[l.source] = (state.balances[l.source] || 0) + l.amount;
+  else state.balances[l.source] = (state.balances[l.source] || 0) - l.amount;
+  (l.payments || []).forEach(p => {
+    if (l.direction === 'lend') state.balances[l.source] = (state.balances[l.source] || 0) - p.amount;
+    else state.balances[l.source] = (state.balances[l.source] || 0) + p.amount;
+  });
+  state.loans = state.loans.filter(x => x.id !== id);
+  if (state.selectedLoanId === id) state.selectedLoanId = null;
+  addLog('DEL_LOAN', `Deleted loan ${l.transactionId} (${l.direction} ${fmt(l.amount)})`);
+  saveState(); renderAll(); showToast(t('loan_deleted'));
+}
+
+function renderCapital() {
+  const b = document.getElementById('capitalBody');
+  if (!b) return;
+  if (!state.capital || state.capital.length === 0) { b.innerHTML = `<tr><td colspan="5" class="empty-state">${t('no_tx')}</td></tr>`; return; }
+  b.innerHTML = state.capital.slice().reverse().map(c => {
+    const dt = new Date(c.ts);
+    return `<tr><td style="color:var(--text-soft)">${dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'2-digit'})}</td>
+      <td>${escapeHtml(c.account)}</td><td class="amount">+${fmt(c.amount)}</td>
+      <td style="color:var(--text-soft)">${escapeHtml(c.note || '')}</td>
+      <td><button class="btn-danger" onclick="deleteCapital('${c.id}')">DEL</button></td></tr>`;
+  }).join('');
+}
+function deleteCapital(id) {
+  const c = state.capital.find(x => x.id === id); if(!c) return;
+  state.balances[c.account] -= c.amount;
+  state.capital = state.capital.filter(x => x.id !== id);
+  addLog('DEL_CAPITAL', `Deleted capital of ${fmt(c.amount)} from ${c.account}`);
+  saveState(); renderAll(); showToast(t('cap_deleted'));
+}
+
+function renderLogs() {
+  const b = document.getElementById('logsBody');
+  if(state.logs.length === 0) { b.innerHTML = `<tr><td colspan="4" class="empty-state">${t('no_tx')}</td></tr>`; return; }
+  b.innerHTML = state.logs.map(l => {
+    const dt = new Date(l.ts);
+    return `<tr><td style="color:var(--text-soft)">${dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})} ${dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}</td>
+      <td style="color:var(--accent)">${l.user}</td><td><strong>${l.action}</strong></td><td>${escapeHtml(l.details)}</td></tr>`;
+  }).join('');
+}
+
+function exportData(format) {
+  const s = document.getElementById('exportStart').value, e = document.getElementById('exportEnd').value;
+  const expType = document.getElementById('exportType').value;
+  const acc = document.getElementById('exportAccount').value;
+  let start = s ? new Date(s) : new Date(0);
+  let end = e ? new Date(e) : new Date(8640000000000000);
+  start.setHours(0,0,0,0); end.setHours(23,59,59,999);
+  let data = [], fileName = 'Export', sheetName = 'Data';
+  
+  if (expType === 'flow') {
+    fileName = 'Account_Flow'; sheetName = 'Account Flow';
+    const map = {};
+    state.transactions.filter(t => { const d=new Date(t.ts); return d>=start && d<=end; }).forEach(t => {
+      const d = new Date(t.ts), dateStr = d.toLocaleDateString('en-GB'), accKey = t.account;
+      if (acc !== 'all' && acc !== accKey) return;
+      if(!map[dateStr+'|'+accKey]) map[dateStr+'|'+accKey] = {Date: dateStr, Account: accKey, 'Cash In Amount': 0, 'Cash Out Amount': 0, Income: 0, Expense: 0};
+      if(t.type === 'in' || t.type === 'bill') map[dateStr+'|'+accKey]['Cash In Amount'] += t.amount; else map[dateStr+'|'+accKey]['Cash Out Amount'] += t.amount;
+      if(t.income > 0 && t.incomeSource === accKey) map[dateStr+'|'+accKey].Income += t.income;
+    });
+    state.pnl.filter(p => { const d=new Date(p.ts); return d>=start && d<=end; }).forEach(p => {
+      const d = new Date(p.ts), dateStr = d.toLocaleDateString('en-GB'), accKey = p.source;
+      if (acc !== 'all' && acc !== accKey) return;
+      if(!map[dateStr+'|'+accKey]) map[dateStr+'|'+accKey] = {Date: dateStr, Account: accKey, 'Cash In Amount': 0, 'Cash Out Amount': 0, Income: 0, Expense: 0};
+      if(p.type === 'income') map[dateStr+'|'+accKey].Income += p.amount; else map[dateStr+'|'+accKey].Expense += p.amount;
+    });
+    data = Object.values(map).sort((a,b) => a.Date.localeCompare(b.Date) || a.Account.localeCompare(b.Account));
+  } else if (expType === 'pnl') {
+    fileName = 'PnL_Details'; sheetName = 'Income/Expense';
+    data = state.pnl.filter(p => { const d = new Date(p.ts); return d>=start && d<=end; }).map(p => ({
+      Date: new Date(p.ts).toLocaleDateString('en-GB'), Type: p.type.toUpperCase(), Category: p.category, Source: p.source, Amount: p.amount, Note: p.note || ''
+    }));
+  } else if (expType === 'loans') {
+    fileName = 'Loan_Details'; sheetName = 'Loans';
+    data = state.loans.filter(l => { const d = new Date(l.ts); return d>=start && d<=end; }).map(l => ({
+      'Transaction ID': l.transactionId || '-', Date: new Date(l.ts).toLocaleDateString('en-GB'), Type: l.direction.toUpperCase(), Name: l.borrowerName,
+      'Original Amount': l.amount, 'Total Paid': getLoanTotalPaid(l), Remaining: getLoanRemaining(l), Status: t(getLoanStatus(l)),
+      Source: l.source, RepayDate: l.repaymentDate || '-', PaymentCount: (l.payments || []).length, LastPayment: getLoanLastPaymentDate(l) || '-', Note: l.note || ''
+    }));
+  } else if (expType === 'capital') {
+    fileName = 'Capital_Details'; sheetName = 'Capital';
+    data = state.capital.filter(c => { const d = new Date(c.ts); return d>=start && d<=end; }).map(c => ({
+      Date: new Date(c.ts).toLocaleDateString('en-GB'), Account: c.account, Amount: c.amount, Note: c.note || ''
+    }));
+  } else if (expType === 'bills') {
+    fileName = 'Bill_Details'; sheetName = 'Bills';
+    data = state.transactions.filter(t => {
+      if (t.type !== 'bill') return false;
+      const d = new Date(t.ts);
+      return d >= start && d <= end;
+    }).map(t => ({
+      Date: new Date(t.ts).toLocaleDateString('en-GB'),
+      Type: t.billType,
+      Name: t.customerName || '-',
+      Phone: t.phone || '-',
+      BillID: t.billId || '-',
+      Amount: t.amount,
+      Fee: t.income || 0,
+      FromAccount: t.account,
+      FeeAccount: t.incomeSource
+    }));
+  }
+  
+  if (data.length === 0) { showToast(t('no_data_export')); return; }
+  if (format === 'excel') {
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    XLSX.writeFile(wb, `${fileName}_${Date.now()}.xlsx`);
+  } else {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.text(`${fileName} Export`, 14, 15);
+    const head = [Object.keys(data[0])];
+    const body = data.map(d => Object.values(d));
+    doc.autoTable({ startY: 20, head: head, body: body });
+    doc.save(`${fileName}_${Date.now()}.pdf`);
+  }
+  showToast(t('exported'));
+}
+
+function downloadBackup() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type: 'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `Backup_${new Date().toISOString().split('T')[0]}.json`; a.click();
+}
+function restoreBackup(e) {
+  const f = e.target.files[0]; if(!f) return; const r = new FileReader();
+  r.onload = ev => { try { state = JSON.parse(ev.target.result); saveState(); applyLanguage(); renderAll(); showToast(t('restored')); } catch(e){ showToast(t('invalid_file')); } };
+  r.readAsText(f);
+}
+
+document.getElementById('txForm').onsubmit = e => { e.preventDefault();
+  if (!state.currentType) { showToast(t('sel_type_first')); return; }
+  const c = document.getElementById('customerName').value.trim(), p = document.getElementById('phone').value.trim(), a = parseFloat(document.getElementById('amount').value), i = parseFloat(document.getElementById('income').value)||0;
+  const ac = document.getElementById('txAccount').value, incSrc = document.getElementById('incomeSource').value;
+  if(!c||!p||!a||a<=0) { showToast(t('check_inputs')); return; }
+  if(state.currentType==='in') { if((state.balances[ac]||0)<a){ showToast(t('insuff_bal')); return; } state.balances.cash+=a; state.balances[ac]-=a; }
+  else { if((state.balances.cash||0)<a){ showToast(t('insuff_cash')); return; } state.balances.cash-=a; state.balances[ac]+=a; }
+  const tx = {id:'tx_'+Date.now(),ts:Date.now(),customerName:c,phone:p,type:state.currentType,account:ac,amount:a,income:i,incomeSource:incSrc};
+  state.transactions.push(tx);
+  if (i > 0) {
+    state.balances[incSrc] += i;
+    state.pnl.push({ id: 'pnl_tx_' + tx.id, ts: tx.ts, type: 'income', category: 'Commission', source: incSrc, amount: i, note: `Income from ${c}` });
+  }
+  addLog('ADD_TX', `${state.currentType === 'in' ? t('cash_in') : t('cash_out')} ${fmt(a)} for ${c}. ${t('income')}: ${fmt(i)}`);
+  saveState(); renderAll();
+  const details = [
+    {k: t('type'), v: state.currentType === 'in' ? t('cash_in') : t('cash_out')},
+    {k: t('cust_name'), v: c}, {k: t('amount'), v: fmt(a) + ' MMK'}, {k: t('account'), v: ac}, {k: t('income'), v: fmt(i) + ' MMK (' + incSrc + ')'}
+  ];
+  showModal(t('tx_complete'), t('tx_complete_msg'), details);
+  document.getElementById('customerName').value=''; document.getElementById('phone').value=''; document.getElementById('amount').value=''; document.getElementById('income').value='0';
+  document.querySelectorAll('#typeToggle button').forEach(b => b.classList.remove('active'));
+  state.currentType = null;
+};
+
+document.getElementById('transferForm').onsubmit = e => { e.preventDefault();
+  const from = document.getElementById('transferFrom').value, to = document.getElementById('transferTo').value, amount = parseFloat(document.getElementById('transferAmount').value), note = document.getElementById('transferNote').value;
+  if (!from || !to || from === to || !amount || amount <= 0) { showToast(t('check_inputs')); return; }
+  if ((state.balances[from] || 0) < amount) { showToast(t('insuff_bal')); return; }
+  state.balances[from] -= amount; state.balances[to] += amount;
+  if (!state.transfers) state.transfers = [];
+  state.transfers.push({ id: 'tr_'+Date.now(), ts: Date.now(), from, to, amount, note });
+  addLog('TRANSFER', `Transferred ${fmt(amount)} from ${from} to ${to}`); saveState(); renderAll();
+  showModal(t('trans_complete'), t('trans_complete_msg'), [{k: t('from'), v: from}, {k: t('to'), v: to}, {k: t('amount'), v: fmt(amount) + ' MMK'}]);
+  document.getElementById('transferAmount').value=''; document.getElementById('transferNote').value='';
+  updateTransferBalances();
+};
+
+document.getElementById('billForm').onsubmit = e => { e.preventDefault();
+  const bType = document.getElementById('billType').value;
+  const bName = document.getElementById('billName').value.trim();
+  const bId = document.getElementById('billId').value.trim();
+  const bPhone = document.getElementById('billPhone').value.trim();
+  const fromAcc = document.getElementById('billFromAcc').value;
+  const incAcc = document.getElementById('billIncomeAcc').value;
+  const amount = parseFloat(document.getElementById('billAmount').value);
+  const fee = parseFloat(document.getElementById('billFee').value) || 0;
+
+  if(!amount || amount <= 0) { showToast(t('invalid_amt')); return; }
+  if((state.balances[fromAcc] || 0) < amount) { showToast(t('insuff_bal_from')); return; }
+
+  // Balance logic
+  state.balances.cash = (state.balances.cash || 0) + amount + fee; // customer pays cash
+  state.balances[fromAcc] = (state.balances[fromAcc] || 0) - amount; // pay bill
+  state.balances[incAcc] = (state.balances[incAcc] || 0) + fee; // receive fee
+  if (incAcc !== 'cash') state.balances.cash -= fee; // move fee if needed
+
+  const tx = {
+    id: 'bill_' + Date.now(),
+    ts: Date.now(),
+    type: 'bill',
+    billType: bType,
+    customerName: bName || bType,
+    phone: bPhone,
+    billId: bId,
+    account: fromAcc,
+    incomeSource: incAcc,
+    amount: amount,
+    income: fee
+  };
+  state.transactions.push(tx);
+
+  if (fee > 0) {
+    state.pnl.push({
+      id: 'pnl_bill_' + tx.id,
+      ts: tx.ts,
+      type: 'income',
+      category: 'Bill Service Fee',
+      source: incAcc,
+      amount: fee,
+      note: `Fee for ${bType} - ${bName || bId || bPhone}`
+    });
+  }
+
+  addLog('BILL_PAY', `Paid ${fmt(amount)} for ${bType}. Fee: ${fmt(fee)}`);
+  saveState(); renderAll();
+  
+  const details = [
+    {k: t('bill_type'), v: bType},
+    {k: t('bill_name'), v: bName || '-'},
+    {k: t('bill_amt'), v: fmt(amount) + ' MMK'},
+    {k: t('serv_fee'), v: fmt(fee) + ' MMK'},
+    {k: t('from_acc'), v: fromAcc},
+    {k: t('fee_acc'), v: incAcc}
+  ];
+  showModal(t('bill_complete'), t('bill_complete_msg'), details);
+  
+  document.getElementById('billName').value = '';
+  document.getElementById('billId').value = '';
+  document.getElementById('billPhone').value = '';
+  document.getElementById('billAmount').value = '';
+  document.getElementById('billFee').value = '0';
+};
+
+document.getElementById('loanForm').onsubmit = e => { e.preventDefault(); recordLoan(); };
+
+document.getElementById('capitalForm').onsubmit = e => { e.preventDefault();
+  const dateVal = document.getElementById('capitalDate').value;
+  const acc = document.getElementById('capitalAccount').value;
+  const amount = parseFloat(document.getElementById('capitalAmount').value);
+  const note = document.getElementById('capitalNote').value;
+  if (!dateVal || !acc || !amount || amount <= 0) { showToast(t('check_inputs')); return; }
+  const t = new Date();
+  const dateObj = new Date(dateVal);
+  dateObj.setHours(t.getHours(), t.getMinutes(), t.getSeconds(), t.getMilliseconds());
+  state.balances[acc] = (state.balances[acc] || 0) + amount;
+  state.capital.push({ id: 'cap_' + Date.now(), ts: dateObj.getTime(), date: dateVal, account: acc, amount: amount, note: note });
+  addLog('ADD_CAPITAL', `Injected ${fmt(amount)} to ${acc}`);
+  saveState(); renderAll();
+  showToast(t('recorded'));
+  document.getElementById('capitalAmount').value = ''; document.getElementById('capitalNote').value = '';
+};
+
+document.getElementById('pnlForm').onsubmit = e => { e.preventDefault();
+  const cat = document.getElementById('pnlCategory').value, src = document.getElementById('pnlSource').value, a = parseFloat(document.getElementById('pnlAmount').value), note = document.getElementById('pnlNote').value;
+  if(!a||a<=0) { showToast(t('invalid_amt')); return; }
+  if(state.currentPnlType==='expense' && (state.balances[src]||0)<a) { showToast(t('insuff_bal')); return; }
+  if(state.currentPnlType==='income') state.balances[src] += a; else state.balances[src] -= a;
+  state.pnl.push({id:'pnl_'+Date.now(),ts:Date.now(),type:state.currentPnlType,category:cat,source:src,amount:a,note});
+  addLog('ADD_PNL', `${state.currentPnlType} ${fmt(a)} in ${cat} via ${src}`); saveState(); renderAll(); showToast(t('recorded'));
+  document.getElementById('pnlAmount').value=''; document.getElementById('pnlNote').value='';
+};
+
+document.querySelectorAll('#typeToggle button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#typeToggle button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); state.currentType=b.dataset.type;
+});
+document.querySelectorAll('#pnlTypeToggle button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#pnlTypeToggle button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); state.currentPnlType=b.dataset.type; renderCategories();
+});
+document.querySelectorAll('#loanTypeToggle button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#loanTypeToggle button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); state.currentLoanType=b.dataset.type;
+});
+document.querySelectorAll('#loanModeToggle button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#loanModeToggle button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); state.currentLoanMode=b.dataset.mode;
+  renderLoans();
+});
+document.querySelectorAll('#reportTypeToggle button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#reportTypeToggle button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); state.currentReportType=b.dataset.type; renderReports();
+});
+document.querySelectorAll('#filterBar .chip').forEach(c => c.onclick = () => {
+  document.querySelectorAll('#filterBar .chip').forEach(x=>x.classList.remove('active'));
+  c.classList.add('active'); state.filter=c.dataset.filter; renderTx();
+});
+
+document.getElementById('loanSearch').addEventListener('input', (e) => { state.loanSearchQuery = e.target.value; renderLoanList(); });
+document.querySelectorAll('#loanFilterBar .chip').forEach(c => c.onclick = () => {
+  document.querySelectorAll('#loanFilterBar .chip').forEach(x=>x.classList.remove('active'));
+  c.classList.add('active'); state.loanFilter=c.dataset.lfilter; renderLoanList();
+});
+
+document.getElementById('loanHistorySearch').addEventListener('input', (e) => { state.loanHistorySearch = e.target.value; renderLoanHistory(); });
+document.querySelectorAll('#loanHistoryFilterBar .chip').forEach(c => c.onclick = () => {
+  document.querySelectorAll('#loanHistoryFilterBar .chip').forEach(x=>x.classList.remove('active'));
+  c.classList.add('active'); state.loanHistoryFilter=c.dataset.hlfilter; renderLoanHistory();
+});
+
+document.getElementById('ledgerStart').onchange = renderTx;
+document.getElementById('ledgerEnd').onchange = renderTx;
+document.getElementById('reportMonth').onchange = renderReports;
+document.getElementById('reportYear').onchange = renderReports;
+document.getElementById('adjustTarget').onchange = updateAdjustCurrent;
+
+if (document.getElementById('transferFrom')) document.getElementById('transferFrom').onchange = updateTransferBalances;
+if (document.getElementById('transferTo')) document.getElementById('transferTo').onchange = updateTransferBalances;
+
+function renderAll() {
+  renderSources('txAccount'); renderSources('incomeSource'); renderSources('pnlSource'); renderSources('exportAccount', true, true);
+  renderSources('capitalAccount'); renderSources('adjustTarget'); renderSources('loanSource');
+  renderSources('billFromAcc'); renderSources('billIncomeAcc');
+  renderTransferSources();
+  renderBalances(); renderSummary(); renderTx(); renderReports(); renderPnl(); renderCategories(); renderAccountList(); renderAdjust(); renderLoans(); renderLogs(); renderTransfers(); renderBills(); renderCapital(); checkAlerts();
+  updateMenuVisibility(); loadPermissionsUI();
+  const cDate = document.getElementById('capitalDate');
+  if (cDate && !cDate.value) cDate.value = new Date().toISOString().split('T')[0];
+}
+function tickClock() { const d=new Date(); document.getElementById('clock').textContent = d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'}) + ' · ' + d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}); }
+tickClock(); setInterval(tickClock, 1000); setInterval(checkAlerts, 3600000);
+setupAutoHideSidebar();
+
+const cvs=document.querySelector('canvas.rain'), ctx=cvs.getContext('2d'); let cols,drops;
+function resize(){cvs.width=innerWidth;cvs.height=innerHeight;cols=Math.floor(cvs.width/22);drops=Array.from({length:cols},()=>Math.random()*-cvs.height);} resize(); addEventListener('resize',resize);
+const CH='0123456789KPGWAVEBANKMMK$+-=.◆'; let rr=true;
+function rf(){ if(!rr)return; ctx.fillStyle='rgba(10,10,10,0.09)'; ctx.fillRect(0,0,cvs.width,cvs.height); ctx.font='13px "JetBrains Mono",monospace'; drops.forEach((y,i)=>{const x=i*22;ctx.fillStyle=Math.random()<0.02?'rgba(255,230,180,0.95)':'rgba(200,170,130,0.55)';ctx.fillText(CH[Math.floor(Math.random()*CH.length)],x,y);drops[i]=y>cvs.height&&Math.random()>0.975?0:y+11;}); requestAnimationFrame(rf);}
+if(!matchMedia('(prefers-reduced-motion: reduce)').matches) rf();
+
+loadState(); applyLanguage(); renderPinDisplay();
+</script>
 </body>
 </html>
