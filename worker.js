@@ -16,7 +16,7 @@ export default {
     }
 
     // -------------------------------------------------------------
-    // 2. Users Data Endpoint (/api/users) - Google Sheet ချိတ်ရန်
+    // 2. Users Data Endpoint (/api/users)
     // -------------------------------------------------------------
     if (url.pathname === "/api/users") {
       const authHeader = request.headers.get("Authorization");
@@ -30,18 +30,10 @@ export default {
       }
 
       try {
-        // D1 Database မှ users table ထဲမှ Data ဆွဲထုတ်ခြင်း
         const { results } = await env.DB.prepare("SELECT id, name, email, created_at FROM users").all();
-
-        return new Response(JSON.stringify(results), {
-          status: 200,
-          headers: corsHeaders
-        });
+        return new Response(JSON.stringify(results), { status: 200, headers: corsHeaders });
       } catch (error) {
-        return new Response(
-          JSON.stringify({ error: error.message }), 
-          { status: 500, headers: corsHeaders }
-        );
+        return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: corsHeaders });
       }
     }
 
@@ -56,7 +48,7 @@ export default {
             accounts: ['Kpay(TZ)', 'Wave(TZ)', 'Bank(TZ)'],
             balances: { 'Kpay(TZ)': 0, 'Wave(TZ)': 0, 'Bank(TZ)': 0, 'cash': 0 },
             transactions: [], pnl: [], loans: [], transfers: [], capital: [], adjustments: [], logs: [],
-            billPayments: [], // Bill Payments အတွက် ထည့်ထားခြင်း
+            billPayments: [],
             categories: { income: ['Commission', 'Salary', 'Other Income'], expense: ['Rent', 'Food', 'Transport', 'Utility', 'Other Expense'] },
             userPermissions: { canDelete: false, canAdjust: false, canLoans: false, canCapital: false, canCategories: false, canReports: true, canExport: true, canBackup: false },
             users: { admin: '0000', user: '1111' }
@@ -83,30 +75,33 @@ export default {
             id: t.id, ts: t.ts, customerName: t.customerName, phone: t.phone, type: t.type, account: t.account, amount: t.amount, income: t.income || 0, incomeSource: t.incomeSource || 'cash'
           }));
 
-          // Bill Payments ဒေတာများကို ဖတ်ယူပြီး transactions ထဲ ပြန်ပေါင်းထည့်ခြင်း (Frontend အတွက် အရေးကြီး)
-          const billRes = await env.DB.prepare("SELECT * FROM bill_payments").all();
-          if(billRes.results) {
-            state.billPayments = billRes.results.map(b => ({
-              id: b.id, created_at: b.created_at, bill_type: b.bill_type, bill_name: b.bill_name,
-              bill_id: b.bill_id, bill_phone: b.bill_phone, from_account: b.from_account,
-              service_fee_account: b.service_fee_account, bill_amount: b.bill_amount, service_fee: b.service_fee || 0
-            }));
+          // Bill Payments ဒေတာများကို ဖတ်ယူခြင်း (Error တက်ရင် လျစ်လျူရှုပြီး ဆက်သွားစေရန်)
+          try {
+            const billRes = await env.DB.prepare("SELECT * FROM bill_payments").all();
+            if(billRes.results) {
+              state.billPayments = billRes.results.map(b => ({
+                id: b.id, created_at: b.created_at, bill_type: b.bill_type, bill_name: b.bill_name,
+                bill_id: b.bill_id, bill_phone: b.bill_phone, from_account: b.from_account,
+                service_fee_account: b.service_fee_account, bill_amount: b.bill_amount, service_fee: b.service_fee || 0
+              }));
 
-            const mappedBills = billRes.results.map(b => ({
-              id: b.id, 
-              ts: b.created_at, 
-              type: 'bill', 
-              billType: b.bill_type, 
-              customerName: b.bill_name || b.bill_type, 
-              phone: b.bill_phone, 
-              billId: b.bill_id, 
-              account: b.from_account, 
-              incomeSource: 'cash', 
-              amount: b.bill_amount, 
-              income: b.service_fee || 0
-            }));
-            // transactions အစုံစုံထဲသို့ ပြန်ပေါင်းထည့်ခြင်း
-            state.transactions = state.transactions.concat(mappedBills);
+              const mappedBills = billRes.results.map(b => ({
+                id: b.id, 
+                ts: b.created_at, 
+                type: 'bill', 
+                billType: b.bill_type, 
+                customerName: b.bill_name || b.bill_type, 
+                phone: b.bill_phone, 
+                billId: b.bill_id, 
+                account: b.from_account, 
+                incomeSource: 'cash', 
+                amount: b.bill_amount, 
+                income: b.service_fee || 0
+              }));
+              state.transactions = state.transactions.concat(mappedBills);
+            }
+          } catch (billError) {
+            console.error("bill_payments table မရှိသေးပါ或 အမှားအယွင်း:", billError.message);
           }
 
           const pnlRes = await env.DB.prepare("SELECT * FROM AppPnl").all();
@@ -143,9 +138,13 @@ export default {
             env.DB.prepare("DELETE FROM AppTransfers"),
             env.DB.prepare("DELETE FROM AppCapital"),
             env.DB.prepare("DELETE FROM AppAdjustments"),
-            env.DB.prepare("DELETE FROM AppLogs"),
-            env.DB.prepare("DELETE FROM bill_payments") // Bill Payments ဒေတာဟောင်းဖျက်ခြင်း
+            env.DB.prepare("DELETE FROM AppLogs")
           ]);
+
+          // Bill Payments ဟောင်းကို ဖျက်ခြင်း (Table ရှိမှ ဖျက်စေရန်)
+          try {
+            await env.DB.prepare("DELETE FROM bill_payments").run();
+          } catch (e) {}
 
           const settingsKeys = ['categories', 'userPermissions', 'users'];
           const sStmts = settingsKeys.map(k => env.DB.prepare("INSERT INTO AppSettings (key, value) VALUES (?, ?)").bind(k, JSON.stringify(state[k])));
@@ -159,34 +158,36 @@ export default {
             await env.DB.prepare("INSERT INTO AppAccounts (name, balance) VALUES (?, ?)").bind('cash', state.balances.cash || 0).run();
           }
 
-          // Transactions နဲ့ Bill Payments ကို ခွဲထုတ်ပြီး သက်ဆိုင်ရာ Table ထဲ ထည့်ခြင်း
           if (state.transactions && state.transactions.length > 0) {
             const regularTxs = state.transactions.filter(t => t.type !== 'bill');
             const billTxs = state.transactions.filter(t => t.type === 'bill');
 
-            // သာမန် Transaction များကို AppTransactions ထဲ သွင်းခြင်း
             if (regularTxs.length > 0) {
               const tStmts = regularTxs.map(t => env.DB.prepare("INSERT INTO AppTransactions (id, ts, customerName, phone, type, account, amount, income, incomeSource) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
                 .bind(t.id, t.ts, t.customerName, t.phone, t.type, t.account, t.amount, t.income || 0, t.incomeSource || 'cash'));
               await env.DB.batch(tStmts);
             }
 
-            // Bill Payment များကို bill_payments table ထဲ သွင်းခြင်း
+            // Bill Payments အသစ် သွင်းခြင်း
             if (billTxs.length > 0) {
-              const billStmts = billTxs.map(b => env.DB.prepare("INSERT INTO bill_payments (id, created_at, bill_type, bill_name, bill_id, bill_phone, from_account, service_fee_account, bill_amount, service_fee) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-                .bind(
-                  b.id, 
-                  b.ts || Date.now(), 
-                  b.billType || b.bill_type || '', 
-                  b.customerName || b.bill_name || '', 
-                  b.billId || b.bill_id || '', 
-                  b.phone || b.bill_phone || '', 
-                  b.account || b.from_account || 'cash', 
-                  'cash', 
-                  b.amount || b.bill_amount || 0, 
-                  b.income || b.service_fee || 0
-                ));
-              await env.DB.batch(billStmts);
+              try {
+                const billStmts = billTxs.map(b => env.DB.prepare("INSERT INTO bill_payments (id, created_at, bill_type, bill_name, bill_id, bill_phone, from_account, service_fee_account, bill_amount, service_fee) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+                  .bind(
+                    b.id, 
+                    b.ts || Date.now(), 
+                    b.billType || '', 
+                    b.customerName || '', 
+                    b.billId || '', 
+                    b.phone || '', 
+                    b.account || 'cash', 
+                    'cash', 
+                    b.amount || 0, 
+                    b.income || 0
+                  ));
+                await env.DB.batch(billStmts);
+              } catch (e) {
+                console.error("Failed to insert bill_payments:", e.message);
+              }
             }
           }
 
