@@ -1,6 +1,3 @@
-ချွော့သွားတဲ့အတွက် တောင်းပန်ပါတယ်။ `capitalForm` event listener အပြီးမှာ ကုဒ်တွေ ဖြတ်တောက်သွားလို့ Login Page မှာ ရပ်သွားတာပါ။ အောက်ပါအတိုင်း အပြည့်အစုံ ပြင်ဆင်ပေးထားပါတယ်။
-
-```html
 <!DOCTYPE html>
 <html lang="my">
 <head>
@@ -455,17 +452,13 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
             </div>
             <div class="form-row-2">
               <div class="form-row">
-                <label>Service Fee <span class="mm">ဝန်ဆောင်ခ</span></label>
+                <label>Service Fee (Income) <span class="mm">ဝန်ဆောင်ခ</span></label>
                 <input type="number" id="billFee" placeholder="0" value="0">
               </div>
               <div class="form-row">
-                <label>Deduct From <span class="mm">ကနုတ်ယူမည့် အကောင့်</span></label>
+                <label>Deduct From (Account) <span class="mm">ငွေထုတ်ပေးမည့် အကောင့်</span></label>
                 <select id="billDeductAccount"></select>
               </div>
-            </div>
-            <div class="form-row">
-              <label>Fee Income To <span class="mm">ဝန်ဆောင်ခ သွင်းမည့် အကောင့်</span></label>
-              <select id="billIncomeAccount"></select>
             </div>
             <div class="form-row">
               <label>Note (Optional) <span class="mm">မှတ်ချက်</span></label>
@@ -473,13 +466,13 @@ body.role-admin .app-section.admin-only.active { display: block !important; }
             </div>
             <button type="submit" class="btn-primary">RECORD BILL PAYMENT</button>
           </form>
-          <div class="hint">ဘီလ် ပမာဏနှင့် ဝန်ဆောင်ခကို "Deduct From" အကောင့်မှ ကနုတ်ယူမည်။ ဝန်ဆောင်ခကို "Fee Income To" အကောင့်သို့ သွင်းပါမည်။ Ledger, Summary, P&L တို့တွင် အလိုလို ပြောင်းလဲမှု ဖြစ်ပါမည်။</div>
+          <div class="hint">ဘီလ် ပမာဏကို ရွေးချယ်ထားသော အကောင့်မှ ကနုတ်ယူမည် (Debit)။ ဖောက်သည်ထံမှ ရရှိသော ငွေသား (ဘီလ်ပမာဏ + ဝန်ဆောင်ခ) ကို Cash အကောင့်တွင် ထည့်သွင်းမည် (Credit)။ Income မှာ Cash အနေဖြင့်သာ မှတ်တမ်းတွင် ပါဝင်ပါမည်။</div>
         </div>
         <div class="card">
           <div class="card-header">Bill History · ဘီလ် မှတ်တမ်း</div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Date</th><th>Type</th><th>Name</th><th>Bill ID</th><th>Amount</th><th>Fee</th><th>Account</th><th>Action</th></tr></thead>
+              <thead><tr><th>Date</th><th>Type</th><th>Name</th><th>Bill ID</th><th>Amount</th><th>Fee</th><th>Paid From</th><th>Action</th></tr></thead>
               <tbody id="billBody"></tbody>
             </table>
           </div>
@@ -1054,8 +1047,14 @@ async function loadState() {
         if (!state.transfers) state.transfers = [];
         if (!state.capital) state.capital = [];
         if (!state.bills) state.bills = [];
+        if (state.bills) {
+          state.bills.forEach(b => {
+            if (!b.incomeAccount) b.incomeAccount = 'cash'; // Backward compatibility
+          });
+        }
         if (!state.billTypes) state.billTypes = ['Electric Bill', 'Phone Bill', 'Water Bill', 'Internet Bill', 'Other Bill'];
         if (!state.language) state.language = 'en';
+        if (!state.users || !state.users.admin || !state.users.user) state.users = { admin: '0000', user: '1111' };
         state.currentType = null;
         if (state.loans) {
           state.loans.forEach(l => {
@@ -1143,7 +1142,7 @@ function applyLanguage() {
     b.classList.toggle('active', b.dataset.lang === state.language);
   });
   
-  saveState();
+  if (currentRole) saveState();
 }
 
 function toggleLanguage() {
@@ -1451,21 +1450,20 @@ function deleteBill(id) {
       {k: 'Bill Type', v: bill.billType},
       {k: 'Bill Amount', v: fmt(bill.billAmount) + ' MMK'},
       {k: 'Service Fee', v: fmt(bill.serviceFee || 0) + ' MMK'},
-      {k: 'Deducted From', v: bill.deductAccount}
+      {k: 'Deducted From', v: bill.deductAccount},
+      {k: 'Received in Cash', v: fmt(bill.billAmount + (bill.serviceFee || 0)) + ' MMK'}
     ], true, (note) => {
-      const totalDeduction = bill.billAmount + (bill.serviceFee || 0);
+      const totalCashReceived = bill.billAmount + (bill.serviceFee || 0);
       
-      if (bill.serviceFee > 0) {
-        if ((state.balances[bill.incomeAccount] || 0) - bill.serviceFee < 0) {
-          showToast('CANNOT DELETE: Income account balance would go negative.');
-          return;
-        }
+      // Check if Cash has enough balance to reverse
+      if ((state.balances.cash || 0) < totalCashReceived) {
+        showToast('CANNOT DELETE: Cash balance would go negative.');
+        return;
       }
       
-      state.balances[bill.deductAccount] += totalDeduction;
-      if (bill.serviceFee > 0) {
-        state.balances[bill.incomeAccount] -= bill.serviceFee;
-      }
+      // Reverse balances: Add back to Account, Deduct from Cash
+      state.balances.cash -= totalCashReceived;
+      state.balances[bill.deductAccount] += bill.billAmount;
       
       state.bills = state.bills.filter(x => x.id !== id);
       state.pnl = state.pnl.filter(p => p.id !== 'pnl_bill_' + id);
@@ -1490,26 +1488,30 @@ function renderSummary() {
     if (useToday) return isToday(ts);
     const d = new Date(ts); return d >= startD && d <= endD;
   };
+  
+  // Cash Summary
   let cIn=0, cOut=0;
   state.transactions.filter(t => filterFn(t.ts)).forEach(t => { if(t.type==='in') cIn+=t.amount; else cOut+=t.amount; });
-  let cBillOut = state.bills.filter(b => filterFn(b.ts) && b.deductAccount==='cash').reduce((s,b)=>s+(b.billAmount+(b.serviceFee||0)),0);
-  let pInc = state.pnl.filter(p => filterFn(p.ts) && p.type==='income').reduce((s,p)=>s+p.amount,0);
-  let pExp = state.pnl.filter(p => filterFn(p.ts) && p.type==='expense').reduce((s,p)=>s+p.amount,0);
+  let cBillIn = state.bills.filter(b => filterFn(b.ts)).reduce((s,b)=>s+b.billAmount,0);
+  let pInc = state.pnl.filter(p => filterFn(p.ts) && p.type==='income' && p.source==='cash').reduce((s,p)=>s+p.amount,0);
+  let pExp = state.pnl.filter(p => filterFn(p.ts) && p.type==='expense' && p.source==='cash').reduce((s,p)=>s+p.amount,0);
   const dateLabel = useToday ? 'TODAY' : `${ds} → ${de}`;
   w.innerHTML += `<div class="summary-cell">
     <div class="name">CASH · ငွေသား (${dateLabel})</div>
     <div class="stat in"><span class="k">CASH IN</span><span class="v">+${fmt(cIn)}</span></div>
     <div class="stat out"><span class="k">CASH OUT</span><span class="v">-${fmt(cOut)}</span></div>
-    <div class="stat out"><span class="k">BILL PAID</span><span class="v">-${fmt(cBillOut)}</span></div>
+    <div class="stat in"><span class="k">BILL CREDIT</span><span class="v">+${fmt(cBillIn)}</span></div>
     <div class="stat in"><span class="k">P&L INCOME</span><span class="v">+${fmt(pInc)}</span></div>
     <div class="stat out"><span class="k">P&L EXPENSE</span><span class="v">-${fmt(pExp)}</span></div>
-    <div class="stat net"><span class="k">NET FLOW</span><span class="v">${fmt(cIn - cOut - cBillOut + pInc - pExp)}</span></div>
+    <div class="stat net"><span class="k">NET FLOW</span><span class="v">${fmt(cIn - cOut + cBillIn + pInc - pExp)}</span></div>
     <div class="foot"><span class="k">Balance</span><span class="v">${fmt(state.balances.cash)}</span></div>
   </div>`;
+  
+  // Digital Accounts Summary
   state.accounts.forEach(a => {
     let dIn=0, dOut=0;
     state.transactions.filter(t => filterFn(t.ts) && t.account===a).forEach(t => { if(t.type==='in') dOut+=t.amount; else dIn+=t.amount; });
-    let billOut = state.bills.filter(b => filterFn(b.ts) && b.deductAccount===a).reduce((s,b)=>s+(b.billAmount+(b.serviceFee||0)),0);
+    let billOut = state.bills.filter(b => filterFn(b.ts) && b.deductAccount===a).reduce((s,b)=>s+b.billAmount,0);
     let aPInc = state.pnl.filter(p => filterFn(p.ts) && p.type==='income' && p.source===a).reduce((s,p)=>s+p.amount,0);
     let aPExp = state.pnl.filter(p => filterFn(p.ts) && p.type==='expense' && p.source===a).reduce((s,p)=>s+p.amount,0);
     w.innerHTML += `<div class="summary-cell">
@@ -1523,6 +1525,8 @@ function renderSummary() {
       <div class="foot"><span class="k">Balance</span><span class="v">${fmt(state.balances[a]||0)}</span></div>
     </div>`;
   });
+  
+  // Daily Flow Table
   const s = document.getElementById('sumStart'), e = document.getElementById('sumEnd');
   if (!s.value) { const d = new Date(); d.setDate(1); s.value = d.toISOString().split('T')[0]; }
   if (!e.value) { e.value = new Date().toISOString().split('T')[0]; }
@@ -1542,7 +1546,11 @@ function renderSummary() {
     const dateStr = d.toLocaleDateString('en-GB');
     const acc = b.deductAccount;
     if(!map[dateStr+'|'+acc]) map[dateStr+'|'+acc] = {dateStr, account: acc, txOut: 0, txIn: 0, billOut: 0, pnlInc: 0, pnlExp: 0};
-    map[dateStr+'|'+acc].billOut += b.billAmount + (b.serviceFee || 0);
+    map[dateStr+'|'+acc].billOut += b.billAmount; // Debit from digital account
+    
+    const cashAcc = 'cash';
+    if(!map[dateStr+'|'+cashAcc]) map[dateStr+'|'+cashAcc] = {dateStr, account: cashAcc, txOut: 0, txIn: 0, billOut: 0, pnlInc: 0, pnlExp: 0};
+    map[dateStr+'|'+cashAcc].txOut += b.billAmount; // Credit to Cash (treated as Cash In)
   });
   state.pnl.filter(p => { const d=new Date(p.ts); return d>=start && d<=end; }).forEach(p => {
     const d = new Date(p.ts);
@@ -1553,14 +1561,23 @@ function renderSummary() {
   });
   const b = document.getElementById('dailyBody');
   if(Object.keys(map).length === 0) { b.innerHTML = '<tr><td colspan="8" class="empty-state">No records in this range</td></tr>'; return; }
-  b.innerHTML = Object.values(map).sort((a,b) => a.dateStr.localeCompare(b.dateStr) || a.account.localeCompare(b.account)).map(m => `
-    <tr>
+  b.innerHTML = Object.values(map).sort((a,b) => a.dateStr.localeCompare(b.dateStr) || a.account.localeCompare(b.account)).map(m => {
+    let netFlow;
+    if (m.account === 'cash') {
+      // For Cash: txOut is Cash In, txIn is Cash Out
+      netFlow = m.txOut - m.txIn + m.pnlInc - m.pnlExp;
+    } else {
+      // For Digital: txIn is Digital In, txOut is Digital Out
+      netFlow = m.txIn - m.txOut + m.pnlInc - m.pnlExp - (m.billOut || 0);
+    }
+    return `<tr>
       <td style="color:var(--text-soft)">${m.dateStr}</td><td>${escapeHtml(m.account)}</td>
       <td class="type-out">${fmt(m.txOut)}</td><td class="type-in">${fmt(m.txIn)}</td>
       <td class="type-out">${fmt(m.billOut || 0)}</td>
       <td class="type-in">${fmt(m.pnlInc)}</td><td class="type-out">${fmt(m.pnlExp)}</td>
-      <td class="amount" style="color:${(m.txIn + m.pnlInc - m.txOut - (m.billOut||0) - m.pnlExp)>=0?'var(--success)':'var(--danger)'}">${fmt(m.txIn + m.pnlInc - m.txOut - (m.billOut||0) - m.pnlExp)}</td>
-    </tr>`).join('');
+      <td class="amount" style="color:${netFlow>=0?'var(--success)':'var(--danger)'}">${fmt(netFlow)}</td>
+    </tr>`;
+  }).join('');
 }
 
 function renderTx() {
@@ -1575,7 +1592,7 @@ function renderTx() {
       customerName: bill.customerName || '-', phone: bill.phone || '-',
       type: 'bill', account: bill.deductAccount,
       amount: bill.billAmount, income: bill.serviceFee || 0,
-      incomeSource: bill.incomeAccount, billType: bill.billType, billId: bill.billId
+      incomeSource: 'cash', billType: bill.billType, billId: bill.billId
     });
   });
   
@@ -2120,10 +2137,21 @@ function exportData(format) {
       if(t.income > 0 && t.incomeSource === accKey) map[dateStr+'|'+accKey].Income += t.income;
     });
     state.bills.filter(b => { const d=new Date(b.ts); return d>=start && d<=end; }).forEach(b => {
-      const d = new Date(b.ts), dateStr = d.toLocaleDateString('en-GB'), accKey = b.deductAccount;
-      if (acc !== 'all' && acc !== accKey) return;
-      if(!map[dateStr+'|'+accKey]) map[dateStr+'|'+accKey] = {Date: dateStr, Account: accKey, 'Cash In Amount': 0, 'Cash Out Amount': 0, Income: 0, Expense: 0};
-      map[dateStr+'|'+accKey]['Cash Out Amount'] += b.billAmount + (b.serviceFee || 0);
+      const d = new Date(b.ts), dateStr = d.toLocaleDateString('en-GB');
+      
+      // 1. Deduct from Digital Account
+      const accKey = b.deductAccount;
+      if (acc === 'all' || acc === accKey) {
+        if(!map[dateStr+'|'+accKey]) map[dateStr+'|'+accKey] = {Date: dateStr, Account: accKey, 'Cash In Amount': 0, 'Cash Out Amount': 0, Income: 0, Expense: 0};
+        map[dateStr+'|'+accKey]['Cash Out Amount'] += b.billAmount;
+      }
+      
+      // 2. Credit to Cash Account
+      const cashKey = 'cash';
+      if (acc === 'all' || acc === cashKey) {
+        if(!map[dateStr+'|'+cashKey]) map[dateStr+'|'+cashKey] = {Date: dateStr, Account: cashKey, 'Cash In Amount': 0, 'Cash Out Amount': 0, Income: 0, Expense: 0};
+        map[dateStr+'|'+cashKey]['Cash In Amount'] += b.billAmount;
+      }
     });
     state.pnl.filter(p => { const d=new Date(p.ts); return d>=start && d<=end; }).forEach(p => {
       const d = new Date(p.ts), dateStr = d.toLocaleDateString('en-GB'), accKey = p.source;
@@ -2144,7 +2172,7 @@ function exportData(format) {
       Date: new Date(b.ts).toLocaleDateString('en-GB'), Type: b.billType,
       Name: b.customerName || '-', BillID: b.billId || '-', Phone: b.phone || '-',
       BillAmount: b.billAmount, ServiceFee: b.serviceFee || 0,
-      DeductAccount: b.deductAccount, IncomeAccount: b.incomeAccount, Note: b.note || ''
+      DeductAccount: b.deductAccount, IncomeAccount: 'cash', Note: b.note || ''
     }));
   } else if (expType === 'loans') {
     fileName = 'Loan_Details'; sheetName = 'Loans';
@@ -2256,34 +2284,34 @@ document.getElementById('billForm').onsubmit = e => { e.preventDefault();
   const billAmount = parseFloat(document.getElementById('billAmount').value);
   const serviceFee = parseFloat(document.getElementById('billFee').value) || 0;
   const deductAccount = document.getElementById('billDeductAccount').value;
-  const incomeAccount = document.getElementById('billIncomeAccount').value;
   const note = document.getElementById('billNote').value.trim();
   
   if (!billAmount || billAmount <= 0) { showToast('CHECK BILL AMOUNT'); return; }
   
-  const totalDeduction = billAmount + serviceFee;
-  if ((state.balances[deductAccount] || 0) < totalDeduction) { showToast('INSUFFICIENT BALANCE IN DEDUCT ACCOUNT'); return; }
+  // Check if Deduct Account has enough balance to pay the bill
+  if ((state.balances[deductAccount] || 0) < billAmount) { showToast('INSUFFICIENT BALANCE IN DEDUCT ACCOUNT'); return; }
   
-  state.balances[deductAccount] -= totalDeduction;
-  if (serviceFee > 0) { state.balances[incomeAccount] += serviceFee; }
+  // Debit from Account, Credit to Cash
+  state.balances[deductAccount] -= billAmount;
+  state.balances.cash += billAmount; 
+  state.balances.cash += serviceFee; // Income to Cash
   
-  const bill = { id: 'bill_' + Date.now(), ts: Date.now(), billType, customerName, billId, phone, billAmount, serviceFee, deductAccount, incomeAccount, note };
+  const bill = { id: 'bill_' + Date.now(), ts: Date.now(), billType, customerName, billId, phone, billAmount, serviceFee, deductAccount, incomeAccount: 'cash', note };
   state.bills.push(bill);
   
   if (serviceFee > 0) {
-    state.pnl.push({ id: 'pnl_bill_' + bill.id, ts: bill.ts, type: 'income', category: 'Bill Commission', source: incomeAccount, amount: serviceFee, note: `Bill fee - ${billType}${customerName ? ' (' + customerName + ')' : ''}` });
+    state.pnl.push({ id: 'pnl_bill_' + bill.id, ts: bill.ts, type: 'income', category: 'Bill Commission', source: 'cash', amount: serviceFee, note: `Bill fee - ${billType}${customerName ? ' (' + customerName + ')' : ''}` });
   }
   
-  addLog('BILL_PAY', `Paid ${billType} ${fmt(billAmount)} + fee ${fmt(serviceFee)} via ${deductAccount}`);
+  addLog('BILL_PAY', `Paid ${billType} ${fmt(billAmount)} via ${deductAccount}. Cash received: ${fmt(billAmount + serviceFee)}`);
   renderAll();
   
   const details = [
     {k: 'Bill Type', v: billType},
     {k: 'Bill Amount', v: fmt(billAmount) + ' MMK'},
     {k: 'Service Fee', v: fmt(serviceFee) + ' MMK'},
-    {k: 'Deducted From', v: deductAccount},
-    {k: 'Fee To', v: incomeAccount},
-    {k: 'Total Deduction', v: fmt(totalDeduction) + ' MMK'}
+    {k: 'Paid From', v: deductAccount},
+    {k: 'Received in Cash', v: fmt(billAmount + serviceFee) + ' MMK'}
   ];
   showModal('BILL PAYMENT COMPLETE', 'ဘီလ် ပေးဆောင်မှု အောင်မြင်ပါသည်။', details);
   
@@ -2427,7 +2455,7 @@ if (document.getElementById('loanSearch')) {
 function renderAll() {
   renderSources('txAccount'); renderSources('incomeSource'); renderSources('pnlSource'); renderSources('exportAccount', true, true);
   renderSources('capitalAccount'); renderSources('adjustTarget'); renderSources('loanSource');
-  renderSources('billDeductAccount'); renderSources('billIncomeAccount');
+  renderSources('billDeductAccount');
   renderTransferSources();
   renderBalances(); renderSummary(); renderTx(); renderReports(); renderPnl(); renderCategories(); renderAccountList(); renderAdjust(); renderLoans(); renderLogs(); renderTransfers(); renderCapital(); renderBills(); checkAlerts();
   updateMenuVisibility(); loadPermissionsUI();
@@ -2453,4 +2481,3 @@ loadState().then(() => {
 </script>
 </body>
 </html>
-```
