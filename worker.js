@@ -16,11 +16,11 @@ export default {
     }
 
     // -------------------------------------------------------------
-    // 2. Users Data Endpoint (/api/users)
+    // 2. Users Data Endpoint (/api/users) - Google Sheet ချိတ်ရန်
     // -------------------------------------------------------------
     if (url.pathname === "/api/users") {
       const authHeader = request.headers.get("Authorization");
-      const SECRET_TOKEN = "TEST_TOKEN_003009"; // Token အသစ်ကို နှစ်ဖက်စလုံး တူညီစေရန် ပြင်ထားပါသည်
+      const SECRET_TOKEN = "MY_SECRET_API_TOKEN_214749";
 
       if (!authHeader || authHeader !== `Bearer ${SECRET_TOKEN}`) {
         return new Response(
@@ -30,50 +30,23 @@ export default {
       }
 
       try {
+        // D1 Database မှ users table ထဲမှ Data ဆွဲထုတ်ခြင်း
         const { results } = await env.DB.prepare("SELECT id, name, email, created_at FROM users").all();
-        return new Response(JSON.stringify(results), { status: 200, headers: corsHeaders });
+
+        return new Response(JSON.stringify(results), {
+          status: 200,
+          headers: corsHeaders
+        });
       } catch (error) {
-        return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: corsHeaders });
-      }
-    }
-
-    // -------------------------------------------------------------
-    // 3. All Data Endpoint (/api/all-data) - Google Sheet အတွက်
-    // -------------------------------------------------------------
-    if (url.pathname === "/api/all-data") {
-      const authHeader = request.headers.get("Authorization");
-      const SECRET_TOKEN = "TEST_TOKEN_003009";
-
-      if (!authHeader || authHeader !== `Bearer ${SECRET_TOKEN}`) {
         return new Response(
-          JSON.stringify({ error: "Unauthorized" }), 
-          { status: 401, headers: corsHeaders }
+          JSON.stringify({ error: error.message }), 
+          { status: 500, headers: corsHeaders }
         );
       }
-
-      try {
-        const allData = {};
-        allData.AppAccounts = (await env.DB.prepare("SELECT * FROM AppAccounts").all()).results;
-        allData.AppAdjustments = (await env.DB.prepare("SELECT * FROM AppAdjustments").all()).results;
-        allData.AppCapital = (await env.DB.prepare("SELECT * FROM AppCapital").all()).results;
-        allData.AppLoans = (await env.DB.prepare("SELECT * FROM AppLoans").all()).results;
-        allData.AppLogs = (await env.DB.prepare("SELECT * FROM AppLogs").all()).results;
-        allData.AppPnl = (await env.DB.prepare("SELECT * FROM AppPnl").all()).results;
-        allData.AppSettings = (await env.DB.prepare("SELECT * FROM AppSettings").all()).results;
-        allData.AppTransactions = (await env.DB.prepare("SELECT * FROM AppTransactions").all()).results;
-        allData.AppTransfers = (await env.DB.prepare("SELECT * FROM AppTransfers").all()).results;
-        
-        // Bill Payments Table အသစ်ကို ထည့်ပေးခြင်း
-        allData.billPayments = (await env.DB.prepare("SELECT * FROM bill_payments").all()).results;
-
-        return new Response(JSON.stringify(allData), { status: 200, headers: corsHeaders });
-      } catch (error) {
-        return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: corsHeaders });
-      }
     }
 
     // -------------------------------------------------------------
-    // 4. App State Endpoint (/api/state) - သင့် Web App အတွက်
+    // 3. App State Endpoint (/api/state)
     // -------------------------------------------------------------
     if (url.pathname === "/api/state") {
       try {
@@ -83,7 +56,7 @@ export default {
             accounts: ['Kpay(TZ)', 'Wave(TZ)', 'Bank(TZ)'],
             balances: { 'Kpay(TZ)': 0, 'Wave(TZ)': 0, 'Bank(TZ)': 0, 'cash': 0 },
             transactions: [], pnl: [], loans: [], transfers: [], capital: [], adjustments: [], logs: [],
-            billPayments: [], // Bill Payments အတွက် array အသစ်ထည့်ပေးခြင်း
+            billPayments: [], // Bill Payments အတွက် ထည့်ထားခြင်း
             categories: { income: ['Commission', 'Salary', 'Other Income'], expense: ['Rent', 'Food', 'Transport', 'Utility', 'Other Expense'] },
             userPermissions: { canDelete: false, canAdjust: false, canLoans: false, canCapital: false, canCategories: false, canReports: true, canExport: true, canBackup: false },
             users: { admin: '0000', user: '1111' }
@@ -110,6 +83,32 @@ export default {
             id: t.id, ts: t.ts, customerName: t.customerName, phone: t.phone, type: t.type, account: t.account, amount: t.amount, income: t.income || 0, incomeSource: t.incomeSource || 'cash'
           }));
 
+          // Bill Payments ဒေတာများကို ဖတ်ယူပြီး transactions ထဲ ပြန်ပေါင်းထည့်ခြင်း (Frontend အတွက် အရေးကြီး)
+          const billRes = await env.DB.prepare("SELECT * FROM bill_payments").all();
+          if(billRes.results) {
+            state.billPayments = billRes.results.map(b => ({
+              id: b.id, created_at: b.created_at, bill_type: b.bill_type, bill_name: b.bill_name,
+              bill_id: b.bill_id, bill_phone: b.bill_phone, from_account: b.from_account,
+              service_fee_account: b.service_fee_account, bill_amount: b.bill_amount, service_fee: b.service_fee || 0
+            }));
+
+            const mappedBills = billRes.results.map(b => ({
+              id: b.id, 
+              ts: b.created_at, 
+              type: 'bill', 
+              billType: b.bill_type, 
+              customerName: b.bill_name || b.bill_type, 
+              phone: b.bill_phone, 
+              billId: b.bill_id, 
+              account: b.from_account, 
+              incomeSource: 'cash', 
+              amount: b.bill_amount, 
+              income: b.service_fee || 0
+            }));
+            // transactions အစုံစုံထဲသို့ ပြန်ပေါင်းထည့်ခြင်း
+            state.transactions = state.transactions.concat(mappedBills);
+          }
+
           const pnlRes = await env.DB.prepare("SELECT * FROM AppPnl").all();
           if(pnlRes.results) state.pnl = pnlRes.results.map(p => ({ id: p.id, ts: p.ts, type: p.type, category: p.category, source: p.source, amount: p.amount, note: p.note }));
 
@@ -127,14 +126,6 @@ export default {
 
           const logsRes = await env.DB.prepare("SELECT * FROM AppLogs").all();
           if(logsRes.results) state.logs = logsRes.results.map(l => ({ id: l.id, ts: l.ts, user: l.user, action: l.action, details: l.details }));
-
-          // Bill Payments ဒေတာများကို ဖတ်ယူခြင်း
-          const billRes = await env.DB.prepare("SELECT * FROM bill_payments").all();
-          if(billRes.results) state.billPayments = billRes.results.map(b => ({
-            id: b.id, created_at: b.created_at, bill_type: b.bill_type, bill_name: b.bill_name,
-            bill_id: b.bill_id, bill_phone: b.bill_phone, from_account: b.from_account,
-            service_fee_account: b.service_fee_account, bill_amount: b.bill_amount, service_fee: b.service_fee || 0
-          }));
 
           return new Response(JSON.stringify(state), { status: 200, headers: corsHeaders });
         }
@@ -168,10 +159,35 @@ export default {
             await env.DB.prepare("INSERT INTO AppAccounts (name, balance) VALUES (?, ?)").bind('cash', state.balances.cash || 0).run();
           }
 
+          // Transactions နဲ့ Bill Payments ကို ခွဲထုတ်ပြီး သက်ဆိုင်ရာ Table ထဲ ထည့်ခြင်း
           if (state.transactions && state.transactions.length > 0) {
-            const tStmts = state.transactions.map(t => env.DB.prepare("INSERT INTO AppTransactions (id, ts, customerName, phone, type, account, amount, income, incomeSource) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
-              .bind(t.id, t.ts, t.customerName, t.phone, t.type, t.account, t.amount, t.income || 0, t.incomeSource || 'cash'));
-            await env.DB.batch(tStmts);
+            const regularTxs = state.transactions.filter(t => t.type !== 'bill');
+            const billTxs = state.transactions.filter(t => t.type === 'bill');
+
+            // သာမန် Transaction များကို AppTransactions ထဲ သွင်းခြင်း
+            if (regularTxs.length > 0) {
+              const tStmts = regularTxs.map(t => env.DB.prepare("INSERT INTO AppTransactions (id, ts, customerName, phone, type, account, amount, income, incomeSource) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+                .bind(t.id, t.ts, t.customerName, t.phone, t.type, t.account, t.amount, t.income || 0, t.incomeSource || 'cash'));
+              await env.DB.batch(tStmts);
+            }
+
+            // Bill Payment များကို bill_payments table ထဲ သွင်းခြင်း
+            if (billTxs.length > 0) {
+              const billStmts = billTxs.map(b => env.DB.prepare("INSERT INTO bill_payments (id, created_at, bill_type, bill_name, bill_id, bill_phone, from_account, service_fee_account, bill_amount, service_fee) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+                .bind(
+                  b.id, 
+                  b.ts || Date.now(), 
+                  b.billType || b.bill_type || '', 
+                  b.customerName || b.bill_name || '', 
+                  b.billId || b.bill_id || '', 
+                  b.phone || b.bill_phone || '', 
+                  b.account || b.from_account || 'cash', 
+                  'cash', 
+                  b.amount || b.bill_amount || 0, 
+                  b.income || b.service_fee || 0
+                ));
+              await env.DB.batch(billStmts);
+            }
           }
 
           if (state.pnl && state.pnl.length > 0) {
@@ -210,15 +226,6 @@ export default {
             await env.DB.batch(logStmts);
           }
 
-                   // Bill Payments ဒေတာအသစ်သွင်းခြင်း (Post Request အတွင်း)
-          // state.billPayments ဆိုတာ သီးခြား မရှိခြင်ဖြစ်နေလို့ transactions ထဲကနေ ရှာယူပါမည်
-          const billTxs = state.transactions.filter(t => t.type === 'bill');
-          if (billTxs.length > 0) {
-            const billStmts = billTxs.map(b => env.DB.prepare("INSERT INTO bill_payments (id, bill_type, bill_name, bill_id, bill_phone, from_account, service_fee_account, bill_amount, service_fee, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-              .bind(b.id || ('bill_' + Date.now()), b.billType, b.customerName, b.billId, b.phone, b.account, 'cash', b.amount, b.income || 0, b.ts || Date.now()));
-            await env.DB.batch(billStmts);
-          }
-
           return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders });
         }
 
@@ -228,30 +235,8 @@ export default {
     }
 
     // -------------------------------------------------------------
-    // 5. Static Files Handling (Frontend HTML)
+    // 4. Static Files Handling (Frontend HTML)
     // -------------------------------------------------------------
     return env.ASSETS.fetch(request);
-  },
- // =========================================================
-  // Cron Job: တစ်လပြည့်ရင် Logs တွေကို အလိုလို ဖျက်ပစ်မယ်
-  // =========================================================
-  async scheduled(event, env, ctx) {
-    ctx.waitUntil(
-      (async () => {
-        try {
-          // လက်ရှိ အချိန် (Milliseconds အားဖြင့်) ကို ရယူပါတယ်
-          const now = Date.now();
-          // ၁ လ = ၃၀ ရက် (30 * 24 * 60 * 60 * 1000 = 2,592,000,000 ms)
-          const oneMonthAgo = now - 2592000000;
-
-          // တစ်လထက်ကျော်လွန်ပြီးသော Logs များကို ဖျက်ပစ်ပါတယ်
-          const result = await env.DB.prepare("DELETE FROM AppLogs WHERE ts < ?1").bind(oneMonthAgo).run();
-          
-          console.log(`Cleanup successful. Deleted ${result.meta.changes} old logs.`);
-        } catch (error) {
-          console.error("Error deleting old logs:", error.message);
-        }
-      })()
-    );
   }
 };
